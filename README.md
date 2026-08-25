@@ -21,4 +21,7 @@
    
    어느 브랜치에서 어느 브랜치로 merge 할건지 선택해서 create를 눌러줍니다(설명을 적어주면 더 좋습니다)
    열린 pull request는 다른사람이 보고 코멘트를 남겨도 좋고, 별다른 문제 없으면 기술팀장이 merge 한 뒤 알림을 보내겠습니다.
-   
+
+3. 깃 협업 흐름(그림)
+   <img width="900" height="500" alt="image" src="https://github.com/user-attachments/assets/c62252da-9cd7-4158-9ed2-b7d8ac264a9a" />
+
