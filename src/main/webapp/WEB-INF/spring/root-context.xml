@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+              http://www.springframework.org/schema/context
+             http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder location="classpath:db.properties"/>
+	<bean
+		class="org.apache.commons.dbcp2.BasicDataSource"
+		id="data_source">
+		<property
+			name="driverClassName"
+			value="${db.driver}" />
+		<property
+			name="url"
+			value="${db.url}" />
+		<property
+			name="username"
+			value="${db.username}" />
+		<property
+			name="password"
+			value="${db.password}" />
+	</bean>
+
+	<bean
+		class="org.mybatis.spring.SqlSessionFactoryBean"
+		id="sqlSessionFactory">
+		<property
+			name="dataSource"
+			ref="data_source"></property>
+		<property
+			name="mapperLocations"
+			value="/WEB-INF/mybatis/mapper/**/*_mapper.xml"></property>
+		<property
+			name="configLocation"
+			value="/WEB-INF/mybatis/mybatis-config.xml"></property>
+
+		<!-- 최상위 패키지인 com.app.dto만 명시하면, 그 하위 폴더의 모든 클래스를 자동 추적합니다 -->
+		<property
+			name="typeAliasesPackage"
+			value="com.app.dto" />
+	</bean>
+
+	<bean
+		id="sqlSessionTemplate"
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg
+			name="sqlSessionFactory"
+			ref="sqlSessionFactory" />
+	</bean>
+
+	<context:component-scan
+		base-package="com.app.service" />
+	<context:component-scan
+		base-package="com.app.dao" />
+
+</beans>
