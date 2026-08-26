@@ -45,7 +45,7 @@ CREATE TABLE t_user (
   u_id VARCHAR2(16) NOT NULL,
   u_nick VARCHAR2(48) NOT NULL,
   u_email VARCHAR2(320) NOT NULL,
-  u_pw VARCHAR2(20) NOT NULL,
+  u_pw VARCHAR2(100) NOT NULL,
   u_registed_date DATE DEFAULT SYSDATE NOT NULL,
   u_p_is_public NUMBER(1) DEFAULT 0 NOT NULL,
   u_photo VARCHAR2(10),
