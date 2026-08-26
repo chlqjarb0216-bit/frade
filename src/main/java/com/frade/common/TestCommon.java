@@ -1,4 +1,4 @@
-package com.app.common;
+package com.frade.common;
 
 public class TestCommon {
 

@@ -1,0 +1,1 @@
+향후 api키 등 api에 필요한 설정을 api.properties로 만들어줘야 합니다. 향후 회의 요망.

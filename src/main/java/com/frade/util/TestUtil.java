@@ -1,4 +1,4 @@
-package com.app.util;
+package com.frade.util;
 
 public class TestUtil {
 

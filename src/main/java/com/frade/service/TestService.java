@@ -1,4 +1,4 @@
-package com.app.service;
+package com.frade.service;
 
 public class TestService {
 

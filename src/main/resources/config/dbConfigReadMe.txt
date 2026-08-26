@@ -1,4 +1,4 @@
-현재있는 src/main/resources 폴더 안에 db.properties 라는 파일을 만들어 줍니다.
+현재있는 src/main/resources/config 폴더 안에 db.properties 라는 파일을 만들어 줍니다.
 
 db.driver=oracle.jdbc.OracleDriver
 db.username=scott

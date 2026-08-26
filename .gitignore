@@ -138,7 +138,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# DB설정 공유 안되도록
-src/main/resources/db.properties
+# properties 공유 방지
+src/main/resources/config/*.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,eclipse,java,maven

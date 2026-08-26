@@ -1,4 +1,4 @@
-package com.app.dao;
+package com.frade.dao;
 
 public class TestDAO {
 

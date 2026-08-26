@@ -5,14 +5,21 @@
 	xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:task="http://www.springframework.org/schema/task"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-http://www.springframework.org/schema/beans/spring-beans.xsd
-http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
-             http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-              http://www.springframework.org/schema/context
-             http://www.springframework.org/schema/context/spring-context.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<context:property-placeholder location="classpath:db.properties"/>
+	<context:property-placeholder
+		location="classpath:config/*.properties" />		
+
+	<context:component-scan
+		base-package="com.frade.service" />
+	<context:component-scan
+		base-package="com.frade.dao" />
+	<context:component-scan
+		base-package="com.frade.config" />
+		
 	<bean
 		class="org.apache.commons.dbcp2.BasicDataSource"
 		id="data_source">
@@ -43,10 +50,10 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
 			name="configLocation"
 			value="/WEB-INF/mybatis/mybatis-config.xml"></property>
 
-		<!-- 최상위 패키지인 com.app.dto만 명시하면, 그 하위 폴더의 모든 클래스를 자동 추적합니다 -->
+		<!-- 최상위 패키지인 com.frade.dto만 명시하면, 그 하위 폴더의 모든 클래스를 자동 추적합니다 -->
 		<property
 			name="typeAliasesPackage"
-			value="com.app.dto" />
+			value="com.frade.dto" />
 	</bean>
 
 	<bean
@@ -56,10 +63,5 @@ http://www.springframework.org/schema/task http://www.springframework.org/schema
 			name="sqlSessionFactory"
 			ref="sqlSessionFactory" />
 	</bean>
-
-	<context:component-scan
-		base-package="com.app.service" />
-	<context:component-scan
-		base-package="com.app.dao" />
 
 </beans>

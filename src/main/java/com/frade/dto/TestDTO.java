@@ -1,4 +1,4 @@
-package com.app.dto;
+package com.frade.dto;
 
 public class TestDTO {
 
