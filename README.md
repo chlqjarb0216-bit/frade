@@ -25,7 +25,7 @@
 3. 깃&깃허브 협업 규칙 <br>
    3-1 브랜치 전략 <br>
       main(최종배포용) -> dev(테스트 통합용) -> feature/도메인(개인작업용) 형태의 구조로 진행하며<br>
-      ✔ 기능 개발을 feature 브랜치에서 하는게 아님!! <br>
+      ✔ 기능 개발 브랜치 명을 "feature_기능" 으로 해주세요 <br>
       ✔✔ 로그인 기능 개발  : feature/login <br>
       ✔✔ 로그아웃 기능 개발: feature/logout <br>
       ✔✔✔feature 하위에 브랜치를 따서 기능별로 관리 <br>
