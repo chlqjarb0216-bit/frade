@@ -48,7 +48,7 @@ CREATE TABLE t_user (
   u_pw VARCHAR2(100) NOT NULL,
   u_registed_date DATE DEFAULT SYSDATE NOT NULL,
   u_p_is_public NUMBER(1) DEFAULT 0 NOT NULL,
-  u_photo VARCHAR2(10),
+  u_photo VARCHAR2(13), --	10->13자리 수정()
   u_is_deleted NUMBER(1),
   CONSTRAINT pk_t_user PRIMARY KEY (u_num)
 );
