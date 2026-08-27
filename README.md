@@ -26,9 +26,9 @@
    3-1 브랜치 전략 <br>
       main(최종배포용) -> dev(테스트 통합용) -> feature/도메인(개인작업용) 형태의 구조로 진행하며<br>
       ✔ 기능 개발 브랜치 명을 "feature_기능" 으로 해주세요 <br>
-      ✔✔ 로그인 기능 개발  : feature/login <br>
-      ✔✔ 로그아웃 기능 개발: feature/logout <br>
-      ✔✔✔feature 하위에 브랜치를 따서 기능별로 관리 <br>
+      ✔✔ 로그인 기능 개발  : feature_login <br>
+      ✔✔ 로그아웃 기능 개발: feature_logout <br>
+      ✔✔✔(취향차이)feature 하위에 브랜치를 따서 기능별로 관리(총 브랜치 경로: main/develop/feature/feature_login) <br>
    3-2 커밋 메시지 약속 <br>
       [FEAT] 회원가입 기능 추가, [FIX] 로그인 오류 수정, [CHORE] 오타 수정 등<br>
       말머리를 달아 남들이 작업 내역을 한눈에 파악할 수 있게 합니다.
