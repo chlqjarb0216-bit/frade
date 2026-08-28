@@ -7,11 +7,10 @@ import lombok.Data;
 @Data
 public class UserSignDTO {
 	
-	int uNum;
+	  int uNum;
     String uId;
     String uNick;
     String uEmail;
     String uPw;
-
 
 }
