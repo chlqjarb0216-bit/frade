@@ -1,15 +1,18 @@
 package com.frade.controller.community;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
@@ -41,7 +44,15 @@ public class CommunityController {
 	
 	@PostMapping("/write")
 	//게시글 저장 버튼 클릭시 하단 컨트롤러 동작
-	public String writeAction(PostDTO post, @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files) {
+	public String writeAction(@Valid PostDTO post, BindingResult br,
+			@RequestParam(value = "uploadFiles", required = false) MultipartFile[] files) {
+		
+		//@Valid 검증 실패 시 처리
+	    if (br.hasErrors()) {
+
+	        return "redirect:/community-lists/write?error=true";
+	    }
+	    
 		//(test)로그인 했다고 가정시켜주는 코드
 		post.setUNum(1L);
 		

@@ -2,6 +2,9 @@ package com.frade.dto.community;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 import lombok.Data;
 
 @Data
@@ -11,7 +14,12 @@ public class PostDTO {
     private Long uNum;             // u_num : 회원 번호 (작성자 FK)
     private Integer pCategoryNum;  // p_category_num : 카테고리 번호(0:질문 1:정보 2:자유)
 //    private Integer scNum;         // sc_num : 종목/세부 카테고리 번호(반도체, 의료 등 코드번호)
+    @NotBlank(message = "제목을 입력해주세요.")
+    @Size(max = 30, message = "제목을 최대 30자 이내로 작성해주세요.")
     private String pTitle;         // p_title : 게시글 제목
+    
+    @NotBlank(message = "내용을 입력해주세요.")
+    @Size(max = 1333, message = "내용이 너무 깁니다. (최대 1333자).")
     private String pContent;       // p_content : 게시글 본문
     private Integer pViewCnt;      // p_view_cnt : 조회수
     private Integer pLikeCnt;      // p_like_cnt : 추천수(좋아요)
