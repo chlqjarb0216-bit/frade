@@ -37,7 +37,7 @@ public class CommunityController {
 	
 	@PostMapping("/write")
 	//게시글 저장 버튼 클릭시 하단 컨트롤러 동작
-	public String writeAction(PostDTO post, @RequestParam(value = "pFiles", required = false) MultipartFile[] files) {
+	public String writeAction(PostDTO post, @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files) {
 		
 		System.out.println(post); 
 		/*PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null,
@@ -45,8 +45,10 @@ public class CommunityController {
 		   pPostedDate=null, pUpdatedDate=null, pTrNum1=null, pTrNum2=null,
 		   pTrNum3=null, pFiles=null, pIsPublic=null)
 		 */
+		System.out.println(files);
 		
-		postService.savePost(post);
+		postService.savePost(post, files);
+		
 		
 		
 		return "community/lists";

@@ -31,7 +31,7 @@
 		<h4>내용</h4>
 		<input type="text" placeholder="내용을 입력해주세요" id="pContent" name="pContent">
 		<h4>첨부파일</h4>
-		<input type="file" id="pFiles" name="pFiles" multiple><br>
+		<input type="file" id="uploadFiles" name="uploadFiles" multiple><br>
 		
 		<button type="submit">작성</button> 
 		<a href="/community-lists"><button type="button">취소</button></a>
@@ -47,7 +47,7 @@
 		const contentInput = document.getElementById('pContent');
 		const categoryNumInput = document.querySelector('input[name="pCategoryNum"]:checked');
 		
-		const fileInput = document.getElementById('pFiles');
+		const fileInput = document.getElementById('uploadFiles');
 		const files = fileInput.files;
 		
 		const titleValue = titleInput.value.trim();
