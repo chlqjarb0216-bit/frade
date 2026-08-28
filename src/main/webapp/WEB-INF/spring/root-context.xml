@@ -11,7 +11,7 @@
 						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<context:property-placeholder
-		location="classpath:config/*.properties" />		
+		location="classpath:config/*.properties" />
 
 	<context:component-scan
 		base-package="com.frade.service" />
@@ -19,7 +19,7 @@
 		base-package="com.frade.dao" />
 	<context:component-scan
 		base-package="com.frade.config" />
-		
+
 	<bean
 		class="org.apache.commons.dbcp2.BasicDataSource"
 		id="data_source">
@@ -63,5 +63,29 @@
 			name="sqlSessionFactory"
 			ref="sqlSessionFactory" />
 	</bean>
+
+
+	<!-- 스케줄러 Bean 등록 -->
+	<bean
+		id="apiScheduler"
+		class="com.frade.scheduler.ApiScheduler" />
+
+	<!-- 스케줄러 설정 -->
+	<task:scheduler
+		id="mainScheduler"
+		pool-size="10" />
+	<task:executor
+		id="mainTaskExecutor"
+		pool-size="10" />
+	<task:annotation-driven
+		executor="mainTaskExecutor"
+		scheduler="mainScheduler" />
+
+	<!-- 다른 스케줄러와 풀을 나눠쓰지 않을 특수 스케줄러 -->
+	<bean
+		id="stockBatchScheduler"
+		class="com.frade.scheduler.StockBatchScheduler" />
+	<task:scheduler id="stockBatchSchedulerPool" pool-size="1" />
+	<task:executor id="stockBatchTaskExecutor" pool-size="1" />
 
 </beans>
