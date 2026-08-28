@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,8 +29,12 @@ public class CommunityController {
 	
 	
 	@GetMapping("/write")
-	public String write(PostDTO post) {
-
+	public String write(PostDTO post, @RequestParam(value = "error", required = false) String error, Model model) {
+		
+		//게시글 저장 서버 오류 발생 예외처리
+		if (error != null) {
+	        model.addAttribute("msg", "게시글 작성 중 서버 오류가 발생했습니다.");
+	    }
 		
 		return "community/write";
 	}
@@ -37,7 +42,7 @@ public class CommunityController {
 	@PostMapping("/write")
 	//게시글 저장 버튼 클릭시 하단 컨트롤러 동작
 	public String writeAction(PostDTO post, @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files) {
-		//로그인 했다고 가정시켜주는 코드
+		//(test)로그인 했다고 가정시켜주는 코드
 		post.setUNum(1L);
 		
 		System.out.println(post); 
@@ -46,6 +51,8 @@ public class CommunityController {
 		   pPostedDate=null, pUpdatedDate=null, pTrNum1=null, pTrNum2=null,
 		   pTrNum3=null, pFiles=null, pIsPublic=null)
 		 */
+		
+		//(test)다중 파일이 잘 전달 되는지 확인 
 		if (files != null) {
 		    for (int i = 0; i < files.length; i++) {
 		        System.out.println((i + 1) + "번째 파일명: " + files[i].getOriginalFilename());
@@ -53,10 +60,13 @@ public class CommunityController {
 		    }
 		}
 		
-		postService.savePost(post, files);
 		
-		
-		
-		return "community/lists";
+
+		    int result = postService.savePost(post, files);
+		    if(result>0) {
+		    	return "/community/lists";
+		    } else {
+		    	return "redirect:/community-lists/write?error=true";
+		    }	
 	}
 }

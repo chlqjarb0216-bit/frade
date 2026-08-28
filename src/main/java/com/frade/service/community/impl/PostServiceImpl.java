@@ -10,9 +10,9 @@ import com.frade.service.community.PostService;
 public class PostServiceImpl implements PostService {
 
 	@Override
-	public void savePost(PostDTO post, MultipartFile[] files) {
+	public int savePost(PostDTO post, MultipartFile[] files) {
 		
-		
+		return 0;
 	}
 
 }

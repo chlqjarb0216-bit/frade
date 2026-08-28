@@ -25,7 +25,7 @@
 			<a href="/community-lists" class="btn btn-outline-secondary"><- 커뮤니티로</a>
 		</div>
 
-		<form action="/community-lists/write" method="post" enctype="multipart/form-data" onsubmit="postValidate(event)">
+		<form id="postForm" action="/community-lists/write" method="post" enctype="multipart/form-data" onsubmit="postValidate(event)">
 			
 			<div>
 				<label >카테고리 선택:</label><br>
@@ -71,8 +71,17 @@
 
 	<!-- 폼 유효성 검증 JS -->
 	<script>
+	
+		//서버 오류로 인해 게시글이 저장되지 않았을때 안내문
+		const serverMsg = "${msg}";
+		
+	    if (serverMsg !== "") {
+	        alert(serverMsg);
+	    }
+		
 		// 카테고리,제목,내용 공백 및 파일크기 검증
 		function postValidate(event) {	
+			event.preventDefault();
 			
 			const titleInput = document.getElementById('pTitle');
 			const contentInput = document.getElementById('pContent');
@@ -85,40 +94,37 @@
 			const contentValue = contentInput.value.trim();
 			
 			if(!categoryNumInput){
-				event.preventDefault();
 				alert("카테고리를 선택해주세요");
 				return false;
 			}
 		
 			if(!titleValue){
-				event.preventDefault();
 				alert("제목을 입력해주세요");
 				return false;
 			}
 			
 			if(!contentValue){
-				event.preventDefault();
 				alert("내용을 입력해주세요");
 				return false;
 			}
 			
-			// 1. 파일 개수 제한 (최대 3개)
+			// 파일 개수 제한 (최대 3개)
 			if (files.length > 3) {
-			    event.preventDefault();
 			    alert("첨부파일은 최대 3개까지만 업로드할 수 있습니다.");
 			    return false;
 			}
 
-			// 2. 개별 파일 용량 제한 (각 10MB)
+			// 개별 파일 용량 제한 (각 10MB)
 			const maxSize = 10 * 1024 * 1024; // 10MB를 Byte 단위로 변환
 
 			for (let i = 0; i < files.length; i++) {
 			    if (files[i].size > maxSize) {
-			        event.preventDefault();
 			        alert(`[` + files[i].name + `] 파일의 크기가 10MB를 초과합니다.`);
 			        return false;
 			    }
 			}
+			//  검증 완료 => 폼 전송.
+		    document.getElementById('postForm').submit();
 		}
 	</script>
 </body>
