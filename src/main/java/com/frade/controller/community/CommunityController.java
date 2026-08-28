@@ -29,8 +29,7 @@ public class CommunityController {
 	
 	@GetMapping("/write")
 	public String write(PostDTO post) {
-		//로그인 했다고 가정시켜주는 코드
-		post.setUNum(00000001L);
+
 		
 		return "community/write";
 	}
@@ -38,6 +37,8 @@ public class CommunityController {
 	@PostMapping("/write")
 	//게시글 저장 버튼 클릭시 하단 컨트롤러 동작
 	public String writeAction(PostDTO post, @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files) {
+		//로그인 했다고 가정시켜주는 코드
+		post.setUNum(1L);
 		
 		System.out.println(post); 
 		/*PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null,
