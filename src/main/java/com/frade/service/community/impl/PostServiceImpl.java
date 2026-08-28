@@ -15,10 +15,4 @@ public class PostServiceImpl implements PostService {
 		return 1;
 	}
 
-	@Override
-	public int validateText(PostDTO post) {
-		return 1;
-		
-	}
-
 }
