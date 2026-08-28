@@ -46,7 +46,12 @@ public class CommunityController {
 		   pPostedDate=null, pUpdatedDate=null, pTrNum1=null, pTrNum2=null,
 		   pTrNum3=null, pFiles=null, pIsPublic=null)
 		 */
-		System.out.println(files);
+		if (files != null) {
+		    for (int i = 0; i < files.length; i++) {
+		        System.out.println((i + 1) + "번째 파일명: " + files[i].getOriginalFilename());
+		        System.out.println("크기: " + files[i].getSize() + " bytes");
+		    }
+		}
 		
 		postService.savePost(post, files);
 		
