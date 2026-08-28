@@ -61,7 +61,6 @@ public class CommunityController {
 		}
 		
 		
-
 		    int result = postService.savePost(post, files);
 		    if(result>0) {
 		    	return "/community/lists";

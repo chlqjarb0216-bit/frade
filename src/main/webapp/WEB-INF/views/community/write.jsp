@@ -86,10 +86,10 @@
 			const titleInput = document.getElementById('pTitle');
 			const contentInput = document.getElementById('pContent');
 			const categoryNumInput = document.querySelector('input[name="pCategoryNum"]:checked');
-			
 			const fileInput = document.getElementById('uploadFiles');
-			const files = fileInput.files;
 			
+			
+			const files = fileInput.files;
 			const titleValue = titleInput.value.trim();
 			const contentValue = contentInput.value.trim();
 			
@@ -108,9 +108,28 @@
 				return false;
 			}
 			
+			// TextEncoder를 이용해 실제 UTF-8 바이트 계산
+		    const encoder = new TextEncoder();
+		    const titleByteSize = encoder.encode(titleValue).length;
+		    const contentByteSize = encoder.encode(contentValue).length;
+
+		    // 제목 바이트 검증 (90 Byte 제한: 한글 약 30자)
+		    if (titleByteSize > 90) {
+		        alert('제목이 너무 깁니다. 한글 기준 약 30자 이내로 작성해주세요. (최대 90바이트 / 현재'+ titleByteSize +'바이트)');
+		        titleInput.focus();
+		        return;
+		    }
+
+		    // 내용 바이트 검증 (4000 Byte 제한: 한글 약 1333자)
+		    if (contentByteSize > 4000) {
+		        alert('내용이 너무 깁니다. 한글 기준 약 1333자 이내로 작성해주세요 (최대 4000바이트 / 현재'+contentByteSize+'바이트)');
+		        contentInput.focus();
+		        return;
+		    }
+			
 			// 파일 개수 제한 (최대 3개)
 			if (files.length > 3) {
-			    alert("첨부파일은 최대 3개까지만 업로드할 수 있습니다.");
+			    alert('첨부파일은 최대 3개까지만 업로드할 수 있습니다.');
 			    return false;
 			}
 
@@ -119,7 +138,7 @@
 
 			for (let i = 0; i < files.length; i++) {
 			    if (files[i].size > maxSize) {
-			        alert(`[` + files[i].name + `] 파일의 크기가 10MB를 초과합니다.`);
+			        alert('[' + files[i].name + '] 파일의 크기가 10MB를 초과합니다.');
 			        return false;
 			    }
 			}

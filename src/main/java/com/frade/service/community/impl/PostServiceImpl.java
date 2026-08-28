@@ -12,7 +12,13 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public int savePost(PostDTO post, MultipartFile[] files) {
 		
-		return 0;
+		return 1;
+	}
+
+	@Override
+	public int validateText(PostDTO post) {
+		return 1;
+		
 	}
 
 }
