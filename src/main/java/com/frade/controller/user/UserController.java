@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.frade.dto.user.UserDTO;
+import com.frade.dto.user.UserSignDTO;
 import com.frade.service.user.UserService;
 
 @Controller
@@ -28,9 +28,9 @@ public class UserController {
 	
 	//로그인 처리
 	@PostMapping("/user/login")
-	public String login(UserDTO userDTO, HttpSession session,Model model) {
+	public String login(UserSignDTO userSignDTO, HttpSession session,Model model) {
 		
-		int loginUserNumber = userService.userLogin(userDTO);
+		int loginUserNumber = userService.userLogin(userSignDTO);
 		
 		
 		
