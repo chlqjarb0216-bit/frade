@@ -3,7 +3,6 @@ package com.frade.service.user.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.frade.dao.user.UserDAO;
 import com.frade.dto.user.UserSignDTO;
 import com.frade.service.user.UserService;
 
