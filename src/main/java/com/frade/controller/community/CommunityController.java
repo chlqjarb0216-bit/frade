@@ -35,7 +35,7 @@ public class CommunityController {
 	}
 	
 	
-	@GetMapping("/api/data")
+	@GetMapping("/api/post-list")
     @ResponseBody
     public Map<String, Object> getPostListData(@RequestParam(defaultValue = "1") int page) {
         // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴

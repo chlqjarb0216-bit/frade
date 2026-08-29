@@ -31,7 +31,7 @@
 	<jsp:include page="../common/navbar.jsp"></jsp:include>
 
 	<!-- 본문 영역 -->
-	<div>
+	<div class="container mt-5">
 		
 		<!-- 헤더 영역 -->
 		<div class="mb-4">
@@ -108,7 +108,7 @@
 		//서버에 비동기(ajax)로 데이터 요청 함수
 		function loadPosts(page){
 			//contrller에 게시글 데이터 요청 경로
-			fetch(`/community-lists/api/data?page=\${page}`)
+			fetch(`/community-lists/api/post-list?page=\${page}`)
 				.then(res => res.json())
 				.then(result=>{
 					
