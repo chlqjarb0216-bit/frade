@@ -1,5 +1,8 @@
 package com.frade.controller.community;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,10 +30,19 @@ public class CommunityController {
 	@GetMapping("")
 	public String lists() {
 		
-		
+
 		return "community/lists";
 	}
 	
+	
+	@GetMapping("/api/data")
+    @ResponseBody
+    public Map<String, Object> getPostListData(@RequestParam(defaultValue = "1") int page) {
+        // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
+        Map<String, Object> result = postService.getPostList(page);
+        
+        return result;
+    }
 	
 	@GetMapping("/write")
 	public String write(PostDTO post, @RequestParam(value = "error", required = false) String error, Model model) {
@@ -74,7 +87,7 @@ public class CommunityController {
 		
 		    int result = postService.savePost(post, files);
 		    if(result>0) {
-		    	return "/community/lists";
+		    	return "redirect:/community/lists";
 		    } else {
 		    	return "redirect:/community-lists/write?error=true";
 		    }	
