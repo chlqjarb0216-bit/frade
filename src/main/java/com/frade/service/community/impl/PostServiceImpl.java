@@ -22,7 +22,8 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public Map<String, Object> getPostList(int page) {
-		//********테스트용 데이터**********
+		//********테스트용 데이터(서버개발자는 참고해도 되고 지워도 됨)**********
+		
 		// 1. 임시로 전체 105개의 가짜 데이터 생성
 	    List<PostDTO> allPosts = new ArrayList<>();
 	    for (int i = 105; i >= 1; i--) {
@@ -36,7 +37,7 @@ public class PostServiceImpl implements PostService {
 	        allPosts.add(post);
 	    }
 
-	    // 2. 페이징 수학 계산
+	    // 2. 페이징 계산
 	    int limit = 10; // 한 페이지에 보여줄 글 개수
 	    int totalPosts = allPosts.size(); // 총 105개
 	    int totalPages = (int) Math.ceil((double) totalPosts / limit); // 총 11페이지
@@ -58,6 +59,7 @@ public class PostServiceImpl implements PostService {
 	    resultMap.put("totalPages", totalPages);
 	    resultMap.put("startPage", startPage);
 	    resultMap.put("endPage", endPage);
+	    
 	  //********테스트용 데이터**********
 	    return resultMap;
 	}
