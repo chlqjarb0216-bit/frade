@@ -1,9 +1,12 @@
 package com.frade.dto.community;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -24,8 +27,7 @@ public class PostDTO {
     private String postContent;       // p_content : 게시글 본문
     private Integer postViewCnt;      // p_view_cnt : 조회수
     private Integer postLikeCnt;      // p_like_cnt : 추천수(좋아요)
-    private Date postPostedDate;      // p_posted_date : 작성일자
-    private String postPostedTimeStr;      //화면 표시용  시간 변수
+    private LocalDateTime postPostedDate;      // p_posted_date : 작성일자
     
 //    private Date postUpdatedDate;     // p_updated_date : 수정일자
 //    private Long postTrNum1;          // p_tr_num1 : 관련 거래/참조 번호 1
@@ -33,6 +35,17 @@ public class PostDTO {
 //    private Long postTrNum3;          // p_tr_num3 : 관련 거래/참조 번호 3
     private String postFiles;         // p_files : 첨부파일 경로 또는 식별자
 //    private Integer postIsPublic;     // p_is_public : 공개 여부 (예: 1=공개, 0=비공개)
+    
+    
+    
+    
+    public String getPostedDateString() {
+        if (this.postPostedDate == null) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return this.postPostedDate.format(formatter);
+    }
     
 
 }

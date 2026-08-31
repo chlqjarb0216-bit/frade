@@ -100,10 +100,10 @@ public class CommunityController {
 	@GetMapping("/detail")
 	public String postDetail(@RequestParam int postNum, Model model) {
 		
-		PostDTO post = new PostDTO();
-		post = postService.getPost(postNum);
-		System.out.println(post);
-		model.addAttribute("post", post);
+		
+		System.out.println(postService.getPost(postNum));
+		model.addAttribute("post", postService.getPost(postNum));
+		
 		
 		return "community/detail";
 	}

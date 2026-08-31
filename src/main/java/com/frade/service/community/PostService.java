@@ -21,6 +21,8 @@ public interface PostService {
 	public Map<String, Object> getPostList(int page, String keyword, int type);
 	
 	
+	//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기
+		//1.postNum 키를 가지오 유저 이름도 가져와야함
 	public PostDTO getPost(int postNum);
 	
 	
