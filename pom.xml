@@ -119,6 +119,13 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<!-- Jackson 날짜처리 모듈 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.22.2</version> <!-- Jackson과 일치시킴 -->
+		</dependency>
+
 		<!--
 		https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
 		<dependency>
