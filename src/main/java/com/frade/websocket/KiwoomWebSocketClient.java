@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class KiwoomWebSocketClient extends WebSocketClient {
 
-	private final ObjectMapper mapper;
+	private final ObjectMapper objectMapper;
 
 	private final StockDataBufferService stockDataBufferService;
 	private final KiwoomApiService kiwoomApiService;
@@ -35,7 +35,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 	public KiwoomWebSocketClient(ObjectMapper mapper, StockDataBufferService stockDataBufferService,
 			KiwoomApiService kiwoomApiService, StockMemoryCache stockMemoryCache) throws URISyntaxException {
 		super(new URI(SOCKET_URL));
-		this.mapper = mapper;
+		this.objectMapper = mapper;
 		this.stockDataBufferService = stockDataBufferService;
 		this.kiwoomApiService = kiwoomApiService;
 		this.stockMemoryCache = stockMemoryCache;
@@ -65,7 +65,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 		String accessToken = kiwoomApiService.getOrRefreshAccessToken();
 
 		// 로그인 메시지 전송
-		ObjectNode loginMessage = mapper.createObjectNode();
+		ObjectNode loginMessage = objectMapper.createObjectNode();
 		loginMessage.put("trnm", "LOGIN");
 		loginMessage.put("token", accessToken);
 		sendMessage(loginMessage);
@@ -74,7 +74,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 	@Override
 	public void onMessage(String message) {
 		try {
-			ObjectNode response = (ObjectNode) mapper.readTree(message);
+			ObjectNode response = (ObjectNode) objectMapper.readTree(message);
 			String trnm = response.has("trnm") ? response.get("trnm").asText() : "";
 
 			if ("LOGIN".equals(trnm)) {
@@ -114,7 +114,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 	private void sendMessage(ObjectNode message) {
 		if (this.isOpen()) {
 			try {
-				String jsonMessage = mapper.writeValueAsString(message);
+				String jsonMessage = objectMapper.writeValueAsString(message);
 				this.send(jsonMessage);
 				log.info("Message sent: {}", jsonMessage);
 			} catch (Exception e) {
@@ -146,22 +146,22 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 			//리스트 쪼개기
 			List<String> chunk = cacheCodeList.subList(i, Math.min(i + CHUNK_SIZE, stockCnt));
 
-			ObjectNode registerMessage = mapper.createObjectNode();
+			ObjectNode registerMessage = objectMapper.createObjectNode();
 			registerMessage.put("trnm", "REG"); // 서비스명(REGISTER)
 			registerMessage.put("grp_no", "1"); // 그룹번호
 			registerMessage.put("refresh", "1"); // 기존등록유지여부(유지)
 
 			//쪼갠 종목코드 리스트를 item 배열에 추가
-			ArrayNode itemArray = mapper.valueToTree(cacheCodeList);
+			ArrayNode itemArray = objectMapper.valueToTree(cacheCodeList);
 			// "type" 값을 배열로 설정
-			ArrayNode typeArray = mapper.createArrayNode();
+			ArrayNode typeArray = objectMapper.createArrayNode();
 			typeArray.add("0B"); // 실시간 체결
 
 			// 실시간 항목, 종목 jsonObject 등록 
-			ObjectNode dataObject = mapper.createObjectNode();
+			ObjectNode dataObject = objectMapper.createObjectNode();
 			dataObject.set("item", itemArray);
 			dataObject.set("type", typeArray);
-			ArrayNode dataArray = mapper.createArrayNode();
+			ArrayNode dataArray = objectMapper.createArrayNode();
 			dataArray.add(dataObject);
 			registerMessage.set("data", dataArray); // 실시간 등록 리스트
 
