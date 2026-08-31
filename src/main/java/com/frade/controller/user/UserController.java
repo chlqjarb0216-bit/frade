@@ -128,7 +128,7 @@ public class UserController {
 		return "redirect:/user/login";
 	}
 
-	@PostMapping("/user/checkId") // 아이디 중복 확인
+	@PostMapping("/api/checkId") // 아이디 중복 확인
 	@ResponseBody
 	public RestApiResponse<Void> checkUserId(@RequestBody String userId) {
 
@@ -142,7 +142,7 @@ public class UserController {
 		return RestApiResponse.success();
 	}
 
-	@PostMapping("/user/checkNick") // 닉네임 중복 확인
+	@PostMapping("/api/checkNick") // 닉네임 중복 확인
 	@ResponseBody
 	public RestApiResponse<Void> checkUserNick(@RequestBody String userNick) {
 
@@ -155,7 +155,7 @@ public class UserController {
 		return RestApiResponse.success();
 	}
 	
-	@PostMapping("/user/checkEmail") //이메일 중복 확인
+	@PostMapping("/api/checkEmail") //이메일 중복 확인
 	@ResponseBody
 	public RestApiResponse<Void> checkUserEmail(@RequestBody String userEmail) {
 
