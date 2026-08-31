@@ -21,7 +21,7 @@ public interface PostService {
 	public Map<String, Object> getPostList(int page, String keyword, int type);
 	
 	
-	public PostDTO getPost(int pNum);
+	public PostDTO getPost(int postNum);
 	
 	
 }

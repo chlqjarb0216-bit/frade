@@ -1,6 +1,6 @@
 package com.frade.dto.community;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -25,6 +25,8 @@ public class PostDTO {
     private Integer postViewCnt;      // p_view_cnt : 조회수
     private Integer postLikeCnt;      // p_like_cnt : 추천수(좋아요)
     private Date postPostedDate;      // p_posted_date : 작성일자
+    private String postPostedTimeStr;      //화면 표시용  시간 변수
+    
 //    private Date postUpdatedDate;     // p_updated_date : 수정일자
 //    private Long postTrNum1;          // p_tr_num1 : 관련 거래/참조 번호 1
 //    private Long postTrNum2;          // p_tr_num2 : 관련 거래/참조 번호 2

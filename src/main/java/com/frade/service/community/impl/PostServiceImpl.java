@@ -1,9 +1,11 @@
 package com.frade.service.community.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,7 +77,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostDTO getPost(int pNum) {
+	public PostDTO getPost(int postNum) {
 		
 		//pNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
 		//=========테스트데이터==============
@@ -85,7 +87,14 @@ public class PostServiceImpl implements PostService {
 		post.setPostContent("testContent");
 		post.setUserName("test개미");
 		post.setPostLikeCnt(552);
-		
+		post.setPostViewCnt(123);
+	
+        Date now = new Date(); // 질문자님의 post.getPostPostedDate() 데이터
+        
+        // 대문자 HH는 24시간제(00~23), 소문자 mm은 분(00~59)을 뜻합니다.
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        String timeStr = formatter.format(now);
+		post.setPostPostedTimeStr(timeStr);
 		
 		
 		//=========테스트데이터==============

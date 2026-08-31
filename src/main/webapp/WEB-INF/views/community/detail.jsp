@@ -33,9 +33,16 @@
 		<a href="/community-lists" class="btn btn-outline-secondary"><- 커뮤니티로</a>
 		
 		<div>
-			<p>${post}</p>
-			<p>${post.userName}</p>
 			
+			<p>${post.postTitle}</p>
+			<p>${post.userName}</p>
+			<p>${post.postPostedTimeStr}</p>
+			<p>${post.postViewCnt}</p>
+			<p>${post.postLikeCnt}</p>
+			
+		</div>
+		<div>
+			<p>${post.postContent}
 		</div>
 	</div>
 
@@ -46,7 +53,6 @@
 		crossorigin="anonymous"></script>
 
 	<!-- 추가 커스텀 JS 필요하면 여기에 -->
-
 </body>
 
 </html>
