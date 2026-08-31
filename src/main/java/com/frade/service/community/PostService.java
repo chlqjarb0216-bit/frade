@@ -20,4 +20,8 @@ public interface PostService {
 	// ++)추가로 uNum가지고 테이블 조인시켜서 작성자 이름 혹은 닉네임 가져와야함
 	public Map<String, Object> getPostList(int page, String keyword, int type);
 	
+	
+	public PostDTO getPost(int pNum);
+	
+	
 }

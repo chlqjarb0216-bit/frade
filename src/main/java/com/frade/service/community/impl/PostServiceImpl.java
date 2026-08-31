@@ -74,4 +74,22 @@ public class PostServiceImpl implements PostService {
 	    return resultMap;
 	}
 
+	@Override
+	public PostDTO getPost(int pNum) {
+		
+		//pNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
+		//=========테스트데이터==============
+		PostDTO post = new PostDTO();
+		post.setPTitle("testTitle");
+		post.setPCategoryNum(2);
+		post.setPContent("testContent");
+		post.setUserName("test개미");
+		post.setPLikeCnt(552);
+		
+		
+		
+		//=========테스트데이터==============
+		return post;
+	}
+
 }

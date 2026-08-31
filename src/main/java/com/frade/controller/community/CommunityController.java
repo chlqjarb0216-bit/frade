@@ -98,9 +98,12 @@ public class CommunityController {
 	
 	
 	@GetMapping("/detail")
-	public String postDetail(@RequestParam String pNum) {
+	public String postDetail(@RequestParam int pNum, Model model) {
 		
-		System.out.println(pNum);
+		PostDTO post = new PostDTO();
+		post = postService.getPost(pNum);
+		System.out.println(post);
+		model.addAttribute("post", post);
 		
 		return "community/detail";
 	}

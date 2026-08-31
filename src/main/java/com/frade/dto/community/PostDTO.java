@@ -12,6 +12,7 @@ public class PostDTO {
 
 	private Long pNum;             // p_num : 게시글 번호 (PK)
     private Long uNum;             // u_num : 회원 번호 (작성자 FK)
+    private String uName;		   // u_num 을 통해 유저 이름을 저장
     private Integer pCategoryNum;  // p_category_num : 카테고리 번호(0:질문 1:정보 2:자유)
 //    private Integer scNum;         // sc_num : 종목/세부 카테고리 번호(반도체, 의료 등 코드번호)
     @NotBlank(message = "제목을 입력해주세요.")
@@ -30,4 +31,6 @@ public class PostDTO {
 //    private Long pTrNum3;          // p_tr_num3 : 관련 거래/참조 번호 3
     private String pFiles;         // p_files : 첨부파일 경로 또는 식별자
 //    private Integer pIsPublic;     // p_is_public : 공개 여부 (예: 1=공개, 0=비공개)
+    
+
 }
