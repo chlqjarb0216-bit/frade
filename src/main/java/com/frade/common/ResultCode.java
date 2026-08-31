@@ -13,7 +13,7 @@ public enum ResultCode {
 	SUCCESS("suc_001", "성공"),
 
 	//회원가입 영역
-	DUP_ID("rej_101", "아이디 중복"), DUP_NICK("rej_102", "닉네임 중복"), DUP_EMAIL("rej_103", "이메일 중복"),
+	DUP_ID("rej_101", "이미 사용 중인 아이디입니다."), DUP_NICK("rej_102", "이미 사용 중인 닉네임입니다."), DUP_EMAIL("rej_103", "이미 사용 중인 이메일입니다."),
 	PW_NOT_MATCH("rej_104", "비밀번호 확인 불일치"),
 
 	//게시판 영역
