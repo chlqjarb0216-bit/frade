@@ -17,10 +17,12 @@ public class ApiScheduler {
 	@Autowired
 	StockService stockService;
 
+	//종목검색시 DB검색을 최소화하기 위한 메모리캐시
 	@Autowired
 	StockMemoryCache stockMemoryCache;
 
 
+	//장 시작전 전체 종목 상태 갱신
 	@Scheduled(cron = "0 40 8 * * *")
 	public void preMarketTask() {
 
