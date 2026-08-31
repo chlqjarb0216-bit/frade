@@ -36,13 +36,13 @@
 			
 			<p>${post.postTitle}</p>
 			<p>${post.userName}</p>
-			<p>${post.postPostedTimeStr}</p>
+			<p>${post.postedDateString}</p>
 			<p>${post.postViewCnt}</p>
 			<p>${post.postLikeCnt}</p>
 			
 		</div>
 		<div>
-			<p>${post.postContent}
+			<p>${post.postContent}</p>
 		</div>
 	</div>
 

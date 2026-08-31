@@ -144,7 +144,7 @@
 	        let html = '';
 	        
 	        postList.forEach(post => {
-	            let category = post.postCateoryNum == 0 ? "질문" : (post.postCategoryNum == 1 ? "정보" : "자유");
+	            let category = post.postCategoryNum == 0 ? "질문" : (post.postCategoryNum == 1 ? "정보" : "자유");
 	            html += `
 	                <tr>
 	                    <td>\${post.postNum}</td>
@@ -154,7 +154,7 @@
 	                    </td>
 	                    <td>\${post.userNum}</td>
 	                    <td>\${post.postViewCnt}</td>
-	                    <td>\${post.postPostedDate}</td>
+	                    <td>\${post.postedDateString}</td>
 	                </tr>
 	            `;
 	        });

@@ -63,5 +63,19 @@
 			name="sqlSessionFactory"
 			ref="sqlSessionFactory" />
 	</bean>
+	
+	<!-- 스프링 내장 팩토리를 이용해 '스프링 표준 세팅이 적용된' 범용 ObjectMapper를 빈으로 등록합니다 -->
+    <bean id="objectMapper"
+        class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+        <!-- 👇 이 프로퍼티 설정을 추가하면 LocalDateTime이 문자열로 예쁘게 출력됩니다 -->
+        <!-- pom.xml에 등록한 JavaTimeModule 모듈명을 강제로 팩토리에 심어줍니다 -->
+        <property name="findModulesViaServiceLoader" value="true"/>
+        <property name="featuresToDisable">
+            <array>
+                <util:constant
+                    static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
+            </array>
+        </property>
+    </bean>
 
 </beans>
