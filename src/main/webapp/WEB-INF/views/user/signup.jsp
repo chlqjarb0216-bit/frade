@@ -24,7 +24,7 @@
 
 		<p id="checkDupIdMsg"></p>
 		<br>비밀번호 : <input type="password" name="userPw" id="inputPw"required>
-		<br> 비밀번호 확인 : <input type="password" name="uPwCheck" id="inputPwCheck" required> 
+		<br> 비밀번호 확인 : <input type="password" name="userPwCheck" id="inputPwCheck" required> 
 		<br>
 
 		<p id="checkPwMsg"></p>
@@ -60,8 +60,6 @@
 	<c:if test="${pwFail}">
 		<p class="error-msg">비밀번호가 일치하지 않습니다.</p>
 	</c:if>
-
-
 
 
 
@@ -119,6 +117,7 @@
 		    .then(response => response.json())
 		    .then(result => {
 
+		    	//확인용 콘솔 나중에 지움
 		        console.log("아이디 중복확인 성공");
 		        console.log(result);
 		        // 공통 응답코드로 중복 여부 확인
@@ -127,7 +126,7 @@
 		            p_checkDupIdMsg.textContent = result.message;
 		            p_checkDupIdMsg.style.color = "red";
 
-		        }else{
+		        }else if(result.code == "suc_001"){
 
 		            p_checkDupIdMsg.textContent = "사용 가능한 아이디 입니다.";
 		            p_checkDupIdMsg.style.color = "green";
@@ -208,7 +207,7 @@
 	                p_checkDupNickMsg.textContent = result.message;
 	                p_checkDupNickMsg.style.color = "red";
 
-	            }else{
+	            }else if(result.code == "suc_001"){
 
 	                p_checkDupNickMsg.textContent = "사용 가능한 닉네임 입니다.";
 	                p_checkDupNickMsg.style.color = "green";
@@ -263,7 +262,7 @@
 		    if(/\s/.test(inputEmailValue)){
 		
 		        p_checkDupEmailMsg.textContent = "이메일에는 공백을 사용할 수 없습니다.";
-		        p_checkDupEmailMsg.style.color = "red";
+		        p_checkDupEmailMsg.style.colors = "red";
 		
 		        return;
 		    }
@@ -290,7 +289,7 @@
 		            p_checkDupEmailMsg.textContent = result.message;
 		            p_checkDupEmailMsg.style.color = "red";
 
-		        }else{
+		        }else if(result.code == "suc_001"){
 
 		            p_checkDupEmailMsg.textContent = "사용 가능한 이메일 입니다.";
 		            p_checkDupEmailMsg.style.color = "green";

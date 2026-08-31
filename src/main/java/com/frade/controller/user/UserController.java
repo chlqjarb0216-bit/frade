@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.frade.common.ResultCode;
 import com.frade.dto.rest.RestApiResponse;
@@ -56,7 +57,7 @@ public class UserController {
 	}
 
 	@PostMapping("/user/signup")
-	public String signup(UserSignDTO userSignDTO, String userPwCheck, Model model) {
+	public String signup(UserSignDTO userSignDTO, String userPwCheck, Model model, RedirectAttributes redirectAttributes) {
 		
 		//입력했던 정보 다시 보여주기(아이디, 닉네임, 이메일)
 		model.addAttribute("usd", userSignDTO);
@@ -124,7 +125,9 @@ public class UserController {
 		    model.addAttribute("signupFail", signupResult.getMessage());
 		    return "user/signup";
 		}
-
+		//로그인 페이지에서 가입완료시 보여줄 내용
+		redirectAttributes.addFlashAttribute("signupSuccess", "회원가입이 완료되었습니다.");
+		
 		return "redirect:/user/login";
 	}
 
