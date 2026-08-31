@@ -119,7 +119,7 @@
 			//contrller에 게시글 데이터 요청 경로
 			fetch(`/community-lists/api/post-list?page=\${page}&keyword=\${keyword}&type=\${type}`,{
 				method: 'GET',
-				headerd:{
+				headers:{
 					'Content-Type' : 'application/json'
 				},
 				body:null
@@ -144,17 +144,17 @@
 	        let html = '';
 	        
 	        postList.forEach(post => {
-	            let category = post.pcategorynum == 0 ? "질문" : (post.pcategorynum == 1 ? "정보" : "자유");
+	            let category = post.postCategoryNum == 0 ? "질문" : (post.postCategoryNum == 1 ? "정보" : "자유");
 	            html += `
 	                <tr>
-	                    <td>\${post.pnum}</td>
+	                    <td>\${post.postNum}</td>
 	                    <td>\${category}</td>
 	                    <td>
-	                        <a href="/community-lists/detail?pNum=\${post.pnum}">\${post.ptitle}</a>
+	                        <a href="/community-lists/detail?postNum=\${post.postNum}">\${post.postTitle}</a>
 	                    </td>
-	                    <td>\${post.unum}</td>
-	                    <td>\${post.pviewCnt}</td>
-	                    <td>\${post.ppostedDate}</td>
+	                    <td>\${post.userNum}</td>
+	                    <td>\${post.postViewCnt}</td>
+	                    <td>\${post.postedDateString}</td>
 	                </tr>
 	            `;
 	        });

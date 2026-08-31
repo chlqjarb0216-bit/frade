@@ -30,12 +30,19 @@
 
 	<!-- 본문 영역 (부트스트랩 container 클래스로 감싸 통일해두면 좋을듯) -->
 	<div class="container mt-5">
-		<div class="alert alert-success" role="alert">
-			<h4 class="alert-heading">성공!</h4>
-			<p>부트스트랩 CDN 방식이 완벽하게 적용된 템플릿입니다.</p>
-			<hr>
-			<button class="btn btn-primary">파란색 버튼</button>
-			<button class="btn btn-danger">빨간색 버튼</button>
+		<a href="/community-lists" class="btn btn-outline-secondary"><- 커뮤니티로</a>
+		
+		<div>
+			
+			<p>${post.postTitle}</p>
+			<p>${post.userName}</p>
+			<p>${post.postedDateString}</p>
+			<p>${post.postViewCnt}</p>
+			<p>${post.postLikeCnt}</p>
+			
+		</div>
+		<div>
+			<p>${post.postContent}</p>
 		</div>
 	</div>
 
@@ -46,7 +53,6 @@
 		crossorigin="anonymous"></script>
 
 	<!-- 추가 커스텀 JS 필요하면 여기에 -->
-
 </body>
 
 </html>

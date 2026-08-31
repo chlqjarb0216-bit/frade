@@ -1,9 +1,12 @@
 package com.frade.service.community.impl;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,12 +39,12 @@ public class PostServiceImpl implements PostService {
 	            if (type == 1 && !writer.contains(keyword)) continue;
 	        }
 	        PostDTO post = new PostDTO();
-	        post.setPNum((long) i);
-	        post.setPCategoryNum(i % 3);
-	        post.setPTitle(title);
-	        post.setUNum((long)i%5);
-	        post.setPViewCnt((int) (Math.random() * 100));
-	        post.setPPostedDate(new java.sql.Date(System.currentTimeMillis()));
+	        post.setPostNum((long) i);
+	        post.setPostCategoryNum(i % 3);
+	        post.setPostTitle(title);
+	        post.setUserNum((long)i%5);
+	        post.setPostViewCnt((int) (Math.random() * 100));
+	        post.setPostPostedDate(LocalDateTime.now());
 	        allPosts.add(post);
 	    }
 
@@ -73,5 +76,28 @@ public class PostServiceImpl implements PostService {
 	  //********테스트용 데이터**********
 	    return resultMap;
 	}
+
+	@Override
+	public PostDTO getPost(int postNum) {
+		
+		//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
+		//=========테스트데이터==============
+		PostDTO post = new PostDTO();
+		post.setPostTitle("testTitle");
+		post.setPostCategoryNum(2);
+		post.setPostContent("testContent");
+		post.setUserName("test개미");
+		post.setPostLikeCnt(552);
+		post.setPostViewCnt(123);
+		post.setPostPostedDate(LocalDateTime.now());
+		
+		//=========테스트데이터==============
+		
+		return post;
+	}
+
+
+	
+	
 
 }

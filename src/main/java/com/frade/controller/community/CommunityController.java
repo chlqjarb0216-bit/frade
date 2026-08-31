@@ -70,7 +70,7 @@ public class CommunityController {
 	    }
 	    
 		//(test)로그인 했다고 가정시켜주는 코드
-		post.setUNum(1L);
+		post.setUserNum(1L);
 		
 		System.out.println(post); 
 		/*PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null,
@@ -90,7 +90,7 @@ public class CommunityController {
 		
 		    int result = postService.savePost(post, files);
 		    if(result>0) {
-		    	return "redirect:/community/lists";
+		    	return "redirect:/community-lists";
 		    } else {
 		    	return "redirect:/community-lists/write?error=true";
 		    }	
@@ -98,9 +98,12 @@ public class CommunityController {
 	
 	
 	@GetMapping("/detail")
-	public String postDetail(@RequestParam String pNum) {
+	public String postDetail(@RequestParam int postNum, Model model) {
 		
-		System.out.println(pNum);
+		
+		System.out.println(postService.getPost(postNum));
+		model.addAttribute("post", postService.getPost(postNum));
+		
 		
 		return "community/detail";
 	}
