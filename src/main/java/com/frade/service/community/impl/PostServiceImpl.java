@@ -83,7 +83,7 @@ public class PostServiceImpl implements PostService {
 		post.setPTitle("testTitle");
 		post.setPCategoryNum(2);
 		post.setPContent("testContent");
-		post.setUserName("test개미");
+		post.setUName("test개미");
 		post.setPLikeCnt(552);
 		
 		
