@@ -53,6 +53,18 @@
 		crossorigin="anonymous"></script>
 
 	<!-- 추가 커스텀 JS 필요하면 여기에 -->
+	
+	<script>
+		
+		window.onload = function(){
+			loadComments(1)
+		}
+		
+		function loadComments(page){
+			
+		}
+	
+	</script>
 </body>
 
 </html>
