@@ -18,6 +18,6 @@ public interface PostService {
     // 3.하단 페이징 블록 계산 (1~5, 6~10)
 	// 4.자른 목록과 페이징 정보를 Map에 담아서 반환
 	// ++)추가로 uNum가지고 테이블 조인시켜서 작성자 이름 혹은 닉네임 가져와야함
-	public Map<String, Object> getPostList(int page);
+	public Map<String, Object> getPostList(int page, String keyword, int type);
 	
 }

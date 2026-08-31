@@ -37,9 +37,12 @@ public class CommunityController {
 	
 	@GetMapping("/api/post-list")
     @ResponseBody
-    public Map<String, Object> getPostListData(@RequestParam(defaultValue = "1") int page) {
+    public Map<String, Object> getPostListData(@RequestParam(defaultValue = "1") int page,
+								    		@RequestParam(required = false, defaultValue = "") String keyword,
+								    		@RequestParam(defaultValue = "0") int type) {
+		
         // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
-        Map<String, Object> result = postService.getPostList(page);
+        Map<String, Object> result = postService.getPostList(page, keyword, type);
         
         return result;
     }
@@ -92,4 +95,14 @@ public class CommunityController {
 		    	return "redirect:/community-lists/write?error=true";
 		    }	
 	}
+	
+	
+	@GetMapping("/detail")
+	public String postDetail(@RequestParam String pNum) {
+		
+		System.out.println(pNum);
+		
+		return "community/detail";
+	}
+	
 }

@@ -43,7 +43,7 @@
 		<div >
 			
 			<!-- 검색 폼 -->
-			<form action="/community-lists" method="get" class="d-flex align-items-center">
+			<form onsubmit="searchPosts(event)" method="get" class="d-flex align-items-center">
 				<!-- 라디오 버튼 그룹 -->
 				<div >
 					<div >
@@ -57,7 +57,7 @@
 				</div>
 				<!-- 검색어 입력 및 버튼 -->
 				<div style="width: 300px;">
-					<input type="text" name="keyword" placeholder="검색어를 입력하세요">
+					<input type="text" name="keyword" id="keyword" placeholder="검색어를 입력하세요">
 					<button type="submit">검색</button>
 				</div>
 			</form>
@@ -105,10 +105,25 @@
 			loadPosts(1)
 		}
 		
-		//서버에 비동기(ajax)로 데이터 요청 함수
+		// 검색 버튼을 눌렀을 때 실행되는 함수
+		function searchPosts(event) {
+		    event.preventDefault(); // 기본 새로고침 폼 전송을 멈춤
+		    loadPosts(1); // 검색 시 무조건 1페이지부터 다시 보여줌
+		}
+		
+		//서버에 비동기(fetch)로 데이터 요청 함수
 		function loadPosts(page){
+			const keyword = document.getElementById('keyword').value;
+			const type = document.querySelector('input[name="type"]:checked').value
+			
 			//contrller에 게시글 데이터 요청 경로
-			fetch(`/community-lists/api/post-list?page=\${page}`)
+			fetch(`/community-lists/api/post-list?page=\${page}&keyword=\${keyword}&type=\${type}`,{
+				method: 'GET',
+				headerd:{
+					'Content-Type' : 'application/json'
+				},
+				body:null
+			})
 				.then(res => res.json())
 				.then(result=>{
 					
