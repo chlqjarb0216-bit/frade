@@ -3,7 +3,6 @@ package com.frade.service.user.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.frade.dao.user.UserDAO;
 import com.frade.dto.user.UserSignDTO;
 import com.frade.service.user.UserService;
 
@@ -38,29 +37,29 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public String userSignup(UserSignDTO userSignDTO) {
+	public int userSignup(UserSignDTO userSignDTO) {
 
 	    String idResult = checkUserId(userSignDTO.getUId());
 
 		    if(idResult.equals("Y")) {
-		        return "DUP_ID";
+		        return 1;
 		    }
 
 		    String nickResult = checkUserNick(userSignDTO.getUNick());
 
 		    if(nickResult.equals("Y")) {
-		        return "DUP_NICK";
+		        return 2;
 		    }
 
 		    String emailResult = checkUserEmail(userSignDTO.getUEmail());
-
+		    
 		    if(emailResult.equals("Y")) {
-		        return "DUP_EMAIL";
+		        return 3;
 		    }
 
 		    System.out.println("회원가입 정보 : " + userSignDTO);
 
-		    return "SUCCESS";
+		    return 0;
 		}
 
 	@Override

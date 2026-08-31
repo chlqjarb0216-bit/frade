@@ -118,28 +118,21 @@ public class UserController {
 			return "user/signup";
 		}
 		
-		 String signupResult = userService.userSignup(userSignDTO);
+		int signupResult = userService.userSignup(userSignDTO);
 
-
-		if(signupResult.equals("DUP_ID")) {
-
+		if(signupResult == 1) {
 		    model.addAttribute("signupFail", "이미 사용 중인 아이디입니다.");
 		    return "user/signup";
-
 		}
 
-		if(signupResult.equals("DUP_NICK")) {
-
+		if(signupResult == 2) {
 		    model.addAttribute("signupFail", "이미 사용 중인 닉네임입니다.");
 		    return "user/signup";
-
 		}
 
-		if(signupResult.equals("DUP_EMAIL")) {
-
+		if(signupResult == 3) {
 		    model.addAttribute("signupFail", "이미 사용 중인 이메일입니다.");
 		    return "user/signup";
-
 		}
 
 		return "redirect:/user/login";
