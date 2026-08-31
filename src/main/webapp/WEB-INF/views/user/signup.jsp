@@ -262,7 +262,7 @@
 		    if(/\s/.test(inputEmailValue)){
 		
 		        p_checkDupEmailMsg.textContent = "이메일에는 공백을 사용할 수 없습니다.";
-		        p_checkDupEmailMsg.style.colors = "red";
+		        p_checkDupEmailMsg.style.color = "red";
 		
 		        return;
 		    }
