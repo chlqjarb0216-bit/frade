@@ -19,22 +19,22 @@
 
 	<form action="" method="post" id="signupForm">
 
-		아이디 : <input type="text" name="uId" id="inputId" value="${uId}" required >
+		아이디 : <input type="text" name="userId" id="inputId" value="${usd.userId}" required >
 		<button type="button" id="btn_checkDupId">중복확인</button>
 
 		<p id="checkDupIdMsg"></p>
-		<br>비밀번호 : <input type="password" name="uPw" id="inputPw"required>
+		<br>비밀번호 : <input type="password" name="userPw" id="inputPw"required>
 		<br> 비밀번호 확인 : <input type="password" name="uPwCheck" id="inputPwCheck" required> 
 		<br>
 
 		<p id="checkPwMsg"></p>
 
-		닉네임 : <input type="text" name="uNick" id="inputNick" value="${uNick}" required>
+		닉네임 : <input type="text" name="userNick" id="inputNick" value="${usd.userNick}" required>
 		<button type="button" id="btn_checkDupNick">중복확인</button>
 
 		<p id="checkDupNickMsg"></p>
 
-		<br> 이메일 : <input type="email" name="uEmail" id="inputEmail" value="${uEmail}" required> 
+		<br> 이메일 : <input type="email" name="userEmail" id="inputEmail" value="${usd.userEmail}" required> 
 		<button type="button" id="btn_checkDupEmail">중복확인</button>
 		
 		<p id="checkDupEmailMsg"></p>
@@ -53,6 +53,14 @@
 		<p class="error-msg">${emptyFail}</p>
 	</c:if>
 
+	<c:if test="${spaceFail}">
+		<p class="error-msg">공백은 사용할 수 없습니다.</p>
+	</c:if>
+
+	<c:if test="${pwFail}">
+		<p class="error-msg">비밀번호가 일치하지 않습니다.</p>
+	</c:if>
+
 
 
 
@@ -60,11 +68,6 @@
 	<br>
 	<a href="/user/login">돌아가기</a>
 
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/4.0.0/jquery.min.js"
-		integrity="sha512-8LENNbXmzI/Gbj+OwXmqR6V4QaUAw0/porPzy1+dQoJqC0JPHedWoe0DDOTL2uHA5XXJyIsPtiMHH86pVlay6A=="
-		crossorigin="anonymous" referrerpolicy="no-referrer">
-</script>
 
 	<script>
 	
@@ -83,17 +86,17 @@
 		
 		// 아이디 공백 입력 방지
 		inputId.addEventListener("input", ()=>{
-		
-		    inputId.value = inputId.value.replace(/\s/g, "");
+			// 아이디 영문, 숫자만 입력 가능
+		    inputId.value = inputId.value.replace(/[^a-zA-Z0-9]/g, "");
 		
 		});
 		
 		
-		// 아이디 중복 확인
+		// 아이디 중복 확인 api 요청
 		btn_checkDupId.addEventListener("click", ()=>{
 		
 		    let inputIdValue = inputId.value;
-		    
+		    // 빈 값이면 중복요청 X
 		    if(inputIdValue == ""){
 
 		        p_checkDupIdMsg.textContent = "아이디를 입력해주세요.";
@@ -102,48 +105,44 @@
 		        return;
 		    }
 		
-		    $.ajax({
-		
-		        type: "POST",
-		
-		        url: "/user/checkId",
-		
-		        headers : {
-		            "Content-type":"application/json"
+		    fetch("/user/checkId", {
+
+		        method: "POST",
+
+		        headers: {
+		            "Content-Type": "application/json"
 		        },
-		
-		        data: inputIdValue,
-		
-		        dataType: "text",
-		
-		        success: function(result){
-		
-		            console.log("아이디 중복확인 성공");
-		            console.log(result);
-		
-		            if(result == "Y"){
-		
-		                p_checkDupIdMsg.textContent = "중복된 아이디 입니다.";
-		                p_checkDupIdMsg.style.color = "red";
-		
-		            }else{
-		
-		                p_checkDupIdMsg.textContent = "사용 가능한 아이디 입니다.";
-		                p_checkDupIdMsg.style.color = "green";
-		
-		                inputId.readOnly = true;
-		
-		                idCheck = true;
-		
-		            }
-		
-		        },
-		
-		        error: function(error){
-		
-		            console.log(error);
-		
+
+		        body: inputIdValue
+
+		    })
+		    .then(response => response.json())
+		    .then(result => {
+
+		        console.log("아이디 중복확인 성공");
+		        console.log(result);
+		        // 공통 응답코드로 중복 여부 확인
+		        if(result.code == "rej_101"){
+
+		            p_checkDupIdMsg.textContent = result.message;
+		            p_checkDupIdMsg.style.color = "red";
+
+		        }else{
+
+		            p_checkDupIdMsg.textContent = "사용 가능한 아이디 입니다.";
+		            p_checkDupIdMsg.style.color = "green";
+
+		            inputId.readOnly = true;
+
+		            idCheck = true;
 		        }
+
+		    })
+		    .catch(error => {
+
+		        console.log(error);
+		
+		        
 		
 		    });
 		
@@ -187,49 +186,43 @@
 	            return;
 	        }
 	
-	        $.ajax({
-	
-	            type: "POST",
-	
-	            url: "/user/checkNick",
-	
-	            headers : {
-	                "Content-type":"application/json"
+	        fetch("/user/checkNick", {
+
+	            method: "POST",
+
+	            headers: {
+	                "Content-Type": "application/json"
 	            },
-	
-	            data: inputNickValue,
-	
-	            dataType: "text",
-	
-	            success: function(result){
-	
-	                console.log("닉네임 중복확인 성공");
-	                console.log(result);
-	
-	                if(result == "Y"){
-	
-	                    p_checkDupNickMsg.textContent = "중복된 닉네임 입니다.";
-	                    p_checkDupNickMsg.style.color = "red";
-	
-	                }else{
-	
-	                    p_checkDupNickMsg.textContent = "사용 가능한 닉네임 입니다.";
-	                    p_checkDupNickMsg.style.color = "green";
-	                    
-	                    document.getElementById("inputNick").readOnly = true;
-	                    
-	                    nickCheck = true;
-	
-	                }
-	
-	            },
-	
-	            error: function(error){
-	
-	                console.log(error);
-	
+
+	            body: inputNickValue
+
+	        })
+	        .then(response => response.json())
+	        .then(result => {
+
+	            console.log("닉네임 중복확인 성공");
+	            console.log(result);
+
+	            if(result.code == "rej_102"){
+
+	                p_checkDupNickMsg.textContent = result.message;
+	                p_checkDupNickMsg.style.color = "red";
+
+	            }else{
+
+	                p_checkDupNickMsg.textContent = "사용 가능한 닉네임 입니다.";
+	                p_checkDupNickMsg.style.color = "green";
+
+	                inputNick.readOnly = true;
+
+	                nickCheck = true;
 	            }
-	
+
+	        })
+	        .catch(error => {
+
+	            console.log(error);
+
 	        });
 	
 	    });
@@ -275,45 +268,42 @@
 		        return;
 		    }
 		
-		    $.ajax({
-		
-		        type: "POST",
-		
-		        url: "/user/checkEmail",
-		
-		        headers : {
-		            "Content-type":"application/json"
+		    fetch("/user/checkEmail", {
+
+		        method: "POST",
+
+		        headers: {
+		            "Content-Type": "application/json"
 		        },
-		
-		        data: inputEmailValue,
-		
-		        dataType: "text",
-		
-		        success: function(result){
-		
-		            if(result == "Y"){
-		
-		                p_checkDupEmailMsg.textContent = "중복된 이메일 입니다.";
-		                p_checkDupEmailMsg.style.color = "red";
-		
-		            }else{
-		
-		                p_checkDupEmailMsg.textContent = "사용 가능한 이메일 입니다.";
-		                p_checkDupEmailMsg.style.color = "green";
-		
-		                inputEmail.readOnly = true;
-		                emailCheck = true;
-		
-		            }
-		
-		        },
-		
-		        error: function(error){
-		
-		            console.log(error);
-		
+
+		        body: inputEmailValue
+
+		    })
+		    .then(response => response.json())
+		    .then(result => {
+
+		        console.log("이메일 중복확인 성공");
+		        console.log(result);
+
+		        if(result.code == "rej_103"){
+
+		            p_checkDupEmailMsg.textContent = result.message;
+		            p_checkDupEmailMsg.style.color = "red";
+
+		        }else{
+
+		            p_checkDupEmailMsg.textContent = "사용 가능한 이메일 입니다.";
+		            p_checkDupEmailMsg.style.color = "green";
+
+		            inputEmail.readOnly = true;
+		            emailCheck = true;
 		        }
-		
+
+		    })
+		    .catch(error => {
+
+		        console.log(error);
+
 		    });
 		
 		});
@@ -375,33 +365,29 @@
 
 	    signupForm.addEventListener("submit", (e)=>{
 
+	        e.preventDefault();
+
 	        if(idCheck == false){
-
-	            e.preventDefault();
-
 	            alert("아이디 중복확인을 해주세요.");
-
 	            return;
 	        }
 
 	        if(nickCheck == false){
-
-	            e.preventDefault();
-
 	            alert("닉네임 중복확인을 해주세요.");
-
 	            return;
 	        }
 
 	        if(emailCheck == false){
-
-	            e.preventDefault();
-
 	            alert("이메일 중복확인을 해주세요.");
-
 	            return;
 	        }
 
+	        if(inputPw.value != inputPwCheck.value){
+	            alert("비밀번호가 일치하지 않습니다.");
+	            return;
+	        }
+
+	        signupForm.submit();
 	    });
 	    
 	

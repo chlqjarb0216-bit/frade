@@ -1,8 +1,8 @@
 package com.frade.service.user.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.frade.common.ResultCode;
 import com.frade.dto.user.UserSignDTO;
 import com.frade.service.user.UserService;
 
@@ -18,59 +18,63 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public String checkUserId(String uId) {
+	public boolean checkUserId(String userId) {
 		
-		if("test".equals(uId)) {
-			return "Y";
+		if("test".equals(userId)) {
+			return true;
 		}
 		
-		return "N";
+		return false;
 	}
 
 	@Override
-	public String checkUserNick(String uNick) {
-		 if ("홍명보".equals(uNick)) {
-		        return "Y";
+	public boolean checkUserNick(String userNick) {
+		 if ("홍명보".equals(userNick)) {
+		        return true;
 		    }
 
-		    return "N";
+		    return false;
+	}
+	
+	@Override
+	public boolean checkUserEmail(String userEmail) {
+		
+		if("test@test.com".equals(userEmail)) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	@Override
-	public int userSignup(UserSignDTO userSignDTO) {
+	public ResultCode userSignup(UserSignDTO userSignDTO) {
 
-	    String idResult = checkUserId(userSignDTO.getUId());
+	    boolean idResult = checkUserId(userSignDTO.getUserId());
+	    	
+	    if(idResult) {
+	        return ResultCode.DUP_ID;
+	    }
 
-		    if(idResult.equals("Y")) {
-		        return 1;
-		    }
+	    boolean nickResult = checkUserNick(userSignDTO.getUserNick());
 
-		    String nickResult = checkUserNick(userSignDTO.getUNick());
+	    if(nickResult) {
+	        return ResultCode.DUP_NICK;
+	    }
 
-		    if(nickResult.equals("Y")) {
-		        return 2;
-		    }
+	    boolean emailResult = checkUserEmail(userSignDTO.getUserEmail());
+	    
+	    if(emailResult) {
+	        return ResultCode.DUP_EMAIL;
+	    }
 
-		    String emailResult = checkUserEmail(userSignDTO.getUEmail());
-		    
-		    if(emailResult.equals("Y")) {
-		        return 3;
-		    }
+	    System.out.println("회원가입 정보 : " + userSignDTO);
 
-		    System.out.println("회원가입 정보 : " + userSignDTO);
-
-		    return 0;
+	    return ResultCode.SUCCESS;
 		}
+	
+	
 
-	@Override
-	public String checkUserEmail(String uEmail) {
-		
-		if("test@test.com".equals(uEmail)) {
-			return"Y";
-		}
-		
-		return "N";
-	}
+	
 	
 
 	

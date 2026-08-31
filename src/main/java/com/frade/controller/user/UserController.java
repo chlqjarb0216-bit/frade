@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.frade.common.ResultCode;
+import com.frade.dto.rest.RestApiResponse;
 import com.frade.dto.user.UserSignDTO;
 import com.frade.service.user.UserService;
 
@@ -54,56 +56,54 @@ public class UserController {
 	}
 
 	@PostMapping("/user/signup")
-	public String signup(UserSignDTO userSignDTO, String uPwCheck, Model model) {
+	public String signup(UserSignDTO userSignDTO, String userPwCheck, Model model) {
 		
 		//입력했던 정보 다시 보여주기(아이디, 닉네임, 이메일)
-		model.addAttribute("uId", userSignDTO.getUId());
-		model.addAttribute("uNick", userSignDTO.getUNick());
-		model.addAttribute("uEmail", userSignDTO.getUEmail());
+		model.addAttribute("usd", userSignDTO);
 		
 		// 아이디 빈칸 확인
-		if(userSignDTO.getUId() == null 
-		        || userSignDTO.getUId().trim().equals("")) {
+		if(userSignDTO.getUserId() == null 
+		        || userSignDTO.getUserId().trim().equals("")) {
 
 		    model.addAttribute("emptyFail", "아이디를 입력해주세요.");
 		    return "user/signup";
 		}
 
 		// 닉네임 빈칸 확인
-		if(userSignDTO.getUNick() == null 
-		        || userSignDTO.getUNick().trim().equals("")) {
+		if(userSignDTO.getUserNick() == null 
+		        || userSignDTO.getUserNick().trim().equals("")) {
 
 		    model.addAttribute("emptyFail", "닉네임을 입력해주세요.");
 		    return "user/signup";
 		}
 
 		// 비밀번호 빈칸 확인
-		if(userSignDTO.getUPw() == null 
-		        || userSignDTO.getUPw().trim().equals("")) {
+		if(userSignDTO.getUserPw() == null 
+		        || userSignDTO.getUserPw().trim().equals("")) {
 
 		    model.addAttribute("emptyFail", "비밀번호를 입력해주세요.");
 		    return "user/signup";
 		}
 
 		// 비밀번호 확인 빈칸 확인
-		if(uPwCheck == null 
-		        || uPwCheck.trim().equals("")) {
+		if(userPwCheck == null 
+		        || userPwCheck.trim().equals("")) {
 
 		    model.addAttribute("emptyFail", "비밀번호 확인을 입력해주세요.");
 		    return "user/signup";
 		}
 
 		// 이메일 빈칸 확인
-		if(userSignDTO.getUEmail() == null 
-		        || userSignDTO.getUEmail().trim().equals("")) {
+		if(userSignDTO.getUserEmail() == null 
+		        || userSignDTO.getUserEmail().trim().equals("")) {
 
 		    model.addAttribute("emptyFail", "이메일을 입력해주세요.");
 		    return "user/signup";
 		}
 
 		// 공백 확인
-		if (userSignDTO.getUId().matches(".*\\s.*") || userSignDTO.getUNick().matches(".*\\s.*")
-				|| userSignDTO.getUPw().matches(".*\\s.*")) {
+		if (userSignDTO.getUserId().matches(".*\\s.*") || userSignDTO.getUserNick().matches(".*\\s.*")
+				|| userSignDTO.getUserPw().matches(".*\\s.*")) {
 
 			model.addAttribute("spaceFail", true);
 
@@ -111,27 +111,17 @@ public class UserController {
 		}
 
 		// 비밀번호 확인
-		if (!userSignDTO.getUPw().equals(uPwCheck)) {
+		if (!userSignDTO.getUserPw().equals(userPwCheck)) {
 
 			model.addAttribute("pwFail", true);
 
 			return "user/signup";
 		}
-		
-		int signupResult = userService.userSignup(userSignDTO);
+		// 중복일때 처리 
+		ResultCode signupResult = userService.userSignup(userSignDTO);
 
-		if(signupResult == 1) {
-		    model.addAttribute("signupFail", "이미 사용 중인 아이디입니다.");
-		    return "user/signup";
-		}
-
-		if(signupResult == 2) {
-		    model.addAttribute("signupFail", "이미 사용 중인 닉네임입니다.");
-		    return "user/signup";
-		}
-
-		if(signupResult == 3) {
-		    model.addAttribute("signupFail", "이미 사용 중인 이메일입니다.");
+		if(signupResult.getCode().startsWith("rej_")) {
+		    model.addAttribute("signupFail", signupResult.getMessage());
 		    return "user/signup";
 		}
 
@@ -140,29 +130,42 @@ public class UserController {
 
 	@PostMapping("/user/checkId") // 아이디 중복 확인
 	@ResponseBody
-	public String checkUserId(@RequestBody String uId) {
+	public RestApiResponse<Void> checkUserId(@RequestBody String userId) {
 
-		String result = userService.checkUserId(uId);
+		boolean result = userService.checkUserId(userId);
+		
+		if(result) {
+			return RestApiResponse.error(ResultCode.DUP_ID);
+		}
+		
 
-		return result;
+		return RestApiResponse.success();
 	}
 
 	@PostMapping("/user/checkNick") // 닉네임 중복 확인
 	@ResponseBody
-	public String checkUserNick(@RequestBody String uNick) {
+	public RestApiResponse<Void> checkUserNick(@RequestBody String userNick) {
 
-		String result = userService.checkUserNick(uNick);
+		boolean result = userService.checkUserNick(userNick);
+		
+		if(result) {
+			return RestApiResponse.error(ResultCode.DUP_NICK);
+		}
 
-		return result;
+		return RestApiResponse.success();
 	}
 	
-	@PostMapping("/user/checkEmail")
+	@PostMapping("/user/checkEmail") //이메일 중복 확인
 	@ResponseBody
-	public String checkUserEmail(@RequestBody String uEmail) {
+	public RestApiResponse<Void> checkUserEmail(@RequestBody String userEmail) {
 
-	    String result = userService.checkUserEmail(uEmail);
+	    boolean result = userService.checkUserEmail(userEmail);
+	    
+	    if(result) {
+	    	return RestApiResponse.error(ResultCode.DUP_EMAIL);
+	    }
 
-	    return result;
+	    return RestApiResponse.success();
 	}
 
 }
