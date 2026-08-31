@@ -70,7 +70,7 @@ public class CommunityController {
 	    }
 	    
 		//(test)로그인 했다고 가정시켜주는 코드
-		post.setUNum(1L);
+		post.setUserNum(1L);
 		
 		System.out.println(post); 
 		/*PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null,

@@ -34,7 +34,7 @@
 		
 		<div>
 			<p>${post}</p>
-			<p>${post.uName}</p>
+			<p>${post.userName}</p>
 			
 		</div>
 	</div>

@@ -147,14 +147,14 @@
 	            let category = post.pcategorynum == 0 ? "질문" : (post.pcategorynum == 1 ? "정보" : "자유");
 	            html += `
 	                <tr>
-	                    <td>\${post.pnum}</td>
+	                    <td>\${post.postNum}</td>
 	                    <td>\${category}</td>
 	                    <td>
 	                        <a href="/community-lists/detail?pNum=\${post.pnum}">\${post.ptitle}</a>
 	                    </td>
-	                    <td>\${post.unum}</td>
-	                    <td>\${post.pviewCnt}</td>
-	                    <td>\${post.ppostedDate}</td>
+	                    <td>\${post.userNum}</td>
+	                    <td>\${post.postViewCnt}</td>
+	                    <td>\${post.postpostedDate}</td>
 	                </tr>
 	            `;
 	        });
