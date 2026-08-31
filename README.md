@@ -47,6 +47,38 @@
         }<br>
    </code> </pre>
 
+5-1.비동기 통신 작성 표준
+모든 비동기(AJAX) 통신 시 제이쿼리($.ajax) 대신 순수 자바스크립트의 fetch API를 사용하는 것을 표준으로 합니다.
+또한, 코드의 통일성과 가독성을 높이기 위해 GET 요청일지라도 method, headers, body 속성을 생략하지 않고 명시적으로 작성하는 것을 원칙으로 합니다.
+
+<예시코드>
+<pre>
+// ❌ 지양하는 방식 (옵션 생략)
+fetch('/community-lists/api/data?page=1')
+    .then(res => res.json())
+    // ...
+
+
+// ✅ 프로젝트 표준 방식 (모든 옵션 명시)
+fetch(`/community-lists/api/data?page=${page}`, {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: null // GET 방식이므로 null 처리
+})
+.then(res => res.json())
+.then(result => {
+    // 성공 시 로직 처리
+    console.log(result);
+})
+.catch(error => {
+    // 에러 예외 처리
+    console.error("데이터 로드 실패:", error);
+});
+   
+</pre>
+
 6. 리소스접근 할 때(css,image,js) 경로명 앞에 "/resources" 넣어서 경로 적어주기!
 
 7. 주석!!!!!!!
