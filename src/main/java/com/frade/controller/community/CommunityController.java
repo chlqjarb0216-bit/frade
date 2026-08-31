@@ -95,4 +95,14 @@ public class CommunityController {
 		    	return "redirect:/community-lists/write?error=true";
 		    }	
 	}
+	
+	
+	@GetMapping("/detail")
+	public String postDetail(@RequestParam String pNum) {
+		
+		System.out.println(pNum);
+		
+		return "community/detail";
+	}
+	
 }

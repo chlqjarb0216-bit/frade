@@ -111,13 +111,19 @@
 		    loadPosts(1); // 검색 시 무조건 1페이지부터 다시 보여줌
 		}
 		
-		//서버에 비동기(ajax)로 데이터 요청 함수
+		//서버에 비동기(fetch)로 데이터 요청 함수
 		function loadPosts(page){
 			const keyword = document.getElementById('keyword').value;
 			const type = document.querySelector('input[name="type"]:checked').value
 			
 			//contrller에 게시글 데이터 요청 경로
-			fetch(`/community-lists/api/post-list?page=\${page}&keyword=\${keyword}&type=\${type}`)
+			fetch(`/community-lists/api/post-list?page=\${page}&keyword=\${keyword}&type=\${type}`,{
+				method: 'GET',
+				headerd:{
+					'Content-Type' : 'application/json'
+				},
+				body:null
+			})
 				.then(res => res.json())
 				.then(result=>{
 					
