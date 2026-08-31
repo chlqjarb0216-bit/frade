@@ -90,7 +90,7 @@ public class CommunityController {
 		
 		    int result = postService.savePost(post, files);
 		    if(result>0) {
-		    	return "redirect:/community/lists";
+		    	return "redirect:/community-lists";
 		    } else {
 		    	return "redirect:/community-lists/write?error=true";
 		    }	
@@ -98,10 +98,10 @@ public class CommunityController {
 	
 	
 	@GetMapping("/detail")
-	public String postDetail(@RequestParam int pNum, Model model) {
+	public String postDetail(@RequestParam int postNum, Model model) {
 		
 		PostDTO post = new PostDTO();
-		post = postService.getPost(pNum);
+		post = postService.getPost(postNum);
 		System.out.println(post);
 		model.addAttribute("post", post);
 		

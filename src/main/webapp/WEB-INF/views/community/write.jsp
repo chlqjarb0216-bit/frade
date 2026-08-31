@@ -30,27 +30,27 @@
 			<div>
 				<label >카테고리 선택:</label><br>
 				<div >
-					<input type="radio" name="pCategoryNum" id="catQ" value="0">
+					<input type="radio" name="postCategoryNum" id="catQ" value="0">
 					<label for="catQ">질문</label>
 				</div>
 				<div >
-					<input type="radio" name="pCategoryNum" id="catI" value="1">
+					<input type="radio" name="postCategoryNum" id="catI" value="1">
 					<label  for="catI">정보</label>
 				</div>
 				<div>
-					<input type="radio" name="pCategoryNum" id="catF" value="2">
+					<input type="radio" name="postCategoryNum" id="catF" value="2">
 					<label for="catF">자유</label>
 				</div>
 			</div>
 			
 			<div >
-				<label for="pTitle" >제목</label>
-				<input type="text"  placeholder="제목을 입력해주세요" id="pTitle" name="pTitle">
+				<label for="postTitle" >제목</label>
+				<input type="text"  placeholder="제목을 입력해주세요" id="postTitle" name="postTitle">
 			</div>
 			
 			<div>
-				<label for="pContent" >내용</label>
-				<textarea placeholder="내용을 입력해주세요" id="pContent" name="pContent" rows="10"></textarea>
+				<label for="postContent" >내용</label>
+				<textarea placeholder="내용을 입력해주세요" id="postContent" name="postContent" rows="10"></textarea>
 			</div>
 			
 			<div>
@@ -83,9 +83,9 @@
 		function postValidate(event) {	
 			event.preventDefault();
 			
-			const titleInput = document.getElementById('pTitle');
-			const contentInput = document.getElementById('pContent');
-			const categoryNumInput = document.querySelector('input[name="pCategoryNum"]:checked');
+			const titleInput = document.getElementById('postTitle');
+			const contentInput = document.getElementById('postContent');
+			const categoryNumInput = document.querySelector('input[name="postCategoryNum"]:checked');
 			const fileInput = document.getElementById('uploadFiles');
 			
 			
