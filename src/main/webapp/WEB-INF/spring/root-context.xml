@@ -11,7 +11,7 @@
 						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<context:property-placeholder
-		location="classpath:config/*.properties" />		
+		location="classpath:config/*.properties" />
 
 	<context:component-scan
 		base-package="com.frade.service" />
@@ -19,7 +19,11 @@
 		base-package="com.frade.dao" />
 	<context:component-scan
 		base-package="com.frade.config" />
-		
+	<context:component-scan
+		base-package="com.frade.websocket" />
+	<context:component-scan
+		base-package="com.frade.memcache" />
+
 	<bean
 		class="org.apache.commons.dbcp2.BasicDataSource"
 		id="data_source">
@@ -63,19 +67,51 @@
 			name="sqlSessionFactory"
 			ref="sqlSessionFactory" />
 	</bean>
-	
+
+
 	<!-- 스프링 내장 팩토리를 이용해 '스프링 표준 세팅이 적용된' 범용 ObjectMapper를 빈으로 등록합니다 -->
-    <bean id="objectMapper"
-        class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
-        <!-- 👇 이 프로퍼티 설정을 추가하면 LocalDateTime이 문자열로 예쁘게 출력됩니다 -->
-        <!-- pom.xml에 등록한 JavaTimeModule 모듈명을 강제로 팩토리에 심어줍니다 -->
-        <property name="findModulesViaServiceLoader" value="true"/>
-        <property name="featuresToDisable">
-            <array>
-                <util:constant
-                    static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
-            </array>
-        </property>
-    </bean>
+	<bean id="objectMapper"
+		class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+		<!-- pom.xml에 등록한 JavaTimeModule 모듈명을 강제로 팩토리에 심어줍니다 -->
+		<property name="findModulesViaServiceLoader" value="true"/>
+
+		<!-- 👇 이 프로퍼티 설정을 추가하면 LocalDateTime이 문자열로 예쁘게 출력됩니다 -->
+		<property name="featuresToDisable">
+			<array>
+				<util:constant
+					static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
+			</array>
+		</property>
+	</bean>
+
+
+	<!-- 스케줄러 Bean 등록 -->
+	<bean
+		id="apiScheduler"
+		class="com.frade.scheduler.ApiScheduler" />
+
+	<!-- 스케줄러 설정 -->
+	<task:scheduler
+		id="mainScheduler"
+		pool-size="10" />
+	<task:executor
+		id="mainTaskExecutor"
+		pool-size="10" />
+	<task:annotation-driven
+		executor="mainTaskExecutor"
+		scheduler="mainScheduler" />
+
+	<!-- 다른 스케줄러와 풀을 나눠쓰지 않을 특수 스케줄러 -->
+	<bean
+		id="stockBatchScheduler"
+		class="com.frade.scheduler.StockBatchScheduler" />
+	<task:scheduler id="stockBatchSchedulerPool" pool-size="1" />
+	<task:executor id="stockBatchTaskExecutor" pool-size="1" />
+	
+	<!-- 웹소켓 데이터 처리용 스레드 풀 -->
+	<task:executor id="stockBufferTaskExecutor" 
+               pool-size="1" 
+               queue-capacity="10" 
+               rejection-policy="CALLER_RUNS" />
 
 </beans>
