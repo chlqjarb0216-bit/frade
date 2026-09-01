@@ -107,5 +107,11 @@
 		class="com.frade.scheduler.StockBatchScheduler" />
 	<task:scheduler id="stockBatchSchedulerPool" pool-size="1" />
 	<task:executor id="stockBatchTaskExecutor" pool-size="1" />
+	
+	<!-- 웹소켓 데이터 처리용 스레드 풀 -->
+	<task:executor id="stockBufferTaskExecutor" 
+               pool-size="1" 
+               queue-capacity="10" 
+               rejection-policy="CALLER_RUNS" />
 
 </beans>
