@@ -102,11 +102,13 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 
 	@Override
 	public void onClose(int code, String reason, boolean remote) {
+		//TODO
 		log.info("연결 종료: {}", reason);
 	}
 
 	@Override
 	public void onError(Exception ex) {
+		//TODO
 		log.warn("WebSocket 오류 발생: {}", ex.getMessage());
 	}
 
