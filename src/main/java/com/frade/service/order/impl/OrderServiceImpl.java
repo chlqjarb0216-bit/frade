@@ -25,7 +25,7 @@ public class OrderServiceImpl implements OrderService {
 	HistoryDAO historyDAO;
 
 	@Override
-	public int processBuy(OrderInfoDTO orderInfo) { // 매수
+	public boolean processBuy(OrderInfoDTO orderInfo) { // 매수
 
 		// 임시데이터 하드코딩
 //		String stockCode = "000660"; // 삼성전자
@@ -36,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
 		// 검증
 		if (orderInfo.getOrderPrice() * orderInfo.getOrderCount() > cash.getCash()) {
 			System.out.println("주문 금액이 보유 예치금보다 많음.");
-			return 0;
+			return false;
 		}
 
 
@@ -67,11 +67,11 @@ public class OrderServiceImpl implements OrderService {
 			portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
 			insertUserPortfolio(portfolio);
 		}
-		return 1;
+		return true;
 	}
 
 	@Override
-	public int processSell(OrderInfoDTO orderInfo) { // 매도
+	public boolean processSell(OrderInfoDTO orderInfo) { // 매도
 
 		// 임시데이터 하드코딩
 //		String stockCode = "000660"; // 삼성전자
@@ -82,10 +82,10 @@ public class OrderServiceImpl implements OrderService {
 		// 검증
 		if (portfolio == null) {
 			System.out.println("해당 주식을 보유하고 있지 않음");
-			return 0;
+			return false;
 		} else if (orderInfo.getOrderCount() > portfolio.getUserStockCnt()) {
 			System.out.println("매도수량이 보유수량보다 많음");
-			return 0;
+			return false;
 		} 
 
 		// 거래기록 저장
@@ -111,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
 			updateUserPortfolio(portfolio);
 		}
 
-		return 1;
+		return true;
 	}
 
 //	================DAO==================

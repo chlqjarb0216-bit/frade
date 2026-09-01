@@ -25,7 +25,7 @@ public class OrderController {
 	@PostMapping("/stock/trade")
 	public String tradeAction(OrderInfoDTO orderInfo) {
 
-		int result = 0;
+		boolean result = false;
 
 		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
 
@@ -50,10 +50,10 @@ public class OrderController {
 			}
 		}
 
-		if (result == 0) {
-			System.out.println("거래 실패");
-		} else {
+		if (result) {
 			System.out.println("거래 성공");
+		} else {
+			System.out.println("거래 실패");
 		}
 
 		return "redirect:/stock/trade";

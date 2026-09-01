@@ -9,8 +9,8 @@ import com.frade.dto.user.UserCashDTO;
 
 public interface OrderService {
 	
-	public int processBuy(OrderInfoDTO orderInfo); //매수 검증
-	public int processSell(OrderInfoDTO orderInfo); //매도 검증
+	public boolean processBuy(OrderInfoDTO orderInfo); //매수 검증
+	public boolean processSell(OrderInfoDTO orderInfo); //매도 검증
 
 	
 	
