@@ -118,11 +118,7 @@ public class CommunityController {
 	@ResponseBody
 	public Map<String, Object> getCommentListData(@RequestParam(defaultValue = "1") int page,
 												@RequestParam(required = false, defaultValue = "1") int postNum) {
-		
-		System.out.println("컨트롤전달완료"+postNum);
-		
-//		List<CommnetDTO> commentList = new ArrayList<CommnetDTO>();//테스트용
-//		List<CommentDTO> result = commentService.getCommentList(postNum, page);
+
 		Map<String, Object> result = commentService.getCommentList(postNum, page);
 		
 		return result;

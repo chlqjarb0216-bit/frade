@@ -133,8 +133,8 @@
 //                     return;
 //                 }
 					
-					renderTable(result.list);
-					renderPaging(result);
+					renderTable(postList.list);
+					renderPaging(postList);
 				});
 		}
 		

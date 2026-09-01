@@ -58,6 +58,9 @@ public class CommentServiceImpl implements CommentService{
 			    resultMap.put("startPage", startPage);
 			    resultMap.put("endPage", endPage);
 			    
+			    //댓글 총 개수 저장해서 보내기
+			    resultMap.put("totalCount", allComments.size());
+			    
 			  //********테스트용 데이터**********
 		
 		
