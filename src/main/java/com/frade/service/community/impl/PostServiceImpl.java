@@ -39,10 +39,10 @@ public class PostServiceImpl implements PostService {
 	            if (type == 1 && !writer.contains(keyword)) continue;
 	        }
 	        PostDTO post = new PostDTO();
-	        post.setPostNum((long) i);
+	        post.setPostNum( i);
 	        post.setPostCategoryNum(i % 3);
 	        post.setPostTitle(title);
-	        post.setUserNum((long)i%5);
+	        post.setUserNum(i%5);
 	        post.setPostViewCnt((int) (Math.random() * 100));
 	        post.setPostPostedDate(LocalDateTime.now());
 	        allPosts.add(post);
@@ -83,6 +83,7 @@ public class PostServiceImpl implements PostService {
 		//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
 		//=========테스트데이터==============
 		PostDTO post = new PostDTO();
+		post.setPostNum(12);
 		post.setPostTitle("testTitle");
 		post.setPostCategoryNum(2);
 		post.setPostContent("testContent");
