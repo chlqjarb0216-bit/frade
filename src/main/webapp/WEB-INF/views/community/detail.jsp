@@ -46,14 +46,20 @@
 			<p>${post.postContent}</p>
 		</div>
 
-		<!-- 댓글영역 -->
+		<!-- 댓글작성영역 -->
+		<div>
+			<div>
+				<textarea id="commentContent" placeholder="댓글을 입력하세요"></textarea>
+				<button type="button" onclick="submitComment()" >작성</button>
+			</div>
+		</div>
+		
+		<!-- 댓글리스트영역 -->
 		<!-- 헤더 -->
 		<div>
-			<h5>
-				댓글 (<span id="commentCount">0</span>)개
-			</h5>
+			<h5>댓글 (<span id="commentCount">0</span>)개</h5>
 		</div>
-		<!-- 바디 -->
+		<!-- 본문 -->
 		<div id="commentList">
 			<!-- script에서 그려줌  -->
 		</div>
@@ -156,6 +162,46 @@
 	        }
 
 	        paging.innerHTML = html;
+		}
+		
+		function submitComment(){
+			const contentInput = document.getElementById('commentContent');
+			const content = contentInput.value.trim();
+			
+			if(content == ""){
+				alert("댓글 내용을 입력해주세요.");
+				contentInput.focus();
+				return;
+			}
+			
+			const postNum = "${post.postNum}";
+			const requestData = {
+					postNum: postNum,
+					commentContent: content
+			};
+			
+			fetch(`/community-lists/api/comment-write`,{
+				method : 'POST',
+				headers:{
+					'Content-Type' : 'application/json'
+				},
+				body: JSON.stringify(requestData)
+			})
+			.then(response =>response.json())
+			.then(writeInfo=>{
+				
+				if(writeInfo.code === "suc_001"){
+					//입력창 비우기
+					contentInput.value = '';
+					
+					//1번 페이지 새로고침
+					loadComments(1);
+				} else{
+					alert(writeInfo.message);
+				}
+
+				
+			})
 		}
 		
 	</script>
