@@ -46,14 +46,22 @@
 			<p>${post.postContent}</p>
 		</div>
 
-		<!-- 댓글영역 -->
+		<!-- 댓글작성영역 -->
+		<div>
+			<form  method="post">
+				<input type="text">
+				<button type="button" onclick="sendComment()" >작성</button>
+			</form>
+		</div>
+		
+		<!-- 댓글리스트영역 -->
 		<!-- 헤더 -->
 		<div>
 			<h5>
 				댓글 (<span id="commentCount">0</span>)개
 			</h5>
 		</div>
-		<!-- 바디 -->
+		<!-- 본문 -->
 		<div id="commentList">
 			<!-- script에서 그려줌  -->
 		</div>
