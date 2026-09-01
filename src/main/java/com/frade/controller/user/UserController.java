@@ -48,6 +48,9 @@ public class UserController {
 		}
 
 	}
+	
+	
+	// -----------------------------------------------------------------------------------
 
 	// 회원가입 페이지
 	@GetMapping("/user/signup")
@@ -171,6 +174,10 @@ public class UserController {
 	    return RestApiResponse.success();
 	}
 	
+	
+	//------------------------------------------------------------
+	
+	//마이페이지
 	@GetMapping("/user/mypage")
 	public String myPage() {
 		
