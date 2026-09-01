@@ -166,6 +166,11 @@
 	        paging.innerHTML = html;
 		}
 		
+		function sendCommnet(){
+			const postNum = "${post.postNum}";
+			fetch()
+		}
+		
 	</script>
 </body>
 
