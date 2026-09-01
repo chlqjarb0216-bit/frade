@@ -27,11 +27,11 @@ public class OrderController {
 
 		int result = 0;
 
-		String tradeOption = orderInfo.getTradeOption();
+		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
 
 		
 		//매수 매도 및 DAO 호출 전 검증
-		if (TradeOptionCommon.valueOf(tradeOption) == (TradeOptionCommon.BUY)) {
+		if (tradeOption == (TradeOptionCommon.BUY)) {
 			if (orderInfo.getOrderCount() <= 0) {
 				System.out.println("주문 수량은 1 이상이어야 함.");
 			} else if (orderInfo.getOrderPrice() <= 0) {
@@ -40,7 +40,7 @@ public class OrderController {
 				result = orderService.processBuy(orderInfo);
 			}
 		}
-		if (TradeOptionCommon.valueOf(tradeOption) == (TradeOptionCommon.SELL)) {
+		if (tradeOption == (TradeOptionCommon.SELL)) {
 			if (orderInfo.getOrderCount() <= 0) {
 				System.out.println("매도수량은 0보다 커야함");
 			} else if (orderInfo.getOrderPrice() <= 0) {
