@@ -20,6 +20,8 @@
 	<context:component-scan
 		base-package="com.frade.config" />
 	<context:component-scan
+		base-package="com.frade.websocket" />
+	<context:component-scan
 		base-package="com.frade.memcache" />
 
 	<bean
@@ -94,6 +96,12 @@
 					static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
 			</array>
 		</property>
+	</bean>
+
+	<!-- 스프링 내장 팩토리를 이용해 '스프링 표준 세팅이 적용된' 범용 ObjectMapper를 빈으로 등록합니다 -->
+	<bean id="objectMapper"
+		class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+		<!-- 기본 타임존이나 날짜 포맷팅 등 스프링 기본 설정을 그대로 따르도록 유도 -->
 	</bean>
 
 

@@ -1,4 +1,4 @@
-package com.frade.common;
+package com.frade.common.stock;
 
 import java.util.HashMap;
 import java.util.Map;
