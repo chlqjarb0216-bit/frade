@@ -170,5 +170,14 @@ public class UserController {
 
 	    return RestApiResponse.success();
 	}
+	
+	@GetMapping("/user/mypage")
+	public String myPage() {
+		
+		
+		return"user/mypage";
+	}
+	
+	
 
 }

@@ -12,6 +12,13 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public int userLogin(UserSignDTO userSignDTO) {
 		
+		// 로그인 확인용 아이디 비밀번호 아이디:test 비번:1234
+		
+		if("test".equals(userSignDTO.getUserId()) && "1234".equals(userSignDTO.getUserPw()) ) {
+			
+			return 1;
+			
+		}
 		
 		
 		return -1;
