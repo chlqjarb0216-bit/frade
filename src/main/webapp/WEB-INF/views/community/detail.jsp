@@ -30,20 +30,40 @@
 
 	<!-- 본문 영역 (부트스트랩 container 클래스로 감싸 통일해두면 좋을듯) -->
 	<div class="container mt-5">
-		<a href="/community-lists" class="btn btn-outline-secondary"><- 커뮤니티로</a>
-		
+		<a href="/community-lists" class="btn btn-outline-secondary"><-
+			커뮤니티로</a>
+
 		<div>
-			
+
 			<p>${post.postTitle}</p>
 			<p>${post.userName}</p>
 			<p>${post.postedDateString}</p>
 			<p>${post.postViewCnt}</p>
 			<p>${post.postLikeCnt}</p>
-			
+
 		</div>
 		<div>
 			<p>${post.postContent}</p>
 		</div>
+
+		<!-- 댓글영역 -->
+		<!-- 헤더 -->
+		<div>
+			<h5>
+				댓글 (<span id="commentCount">0</span>)개
+			</h5>
+		</div>
+		<!-- 바디 -->
+		<div id="commentList">
+			<!-- script에서 그려줌  -->
+		</div>
+		
+		<!-- 페이징(Pagination) 영역 -->
+		<nav aria-label="Page navigation">
+			<ul id="paging">
+				<!-- script 영역에서 그려줌 -->
+			</ul>
+		</nav>
 	</div>
 
 	<!-- 부트스트랩 JS -->
@@ -53,6 +73,92 @@
 		crossorigin="anonymous"></script>
 
 	<!-- 추가 커스텀 JS 필요하면 여기에 -->
+
+	<script>
+		
+		window.onload = function(){
+			loadComments(1)
+		}
+		
+		function loadComments(page){
+
+			const postNum = "${post.postNum}";
+			
+			//게시글 번호에 맞는 댓글 정보 요청
+			fetch(`/community-lists/api/comment-list?page=\${page}&postNum=\${postNum}`,{
+				method: 'GET',
+				headers:{
+					'Content-Type' : 'application/json'
+				},
+				body:null
+			})
+			.then(response => response.json())
+			.then(commentList=>{
+				
+				console.log("받아온 댓글 리스트:" , commentList);
+				
+				//댓글개수
+				document.getElementById('commentCount').innerText = commentList.totalCount;
+				
+				renderCommentList(commentList.list);
+				renderPaging(commentList);
+			})
+
+		}
+		
+		function renderCommentList(commentList){
+			const commentTable = document.getElementById('commentList');
+			let html = '';
+			
+			commentList.forEach(comment =>{
+				html += `
+					<div>
+						<p>\${comment.userName} \${comment.commentContent}</p>
+					</div>
+				
+				`;
+			});
+			
+			commentTable.innerHTML = html;
+		}
+		
+		function renderPaging(pageInfo){
+			const paging = document.getElementById('paging');
+	        let html = '';
+
+	        // [이전] 버튼 (시작 페이지가 1보다 클 때만 활성화)
+	        if (pageInfo.startPage > 1) {
+	            html += `
+		            <li>
+		            	<a href="#" onclick="loadComments(\${pageInfo.startPage - 1}); return false;">이전</a>
+		            </li>
+		        `;
+	        }
+
+	        // 숫자 버튼 (1~5, 6~10)
+	        for (let i = pageInfo.startPage; i <= pageInfo.endPage; i++) {
+	            // 현재 페이지면 active 클래스 추가
+	            let active = (i === pageInfo.currentPage) ? "active" : "";
+	            html += `
+		            <li>
+		            	<a href="#" onclick="loadComments(\${i}); return false;">\${i}</a>
+		            </li>
+	            `;
+	        }
+
+	        // [다음] 버튼 (끝 페이지가 총 페이지수보다 작을 때만 활성화)
+	        if (pageInfo.endPage < pageInfo.totalPages) {
+	            html += `
+		            <li>
+		           		<a href="#" onclick="loadComments(\${pageInfo.endPage + 1}); return false;">다음</a>
+		            </li>
+	            `;
+	        }
+
+	        paging.innerHTML = html;
+		}
+		
+	</script>
 </body>
 
 </html>
