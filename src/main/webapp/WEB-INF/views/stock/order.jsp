@@ -60,10 +60,10 @@
 			</div> -->
 			
 			<div class="prOption">
-				<input type="radio" class="btn-check" name="priceOption" id="limitPriceOpt" autocomplete="off" checked value="limitPriceOpt">
+				<input type="radio" class="btn-check" name="priceOption" id="limitPriceOpt" autocomplete="off" checked value="LIMITPRICE">
 				<label class="btn btn-secondary" for="limitPriceOpt">시장가</label>
 
-				<input type="radio" class="btn-check" name="priceOption" id="marketPriceOpt" autocomplete="off" value="marketPriceOpt">
+				<input type="radio" class="btn-check" name="priceOption" id="marketPriceOpt" autocomplete="off" value="MARKETPRICE">
 				<label class="btn btn-secondary" for="marketPriceOpt">지정가</label>
 			</div>
 			
