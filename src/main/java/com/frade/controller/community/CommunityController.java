@@ -76,7 +76,7 @@ public class CommunityController {
 	    }
 	    
 		//(test)로그인 했다고 가정시켜주는 코드
-		post.setUserNum(1L);
+		post.setUserNum(1);
 		
 		System.out.println(post); 
 		/*PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null,
@@ -117,7 +117,7 @@ public class CommunityController {
 	@GetMapping("/api/comment-list")
 	@ResponseBody
 	public Map<String, Object> getCommentListData(@RequestParam(defaultValue = "1") int page,
-												@RequestParam(required = false, defaultValue = "1") int postNum) {
+												@RequestParam(defaultValue = "1") int postNum) {
 
 		Map<String, Object> result = commentService.getCommentList(postNum, page);
 		

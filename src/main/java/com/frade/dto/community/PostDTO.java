@@ -13,10 +13,10 @@ import lombok.Data;
 @Data
 public class PostDTO {
 
-	private Long postNum;             // p_num : 게시글 번호 (PK)
-    private Long userNum;             // u_num : 회원 번호 (작성자 FK)
+	private int postNum;             // p_num : 게시글 번호 (PK)
+    private int userNum;             // u_num : 회원 번호 (작성자 FK)
     private String userName;		   // u_num 을 통해 유저 이름을 저장
-    private Integer postCategoryNum;  // p_category_num : 카테고리 번호(0:질문 1:정보 2:자유)
+    private int postCategoryNum;  // p_category_num : 카테고리 번호(0:질문 1:정보 2:자유)
 //    private Integer sectorNum;         // sc_num : 종목/세부 카테고리 번호(반도체, 의료 등 코드번호)
     @NotBlank(message = "제목을 입력해주세요.")
     @Size(max = 30, message = "제목을 최대 30자 이내로 작성해주세요.")
@@ -25,8 +25,8 @@ public class PostDTO {
     @NotBlank(message = "내용을 입력해주세요.")
     @Size(max = 1333, message = "내용이 너무 깁니다. (최대 1333자).")
     private String postContent;       // p_content : 게시글 본문
-    private Integer postViewCnt;      // p_view_cnt : 조회수
-    private Integer postLikeCnt;      // p_like_cnt : 추천수(좋아요)
+    private int postViewCnt;      // p_view_cnt : 조회수
+    private int postLikeCnt;      // p_like_cnt : 추천수(좋아요)
     private LocalDateTime postPostedDate;      // p_posted_date : 작성일자
     
 //    private Date postUpdatedDate;     // p_updated_date : 수정일자
