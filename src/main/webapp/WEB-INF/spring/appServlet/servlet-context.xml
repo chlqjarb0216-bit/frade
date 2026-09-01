@@ -44,6 +44,10 @@
 					</beans:list>
 				</beans:property>
 			</beans:bean>
+			<beans:bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<beans:property name="objectMapper" ref="objectMapper" />
+			</beans:bean>
 		</message-converters>
 	</annotation-driven>
 
