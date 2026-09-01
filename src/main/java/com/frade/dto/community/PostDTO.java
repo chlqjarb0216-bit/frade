@@ -38,7 +38,7 @@ public class PostDTO {
     
     
     
-    
+    //DB에 시간 데이터를 JSON에 넘겨줄때 String 타입으로 변환 시켜주는 getter
     public String getPostedDateString() {
         if (this.postPostedDate == null) {
             return "";

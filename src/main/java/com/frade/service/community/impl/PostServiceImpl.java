@@ -83,6 +83,7 @@ public class PostServiceImpl implements PostService {
 		//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
 		//=========테스트데이터==============
 		PostDTO post = new PostDTO();
+		post.setPostNum(12L);
 		post.setPostTitle("testTitle");
 		post.setPostCategoryNum(2);
 		post.setPostContent("testContent");

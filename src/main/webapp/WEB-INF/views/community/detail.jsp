@@ -61,7 +61,23 @@
 		}
 		
 		function loadComments(page){
+
+			const postNum = "${post.postNum}";
+			console.log(postNum);
 			
+			fetch(`/community-lists/api/comment-list?page=\${page}&postNum=\${postNum}`,{
+				method: 'GET',
+				headers:{
+					'Content-Type' : 'application/json'
+				},
+				body:null
+			})
+			.then(response => response.json())
+			.then(commentList=>{
+				
+				console.log("받아온 댓글 리스트:" , commentList)
+			})
+
 		}
 	
 	</script>

@@ -1,5 +1,6 @@
 package com.frade.controller.community;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.frade.dto.community.CommentDTO;
 import com.frade.dto.community.PostDTO;
+import com.frade.service.community.CommentService;
 import com.frade.service.community.PostService;
 
 @Controller
@@ -26,6 +29,9 @@ import com.frade.service.community.PostService;
 public class CommunityController {
 	@Autowired
 	PostService postService;
+	
+	@Autowired
+	CommentService commentService;
 
 	@GetMapping("")
 	public String lists() {
@@ -107,5 +113,19 @@ public class CommunityController {
 		
 		return "community/detail";
 	}
+	
+	@GetMapping("/api/comment-list")
+	@ResponseBody
+	public List<CommentDTO> getCommentListData(@RequestParam int page,
+												@RequestParam int postNum) {
+		
+		System.out.println("컨트롤전달완료"+postNum);
+		
+//		List<CommnetDTO> commentList = new ArrayList<CommnetDTO>();//테스트용
+		List<CommentDTO> result = commentService.getCommentList(postNum, page);
+		
+		return result;
+	}
+	
 	
 }
