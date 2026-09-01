@@ -28,8 +28,8 @@ public class OrderServiceImpl implements OrderService {
 	public boolean processBuy(OrderInfoDTO orderInfo) { // 매수
 		
 		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
-		// 임시데이터 하드코딩
-//		String stockCode = "000660"; // 삼성전자
+		
+		//임시 유저넘버
 		int userNum = 1;
 
 		UserCashDTO cash = findUserCashByUserNum(userNum);
@@ -62,28 +62,10 @@ public class OrderServiceImpl implements OrderService {
 		portfolio.setUserStockCnt(orderInfo.getOrderCount());
 		portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
 		
-		System.out.println("hi");
+
 		updateOrInsertUserPortfolio(portfolio);
 		
-		System.out.println("hi");
-		
-		
-		
-		
-		
-//		if(findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode()) != null) {
-//			portfolio = findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
-//			portfolio.setUserStockCnt(portfolio.getUserStockCnt() + orderInfo.getOrderCount());
-//			portfolio.setUserBuyCost(portfolio.getUserBuyCost() 
-//					+ orderInfo.getOrderCount() * orderInfo.getOrderPrice());
-//			updateUserPortfolio(portfolio);
-//		}else {
-//			portfolio.setUserNum(userNum);
-//			portfolio.setStockCode(orderInfo.getStockCode());
-//			portfolio.setUserStockCnt(orderInfo.getOrderCount());
-//			portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
-//			insertUserPortfolio(portfolio);
-//		}
+
 		return true;
 	}
 
@@ -91,8 +73,8 @@ public class OrderServiceImpl implements OrderService {
 	public boolean processSell(OrderInfoDTO orderInfo) { // 매도
 
 		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
-		// 임시데이터 하드코딩
-//		String stockCode = "000660"; // 삼성전자
+		
+		//임시 유저넘버
 		int userNum = 1;
 
 		PortfolioDTO portfolio = findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
@@ -115,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
 		insertTradeHistory(history);
 
 		// 현금정보 저장
-		updateUserCash(orderInfo.getUserNum(), totalPrice);
+		updateUserCash(userNum, totalPrice);
 
 		// 포트폴리오 업데이트
 		portfolio.setUserStockCnt(portfolio.getUserStockCnt() - orderInfo.getOrderCount());

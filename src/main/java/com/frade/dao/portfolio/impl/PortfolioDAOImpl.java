@@ -59,9 +59,7 @@ public class PortfolioDAOImpl implements PortfolioDAO{
 
 	@Override
 	public int updateOrInsertUserPortfolio(PortfolioDTO portfolio) {
-		System.out.println(portfolio);
 		int result = sqlSessionTemplate.update("order_mapper.updateOrInsertUserPortfolio", portfolio);
-		System.out.println(portfolio);
 		return result;
 	}
 
