@@ -6,4 +6,84 @@
 <mapper namespace="order_mapper">
 
 
+	<!-- ====================t_portfolio================== -->
+
+	<select id="findUserPortfolioListByUserNum" parameterType="int" resultType="PortfolioDTO">
+		select * from t_portfolio
+		where user_num = #{userNum}
+	</select>
+
+	<select id="findUserPortfolioByUserNumAndStockCode" parameterType="map" resultType="PortfolioDTO">
+		select * from t_portfolio
+		where user_num = #{userNum} and stock_code = #{stockCode}
+	</select>
+	
+	<insert id="insertUserPortfolio" parameterType="PortfolioDTO">
+		insert into t_portfolio(user_num, stock_code, user_stock_cnt, user_buy_cost)
+		values (
+			#{userNum},
+			#{stockCode},
+			#{userStockCnt},
+			#{userBuyCost}
+		)
+	</insert>
+	
+	<update id="updateUserPortfolio" parameterType="PortfolioDTO">
+		update t_portfolio
+		set user_stock_cnt = #{userStockCnt},
+			user_buy_cost = #{userBuyCost}
+		where user_num = #{userNum} and stock_code = #{stockCode}
+	</update>
+	
+	
+	<delete id="deleteUserPortfolioByUserNumAndStockCode" parameterType="map">
+		delete from t_portfolio 
+		where user_num = #{userNum} and stock_code = #{stockCode}
+	</delete>
+	
+	
+	
+	
+	
+	<!-- ====================t_cash================== -->
+	
+	<select id="findUserCashByUserNum" parameterType="int" resultType="UserCashDTO">
+		select * from t_cash
+		where user_num = #{userNum}
+	</select>
+	
+	<update id="updateUserCash" parameterType="UserCashDTO">
+		update t_cash
+		set cash = #{cash}
+		where user_num = #{userNum}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- ====================t_history=============== -->
+	
+	<select id="findTradeHistoryByUserNum" parameterType="int" resultType="HistoryDTO">
+		select * from t_history
+		where user_num = #{userNum}
+	</select>
+	
+	
+	
+	<insert id="insertTradeHistory" parameterType="HistoryDTO">
+		
+		insert into t_history(user_num, stock_code, trade_price, trade_cnt)
+		values (
+			#{userNum},
+			#{stockCode},
+			#{tradePrice},
+			#{tradeCnt}
+		)
+	</insert>
+	
+	
 </mapper>

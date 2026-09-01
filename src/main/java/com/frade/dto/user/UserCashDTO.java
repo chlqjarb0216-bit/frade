@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class UserCashDTO {
 	
-	int uNum; //유저 넘버
+	int userNum; //유저 넘버
 	long cash; //유저 보유 현금
 	
 }
