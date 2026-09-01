@@ -1,7 +1,7 @@
 package com.frade.dto.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.frade.common.StockSector;
+import com.frade.common.stock.StockSector;
 import com.frade.dto.stock.StockInfoDTO;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
