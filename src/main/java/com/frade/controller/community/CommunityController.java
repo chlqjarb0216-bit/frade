@@ -47,14 +47,15 @@ public class CommunityController {
 	
 	@GetMapping("/api/post-list")
     @ResponseBody
-    public Map<String, Object> getPostListData(@RequestParam(defaultValue = "1") int page,
+    public <T> RestApiResponse<Map<String, Object>> getPostListData(@RequestParam(defaultValue = "1") int page,
 								    		@RequestParam(required = false, defaultValue = "") String keyword,
 								    		@RequestParam(defaultValue = "0") int type) {
 		
         // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
         Map<String, Object> result = postService.getPostList(page, keyword, type);
-        
-        return result;
+  
+        	return RestApiResponse.success(result);
+       
     }
 	
 	@GetMapping("/write")
@@ -120,12 +121,12 @@ public class CommunityController {
 	
 	@GetMapping("/api/comment-list")
 	@ResponseBody
-	public Map<String, Object> getCommentListData(@RequestParam(defaultValue = "1") int page,
+	public RestApiResponse<Map<String, Object>>  getCommentListData(@RequestParam(defaultValue = "1") int page,
 												@RequestParam(defaultValue = "1") int postNum) {
 
 		Map<String, Object> result = commentService.getCommentList(postNum, page);
 		
-		return result;
+		return RestApiResponse.success(result);
 	}
 	
 	@PostMapping("/api/comment-write")

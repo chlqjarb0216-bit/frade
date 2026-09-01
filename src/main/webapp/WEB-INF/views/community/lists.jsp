@@ -127,14 +127,14 @@
 				.then(response => response.json())
 				.then(postList=>{
 					
-					//서버오류 조건처리 필요(예시)
-// 					if(result.code !== 200) {
-//                     alert("데이터를 불러오지 못했습니다.");
-//                     return;
-//                 }
+					//서버오류 조건처리 필요
+					if(result.code !== 200) {
+                    alert("데이터를 불러오지 못했습니다.");
+                    return;
+                }
 					
-					renderTable(postList.list);
-					renderPaging(postList);
+					renderTable(postList.data.list);
+					renderPaging(postList.data);
 				});
 		}
 		
