@@ -101,18 +101,18 @@
 			.then(response => response.json())
 			.then(commentList=>{
 				
-				console.log("받아온 댓글 리스트:" , commentList);
+				console.log("받아온 댓글 리스트:" , commentList.data);
 				
 				//댓글개수
-				document.getElementById('commentCount').innerText = commentList.totalCount;
+				document.getElementById('commentCount').innerText = commentList.data.totalCount;
 				
-				renderCommentList(commentList.list);
-				renderPaging(commentList);
+				renderCommentList(commentList.data.list);
+				renderPaging(commentList.data);
 			})
 
 		}
 		
-		function renderCommentList(commentList){
+		function renderCommentList(commentList.data){
 			const commentTable = document.getElementById('commentList');
 			let html = '';
 			
