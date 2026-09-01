@@ -8,6 +8,6 @@ import lombok.Getter;
 public class StockInfoDTO {
 	private String stockCode;
 	private String stockName;
-	private int scNum;
+	private int sectorNum;
 	private int stockStatus;
 }
