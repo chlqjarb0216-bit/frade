@@ -1,4 +1,4 @@
-package com.frade.dao.order.impl;
+package com.frade.dao.portfolio.impl;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,19 +8,18 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.frade.dao.order.OrderDAO;
+import com.frade.dao.portfolio.PortfolioDAO;
 import com.frade.dto.order.HistoryDTO;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
 
 @Repository
-public class OrderDAOImpl implements OrderDAO{
+public class PortfolioDAOImpl implements PortfolioDAO{
 	
 	@Autowired
 	SqlSessionTemplate sqlSessionTemplate;
+
 	
-	
-//	==========t_portfolio===========
 	@Override
 	public List<PortfolioDTO> findUserPortfolioListByUserNum(int userNum) {
 		List<PortfolioDTO> portfolio = sqlSessionTemplate.selectList("order_mapper.findUserPortfolioListByUserNum", userNum);
@@ -58,49 +57,6 @@ public class OrderDAOImpl implements OrderDAO{
 		return result;
 	}
 
-	
-	
-	
-	
-//	==========t_cash===========
-	@Override
-	public UserCashDTO findUserCashByUserNum(int userNum) {
-		UserCashDTO userCash = sqlSessionTemplate.selectOne("order_mapper.findUserCashByUserNum", userNum);
-		return userCash;
-	}
-	
-	@Override
-	public int updateUserCash(UserCashDTO userCash) {
-		int result = sqlSessionTemplate.update("order_mapper.updateUserCash", userCash);
-		return result;
-	}
-	
-	
-	
-	
-//	==========t_history===========
-	@Override
-	public List<HistoryDTO> findTradeHistoryByUserNum(int userNum) {
-	    List<HistoryDTO> history = sqlSessionTemplate.selectList("order_mapper.findTradeHistoryByUserNum", userNum);
-	    return history;
-	}
 
-	@Override
-	public int insertTradeHistory(HistoryDTO history) {
-		int result = sqlSessionTemplate.insert("order_mapper.insertTradeHistory", history);
-		return result;
-	}
-
-	
-	
-
-	
-
-	
-	
-
-	
-
-	
 
 }
