@@ -3,6 +3,9 @@ package com.frade.dto.community;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import lombok.Data;
+
+@Data
 public class CommentDTO {
 	private Long commentNum;
 	private Long postNum;

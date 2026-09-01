@@ -124,8 +124,8 @@
 				},
 				body:null
 			})
-				.then(res => res.json())
-				.then(result=>{
+				.then(response => response.json())
+				.then(postList=>{
 					
 					//서버오류 조건처리 필요(예시)
 // 					if(result.code !== 200) {

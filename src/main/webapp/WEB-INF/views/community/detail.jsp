@@ -76,6 +76,7 @@
 			.then(commentList=>{
 				
 				console.log("받아온 댓글 리스트:" , commentList)
+				
 			})
 
 		}

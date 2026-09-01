@@ -1,11 +1,13 @@
 package com.frade.service.community;
 
-import java.util.List;
+import java.util.Map;
 
-import com.frade.dto.community.CommentDTO;
+import org.springframework.stereotype.Service;
 
 public interface CommentService {
 
-	public List<CommentDTO> getCommentList(int postNum, int page);
+	
+	//댓글 리스트 데이터 요청
+	public Map<String, Object> getCommentList(int postNum, int page);
 	
 }
