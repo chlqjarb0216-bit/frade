@@ -1,5 +1,7 @@
 package com.frade.dto.user;
 
+import java.time.LocalDateTime;
+
 import lombok.Data;
 
 @Data
@@ -12,6 +14,9 @@ public class UserProfileDTO {	// 프로필 정보 및 수정
     String currentPw;    // 현재 비밀번호
     String newPw;        // 변경할 비밀번호
     String newPwCheck;   // 변경할 새 비밀번호 확인
+    
+    LocalDateTime userRegistedDate;	//가입일
+    
     
     int userPortfolioIsPublic; //포트폴리오 공개,비공개 여부
 
