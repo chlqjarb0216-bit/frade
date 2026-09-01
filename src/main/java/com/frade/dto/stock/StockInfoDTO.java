@@ -10,4 +10,5 @@ public class StockInfoDTO {
 	private String stockName;
 	private int sectorNum;
 	private int stockStatus;
+	private int prevDayClosePrice;
 }
