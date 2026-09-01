@@ -1,5 +1,8 @@
 package com.frade.dao.portfolio.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,9 +23,13 @@ public class CashDAOImpl implements CashDAO{
 	}
 	
 	@Override
-	public int updateUserCash(UserCashDTO userCash) {
-		int result = sqlSessionTemplate.update("order_mapper.updateUserCash", userCash);
+	public int updateUserCash(int userNum, int add) {
+		Map<String, Integer> params = new HashMap<>();
+	    params.put("userNum", userNum);
+	    params.put("add", add);
+		int result = sqlSessionTemplate.update("order_mapper.updateUserCash", params);
 		return result;
 	}
+
 	
 }

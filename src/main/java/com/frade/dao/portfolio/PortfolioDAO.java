@@ -15,6 +15,7 @@ public interface PortfolioDAO {
 	public int insertUserPortfolio(PortfolioDTO portfolio); //포트폴리오 신규저장
 	public int updateUserPortfolio(PortfolioDTO portfolio); //포트폴리오 기존 보유종목 업데이트
 	public int deleteUserPortfolioByUserNumAndStockCode(int userNum, String stockCode); //전량매도
+	public int updateOrInsertUserPortfolio(PortfolioDTO portfolio); //merge into 포트폴리오
 	
 	
 }

@@ -26,7 +26,8 @@ public class OrderServiceImpl implements OrderService {
 
 	@Override
 	public boolean processBuy(OrderInfoDTO orderInfo) { // 매수
-
+		
+		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
 		// 임시데이터 하드코딩
 //		String stockCode = "000660"; // 삼성전자
 		int userNum = 1;
@@ -34,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
 		UserCashDTO cash = findUserCashByUserNum(userNum);
 
 		// 검증
-		if (orderInfo.getOrderPrice() * orderInfo.getOrderCount() > cash.getCash()) {
+		if (totalPrice > cash.getCash()) {
 			System.out.println("주문 금액이 보유 예치금보다 많음.");
 			return false;
 		}
@@ -47,32 +48,49 @@ public class OrderServiceImpl implements OrderService {
 		history.setTradePrice(orderInfo.getOrderPrice());
 		history.setTradeCnt(orderInfo.getOrderCount());
 		insertTradeHistory(history);
-
+		
 		// 현금정보 저장
-		cash.setCash(cash.getCash() - orderInfo.getOrderCount() * orderInfo.getOrderPrice());
-		updateUserCash(cash);
-
-		// 포트폴리오 업데이트
+		updateUserCash(userNum, -1 * totalPrice);
+		
+		
+		
+		
+		// 포트폴리오 merge into
 		PortfolioDTO portfolio = new PortfolioDTO();
-		if(findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode()) != null) {
-			portfolio = findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
-			portfolio.setUserStockCnt(portfolio.getUserStockCnt() + orderInfo.getOrderCount());
-			portfolio.setUserBuyCost(portfolio.getUserBuyCost() 
-					+ orderInfo.getOrderCount() * orderInfo.getOrderPrice());
-			updateUserPortfolio(portfolio);
-		}else {
-			portfolio.setUserNum(userNum);
-			portfolio.setStockCode(orderInfo.getStockCode());
-			portfolio.setUserStockCnt(orderInfo.getOrderCount());
-			portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
-			insertUserPortfolio(portfolio);
-		}
+		portfolio.setUserNum(userNum);
+		portfolio.setStockCode(orderInfo.getStockCode());
+		portfolio.setUserStockCnt(orderInfo.getOrderCount());
+		portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
+		
+		System.out.println("hi");
+		updateOrInsertUserPortfolio(portfolio);
+		
+		System.out.println("hi");
+		
+		
+		
+		
+		
+//		if(findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode()) != null) {
+//			portfolio = findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
+//			portfolio.setUserStockCnt(portfolio.getUserStockCnt() + orderInfo.getOrderCount());
+//			portfolio.setUserBuyCost(portfolio.getUserBuyCost() 
+//					+ orderInfo.getOrderCount() * orderInfo.getOrderPrice());
+//			updateUserPortfolio(portfolio);
+//		}else {
+//			portfolio.setUserNum(userNum);
+//			portfolio.setStockCode(orderInfo.getStockCode());
+//			portfolio.setUserStockCnt(orderInfo.getOrderCount());
+//			portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
+//			insertUserPortfolio(portfolio);
+//		}
 		return true;
 	}
 
 	@Override
 	public boolean processSell(OrderInfoDTO orderInfo) { // 매도
 
+		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
 		// 임시데이터 하드코딩
 //		String stockCode = "000660"; // 삼성전자
 		int userNum = 1;
@@ -97,14 +115,12 @@ public class OrderServiceImpl implements OrderService {
 		insertTradeHistory(history);
 
 		// 현금정보 저장
-		UserCashDTO cash = findUserCashByUserNum(userNum);
-		cash.setCash(cash.getCash() + orderInfo.getOrderCount() * orderInfo.getOrderPrice());
-		updateUserCash(cash);
+		updateUserCash(orderInfo.getUserNum(), totalPrice);
 
 		// 포트폴리오 업데이트
 		portfolio.setUserStockCnt(portfolio.getUserStockCnt() - orderInfo.getOrderCount());
 		portfolio.setUserBuyCost(portfolio.getUserBuyCost() 
-						- orderInfo.getOrderCount() * orderInfo.getOrderPrice());
+						- totalPrice);
 		if(portfolio.getUserStockCnt() == 0) {
 			deleteUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
 		}else {
@@ -113,6 +129,7 @@ public class OrderServiceImpl implements OrderService {
 
 		return true;
 	}
+	
 
 //	================DAO==================
 
@@ -142,6 +159,16 @@ public class OrderServiceImpl implements OrderService {
 		int result = orderDAO.deleteUserPortfolioByUserNumAndStockCode(userNum, stockCode);
 		return result;
 	}
+	
+	private int updateOrInsertUserPortfolio(PortfolioDTO portfolio) {
+		System.out.println("hi");
+		int result = orderDAO.updateOrInsertUserPortfolio(portfolio);
+		System.out.println("hi");
+		return result;
+		
+	}
+	
+	
 
 //	=============t_cash==============
 	private UserCashDTO findUserCashByUserNum(int userNum) {
@@ -149,8 +176,8 @@ public class OrderServiceImpl implements OrderService {
 		return userCash;
 	}
 
-	private int updateUserCash(UserCashDTO userCash) { // 변동 현금정도 저장
-		int result = cashDAO.updateUserCash(userCash);
+	private int updateUserCash(int userNum, int add) { // 변동 현금정도 저장
+		int result = cashDAO.updateUserCash(userNum, add);
 		return result;
 	}
 

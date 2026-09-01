@@ -42,6 +42,21 @@
 	</delete>
 	
 	
+	<update id="updateOrInsertUserPortfolio" parameterType="PortfolioDTO">
+	
+		merge into t_portfolio using dual
+			on (user_num = #{userNum} and stock_code = #{stockCode})
+		when matched then
+    	update set user_stock_cnt = user_stock_cnt + #{userStockCnt},
+            user_buy_cost = user_buy_cost + #{userBuyCost}
+		when not matched then
+    	insert (user_num, stock_code, user_stock_cnt, user_buy_cost) 
+    	values (#{userNum}, #{stockCode}, #{userStockCnt}, #{userBuyCost})
+		
+		
+	</update>
+	
+	
 	
 	
 	
@@ -52,9 +67,9 @@
 		where user_num = #{userNum}
 	</select>
 	
-	<update id="updateUserCash" parameterType="UserCashDTO">
+	<update id="updateUserCash" parameterType="map">
 		update t_cash
-		set cash = #{cash}
+		set cash = cash + #{add}
 		where user_num = #{userNum}
 	</update>
 	
