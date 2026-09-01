@@ -117,7 +117,7 @@ public class CommunityController {
 	@GetMapping("/api/comment-list")
 	@ResponseBody
 	public Map<String, Object> getCommentListData(@RequestParam(defaultValue = "1") int page,
-												@RequestParam(required = false, defaultValue = "1") int postNum) {
+												@RequestParam(defaultValue = "1") int postNum) {
 
 		Map<String, Object> result = commentService.getCommentList(postNum, page);
 		
