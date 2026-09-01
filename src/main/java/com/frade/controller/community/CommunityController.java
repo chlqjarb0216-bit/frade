@@ -1,6 +1,7 @@
 package com.frade.controller.community;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,14 +14,17 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.frade.common.ResultCode;
 import com.frade.dto.community.CommentDTO;
 import com.frade.dto.community.PostDTO;
+import com.frade.dto.rest.RestApiResponse;
 import com.frade.service.community.CommentService;
 import com.frade.service.community.PostService;
 
@@ -122,6 +126,26 @@ public class CommunityController {
 		Map<String, Object> result = commentService.getCommentList(postNum, page);
 		
 		return result;
+	}
+	
+	@PostMapping("/api/comment-write")
+	@ResponseBody
+	public <T> RestApiResponse<T> saveComment(@RequestBody CommentDTO comment) {
+		
+		//로그인 기능 x 임시번호 붕
+		comment.setUserNum(1);
+		
+		int result = commentService.saveComment(comment);
+		
+		/*Map<String, Object> response = new HashMap<>();*/
+		
+		
+		if(result>0) {
+			return RestApiResponse.success();
+		} else {
+			return RestApiResponse.error(ResultCode.SERVER_ERROR);
+		}
+		
 	}
 	
 	

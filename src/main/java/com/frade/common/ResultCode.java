@@ -17,12 +17,14 @@ public enum ResultCode {
 	PW_NOT_MATCH("rej_104", "비밀번호 확인 불일치"),
 
 	//게시판 영역
-	SUC_NO_LIST("suc_202", "성공했으나 비어있음");
+	SUC_NO_LIST("suc_202", "성공했으나 비어있음"),
+	SERVER_ERROR("rej_202", "예상치 못한 서버 에러 발생"),
 
 	//트레이딩 영역
-
+	
 	//추가
 
+	;
 	private final String code;
 	private final String message;
 }

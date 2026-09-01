@@ -67,4 +67,12 @@ public class CommentServiceImpl implements CommentService{
 		return resultMap;
 	}
 
+	@Override
+	public int saveComment(CommentDTO comment) {
+		
+		int result = 1;
+		
+		return result;
+	}
+
 }
