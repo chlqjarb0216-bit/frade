@@ -33,6 +33,6 @@ public interface PortfolioService {
 	int updateOrInsertUserPortfolio(PortfolioDTO portfolio);
 
 	//Asset 정보
-	AssetsInfoDTO getAssetInfo();
+	AssetsInfoDTO getAssetsInfo();
 	
 }

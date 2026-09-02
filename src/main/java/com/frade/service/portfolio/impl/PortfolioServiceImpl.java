@@ -31,18 +31,18 @@ public class PortfolioServiceImpl implements PortfolioService {
 	@Autowired
 
 	@Override
-	public AssetsInfoDTO getAssetInfo() {
-
+	public AssetsInfoDTO getAssetsInfo() {
+		
 		List<PortfolioDTO> portfolioList = findUserPortfolioListByUserNum(1);
 		UserCashDTO userCash = cashDAO.findUserCashByUserNum(1);
 		List<HistoryDTO> historyList = historyDAO.findTradeHistoryByUserNum(1);
 
 		AssetsInfoDTO assetsInfo = new AssetsInfoDTO();
-		long valuation = valuationCaculator(portfolioList);
+		long valuation = totalValuationCaculator(portfolioList);
 		long cash = userCash.getCash();
 
 		assetsInfo.setTotalAsset(valuation + cash);
-		assetsInfo.setValuation(valuation);
+		assetsInfo.setTotalValuation(valuation);
 		assetsInfo.setCash(cash);
 		assetsInfo.setStockCnt(portfolioList.size());
 		assetsInfo.setTradeCnt(historyList.size());
@@ -52,7 +52,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 		return assetsInfo;
 	}
 
-	private long valuationCaculator(List<PortfolioDTO> portfolioList) { // 주식평가금 계산
+	private long totalValuationCaculator(List<PortfolioDTO> portfolioList) { // 주식평가금 계산
 		long result = 0;
 
 		// 현재가 임시 데이터

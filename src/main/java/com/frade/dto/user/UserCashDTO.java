@@ -7,5 +7,6 @@ public class UserCashDTO {
 	
 	int userNum; //유저 넘버
 	long cash; //유저 보유 현금
+	//long reserved_cash   주문증거금
 	
 }
