@@ -137,9 +137,15 @@
 			})
 				.then(response => response.json())
 				.then(postList=>{
-					
+
+						console.log(postList.code);
+					if(postList.code == "suc_002"){
+						renderTable([]);
+						clearPaging();
+						return;
+					}
 					//서버오류 조건처리 필요
-					if(postList.code !== "suc_001") {
+					if(postList.code !== "suc_001" ) {
                     	alert("데이터를 불러오지 못했습니다.");
                     return;
                 }
@@ -173,6 +179,19 @@
 		}
 		
 		//하단 번호 그리기 함수
+		function clearPaging(){
+			const paging = document.getElementById('paging');
+			let html = '';
+			
+			html += `
+				<div>
+					<p5>조회된 게시글이 없습니다.</p5>
+				</div>
+				
+			`;
+			 paging.innerHTML = html;
+		}
+		
 		function renderPaging(pageInfo){
 			const paging = document.getElementById('paging');
 	        let html = '';
