@@ -6,6 +6,9 @@ package com.frade.common;
 //식으로 사용
 //필요하면 추가
 public class FilePath {
+	//루트 절대 경로(저장용)
+	public static final String FILE_ABSOLUTE_STORE_PATH = "D:/fileStorage_Frade";
+
 	//파일스토리지 접속루트경로
 	public static final String FILE_ROOT_PATH = "/file-storage";
 
