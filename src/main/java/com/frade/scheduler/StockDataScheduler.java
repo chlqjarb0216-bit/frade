@@ -1,6 +1,7 @@
 package com.frade.scheduler;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.frade.dto.stock.StockInfoDTO;
+import com.frade.common.stock.StockSector;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.dto.stock.StockPriceDTO;
 import com.frade.memcache.StockMemoryCache;
@@ -64,30 +65,34 @@ public class StockDataScheduler {
 			if (priceSnapshots.isEmpty())
 				return;
 
+			//갈아끼울 새 맵 작성
+			Map<String, StockPreviewDTO> tempMap = new HashMap<>();
 			//정렬
-			List<StockPreviewDTO> previewList = priceSnapshots.entrySet().stream().map(entry -> {
-				String stockCode = entry.getKey();
-				int currentPrice = entry.getValue(); // 현재가 (종가)
+			List<StockPreviewDTO> previewList = stockMemoryCache.getAllStockList().stream().map(info -> {
+				Integer currentPrice = priceSnapshots.get(info.getStockCode());
+				if (currentPrice == null) {
+					StockPreviewDTO prevCache = stockRankingCache.getPreviewByStockCode(info.getStockCode());
+					currentPrice = prevCache != null ? prevCache.getPrice() : 0;
+					if (currentPrice <= 0) {
+						currentPrice = info.getPrevDayClosePrice();
+					}
+				}
 
-				// 8시 40분에 로드해둔 캐시에서 전일종가 및 종목명 획득
-				StockInfoDTO info = stockMemoryCache.getByCode(stockCode);
-				if (info == null || info.getPrevDayClosePrice() <= 0)
+				if (info.getPrevDayClosePrice() <= 0)
 					return null;
 
-				int prevClose = info.getPrevDayClosePrice();
-
-				// 전일 종가 기준 당일 등락률 연산
-				double changeRate = ((double) (currentPrice - prevClose) / prevClose) * 100.0;
-				double roundedRate = Math.round(changeRate * 100.0) / 100.0;
-
 				// 화면 출력용 객체 조립
-				return new StockPreviewDTO(stockCode, info.getStockName(), currentPrice, roundedRate);
+				StockPreviewDTO previewDTO = new StockPreviewDTO(info.getStockCode(), info.getStockName(),
+						StockSector.getSectorName(info.getSectorNum()), currentPrice, info.getPrevDayClosePrice());
+
+				tempMap.put(info.getStockCode(), previewDTO);
+				return previewDTO;
 			}).filter(Objects::nonNull)
-					.sorted((o1, o2) -> Double.compare(o2.getDailyChangeRate(), o1.getDailyChangeRate())) // dailyChangeRate(당일 등락률) 기준 내림차순 정렬
+					.sorted((o1, o2) -> Double.compare(o2.getDailyPriceChangeRate(), o1.getDailyPriceChangeRate())) // dailyChangeRate(당일 등락률) 기준 내림차순 정렬
 					.collect(Collectors.toList());
 
 			// 종목 순위 갱신
-			stockRankingCache.updateSortedCache(previewList);
+			stockRankingCache.updateSortedCache(previewList, tempMap);
 
 		} catch (Exception e) {
 			log.warn("종목 순위 갱신중 에러\n {}", e.getMessage());
