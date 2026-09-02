@@ -14,4 +14,6 @@ public interface OrderService {
 
 	
 	
+	public boolean saveMarketPrice(OrderInfoDTO orderInfo); //시장가 주문 저장
+	
 }

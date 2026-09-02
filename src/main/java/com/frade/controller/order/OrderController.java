@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.frade.common.order.PriceOptionCommon;
 import com.frade.common.order.TradeOptionCommon;
 import com.frade.dto.order.HistoryDTO;
 import com.frade.dto.order.OrderInfoDTO;
@@ -28,7 +29,13 @@ public class OrderController {
 		boolean result = false;
 
 		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
-
+		
+		PriceOptionCommon priceOption = orderInfo.getPriceOption();
+		
+		if(priceOption == PriceOptionCommon.LIMITPRICE) {
+			orderService.saveMarketPrice(orderInfo);
+			return "redirect:/stock/trade";
+		}
 		
 		//매수 매도 및 DAO 호출 전 검증
 		if (tradeOption == (TradeOptionCommon.BUY)) {

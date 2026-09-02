@@ -174,4 +174,11 @@ public class OrderServiceImpl implements OrderService {
 		return result;
 	}
 
+	
+	@Override
+	public boolean saveMarketPrice(OrderInfoDTO orderInfo) {
+		
+		return false;
+	}
+
 }
