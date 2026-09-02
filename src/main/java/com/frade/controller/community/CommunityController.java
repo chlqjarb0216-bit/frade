@@ -105,13 +105,21 @@ public class CommunityController {
 		    }
 		}
 		
-		
+		try {
 		    int result = postService.savePost(post, files);
-		    if(result>0) {
-		    	return "redirect:/community-lists";
+		    
+		    //  DB에 실제로 데이터가 들어갔는지 확인
+		    if (result > 0) {
+		    	return "redirect:/community-lists"; // 성공
 		    } else {
-		    	return "redirect:/community-lists/write?error=true";
+		    	return "redirect:/community-lists/write?error=true"; // 실패 (0건 입력)
 		    }	
+		    
+		} catch (Exception e) {
+		    // 파일 저장 중 돌발 상황 방어
+		    e.printStackTrace(); //에러 로그 출력
+		    return "redirect:/community-lists/write?error=true";
+		}
 	}
 	
 	

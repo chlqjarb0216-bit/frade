@@ -1,16 +1,21 @@
 package com.frade.service.community.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.frade.common.FilePath;
 import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
@@ -18,11 +23,55 @@ import com.frade.service.community.PostService;
 @Service
 public class PostServiceImpl implements PostService {
 
+	@Transactional // 파일 저장이나 DB 인서트 중 하나라도 실패하면 롤백되도록 선언
 	@Override
 	public int savePost(PostDTO post, MultipartFile[] files) {
-		
-		return 1;
-	}
+		// 1. 게시글 시퀀스(번호) 먼저 따오기
+        int nextNum = 3;//postMapper.getNextPostNum();
+        post.setPostNum(nextNum); // DTO에 번호 세팅 
+        
+        // 2. 파일이 있을 경우에만 조립 및 저장 로직 실행
+        if (files != null && files.length > 0) {
+            StringJoiner sj = new StringJoiner(",");
+            
+            // 물리적 저장 경로 세팅 (D:/fileStorage_Frade/post_uploadfiles)
+            String baseDir = FilePath.FILE_ABSOLUTE_STORE_PATH + FilePath.POST_UPLOADFILE_PATH;
+            File folder = new File(baseDir);
+            if (!folder.exists()) {
+                folder.mkdirs(); // 폴더가 없으면 생성
+            }
+            
+            for (int i = 0; i < files.length; i++) {
+                MultipartFile file = files[i];
+                if (!file.isEmpty()) {
+                    try {
+                        // 원본 파일명에서 확장자 추출 (.jpg, .png 등)
+                        String originalName = file.getOriginalFilename();
+                        String ext = originalName.substring(originalName.lastIndexOf("."));
+                        
+                        // 파일명 조립 (예: 105-1.jpg)
+                        String savedFileName = nextNum + "_" + (i + 1) + ext;
+                        sj.add(savedFileName);
+                        
+                        // 물리적 폴더에 실제 파일 저장
+                        File saveFile = new File(baseDir, savedFileName);
+                        file.transferTo(saveFile); 
+                        System.out.println(saveFile);
+                        
+                    } catch (IOException e) {
+                        // 예외 발생 시 RuntimeException으로 던져야 @Transactional이 인식하고 DB 롤백을 수행함
+                        throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
+                    }
+                }
+            }
+            // 조립된 문자열 (예: 105-1.jpg,105-2.png)을 DTO에 세팅
+            post.setPostFiles(sj.toString()); 
+        }
+        
+        // 3. 파일명까지 모두 완벽하게 세팅된 DTO를 DB에 INSERT!
+        return 1;//postMapper.insertPost(post); 
+    }
+	
 
 	@Override
 	public PageResultDTO<PostDTO> getPostList(int page, String keyword, int type) {
