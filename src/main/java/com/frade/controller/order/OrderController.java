@@ -2,13 +2,17 @@ package com.frade.controller.order;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.frade.common.order.PriceOptionCommon;
 import com.frade.common.order.TradeOptionCommon;
 import com.frade.dto.order.OrderInfoDTO;
+import com.frade.dto.user.AssetsInfoDTO;
 import com.frade.service.order.OrderService;
+import com.frade.service.portfolio.PortfolioService;
+
 
 
 @Controller
@@ -16,6 +20,9 @@ public class OrderController {
 
 	@Autowired
 	OrderService orderService;
+	
+	@Autowired
+	PortfolioService portfolioService;
 
 
 	@GetMapping("/stock/trade")
@@ -28,7 +35,8 @@ public class OrderController {
 	public String tradeAction(OrderInfoDTO orderInfo) {
 
 		boolean result = false;
-
+		
+		
 		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
 		PriceOptionCommon priceOption = orderInfo.getPriceOption();
 		
@@ -40,8 +48,6 @@ public class OrderController {
 //			orderService.saveMarketPrice(orderInfo);
 //			return "redirect:/stock/trade";
 //		}
-		
-		
 		
 		
 		//매수 매도 및 DAO 호출 전 검증
@@ -69,6 +75,11 @@ public class OrderController {
 		} else {
 			System.out.println("거래 실패");
 		}
+		
+		
+		//===========assetInfo 확인용 코드, 추후 마이페이지로 이관 예정============
+		AssetsInfoDTO assetsInfo = portfolioService.getAssetInfo();
+		System.out.println(assetsInfo);
 
 		return "redirect:/stock/trade";
 	}

@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.frade.dao.portfolio.PortfolioDAO;
+import com.frade.dto.order.HistoryDTO;
+import com.frade.dto.user.AssetsInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
+import com.frade.dto.user.UserCashDTO;
 
 
 public interface PortfolioService {
@@ -28,5 +31,8 @@ public interface PortfolioService {
 	
 	//DB 조회 후 데이터 없으면 insert 있으면 update
 	int updateOrInsertUserPortfolio(PortfolioDTO portfolio);
+
+	//Asset 정보
+	AssetsInfoDTO getAssetInfo();
 	
 }

@@ -27,5 +27,5 @@ public class HistoryDAOImpl implements HistoryDAO {
 		int result = sqlSessionTemplate.insert("order_mapper.insertTradeHistory", history);
 		return result;
 	}
-	
+
 }
