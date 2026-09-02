@@ -98,6 +98,9 @@
 			})
 			.then(response => response.json())
 			.then(commentList=>{
+				if(commentList.code === "suc_002"){
+					return;
+				}
 				if(commentList.code !== "suc_001") {
 					alert("댓글 데이터를 불러오지 못했습니다.");
 					return;
