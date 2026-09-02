@@ -9,13 +9,14 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.frade.dto.community.CommentDTO;
+import com.frade.dto.community.PageResultDTO;
 import com.frade.service.community.CommentService;
 
 @Service
 public class CommentServiceImpl implements CommentService{
 
 	@Override
-	public Map<String,Object> getCommentList(int postNum, int page) {
+	public PageResultDTO<CommentDTO> getCommentList(int postNum, int page) {
 
 		//********테스트용 데이터(서버개발자는 참고해도 되고 지워도 됨)**********
 		
@@ -51,20 +52,20 @@ public class CommentServiceImpl implements CommentService{
 			    int endPage = Math.min(startPage + blockSize - 1, totalPages);
 
 			    // 3. 자른 목록과 페이징 정보를 Map에 담아서 반환
-			    Map<String, Object> resultMap = new HashMap<>();
-			    resultMap.put("list", pagedList); // 10개의 데이터
-			    resultMap.put("currentPage", page);
-			    resultMap.put("totalPages", totalPages);
-			    resultMap.put("startPage", startPage);
-			    resultMap.put("endPage", endPage);
-			    
 			    //댓글 총 개수 저장해서 보내기
-			    resultMap.put("totalCount", allComments.size());
+			    PageResultDTO<CommentDTO> resultPage = new PageResultDTO<>(
+			    	    pagedList,           // 1. list (10개의 데이터)
+			    	    page,                // 2. currentPage (현재 페이지)
+			    	    totalPages,          // 3. totalPages (총 페이지)
+			    	    startPage,           // 4. startPage (시작 페이지)
+			    	    endPage,             // 5. endPage (끝 페이지)
+			    	    allComments.size()   // 6. totalCount (총 댓글 개수)
+			    	);
 			    
 			  //********테스트용 데이터**********
 		
 		
-		return resultMap;
+		return resultPage;
 	}
 
 	@Override
