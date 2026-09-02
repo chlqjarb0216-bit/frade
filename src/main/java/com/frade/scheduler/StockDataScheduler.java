@@ -74,16 +74,10 @@ public class StockDataScheduler {
 				if (info == null || info.getPrevDayClosePrice() <= 0)
 					return null;
 
-				int prevClose = info.getPrevDayClosePrice();
-
-				// 전일 종가 기준 당일 등락률 연산
-				double changeRate = ((double) (currentPrice - prevClose) / prevClose) * 100.0;
-				double roundedRate = Math.round(changeRate * 100.0) / 100.0;
-
 				// 화면 출력용 객체 조립
-				return new StockPreviewDTO(stockCode, info.getStockName(), currentPrice, roundedRate);
+				return new StockPreviewDTO(stockCode, info.getStockName(), currentPrice, info.getPrevDayClosePrice());
 			}).filter(Objects::nonNull)
-					.sorted((o1, o2) -> Double.compare(o2.getDailyChangeRate(), o1.getDailyChangeRate())) // dailyChangeRate(당일 등락률) 기준 내림차순 정렬
+					.sorted((o1, o2) -> Double.compare(o2.getDailyPriceChangeRate(), o1.getDailyPriceChangeRate())) // dailyChangeRate(당일 등락률) 기준 내림차순 정렬
 					.collect(Collectors.toList());
 
 			// 종목 순위 갱신

@@ -157,7 +157,7 @@
 									<h2>\${ stock.price }</h2>
 								</div>
 								<div>
-									<h4>\${ stock.dailyChangeRate }</h4>
+									<h4>\${ stock.dailyPriceChangeRoundedPercent }</h4>
 								</div>
 							</div>
 	            `;
