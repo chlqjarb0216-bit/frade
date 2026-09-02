@@ -203,7 +203,7 @@ CREATE TABLE t_post (
   post_trade_num2 NUMBER,
   post_trade_num3 NUMBER,
   post_files VARCHAR2(100),
-  post_is_public NUMBER(1) NOT NULL,
+  post_is_public NUMBER(1) DEFAULT 1 NOT NULL,
   CONSTRAINT pk_t_post PRIMARY KEY (post_num)
 );
 
