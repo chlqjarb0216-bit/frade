@@ -143,9 +143,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 	
 	private int updateOrInsertUserPortfolio(PortfolioDTO portfolio) {
-		System.out.println("hi");
 		int result = orderDAO.updateOrInsertUserPortfolio(portfolio);
-		System.out.println("hi");
 		return result;
 		
 	}
