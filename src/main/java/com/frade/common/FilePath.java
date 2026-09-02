@@ -13,5 +13,5 @@ public class FilePath {
 	public static final String USER_PROFILE_PATH = "/user_profile";
 
 	//게시글 첨부파일 저장할 폴더
-	public static final String POST_UPLOADFILE_PATH = "/post_uploadfiles";
+	public static final String POST_UPLOADFILE_PATH = "/post_uploadfile";
 }
