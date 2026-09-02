@@ -18,7 +18,7 @@ public class StockServiceImpl implements StockService {
 		// TODO Auto-generated method stub
 		List<StockPreviewDTO> stockList = new ArrayList<StockPreviewDTO>();
 		for (int i = 0; i < 10; i++) {
-			stockList.add(new StockPreviewDTO("000" + i + "00", "삼" + i + "전자", 100000 - i * 1000, 99990));
+			stockList.add(new StockPreviewDTO("000" + i + "00", "삼" + i + "전자", "전기·전자", 100000 - i * 1000, 99990));
 		}
 		return stockList;
 	}

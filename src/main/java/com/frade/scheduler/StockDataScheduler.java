@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.frade.common.stock.StockSector;
 import com.frade.dto.stock.StockInfoDTO;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.dto.stock.StockPriceDTO;
@@ -75,7 +76,8 @@ public class StockDataScheduler {
 					return null;
 
 				// 화면 출력용 객체 조립
-				return new StockPreviewDTO(stockCode, info.getStockName(), currentPrice, info.getPrevDayClosePrice());
+				return new StockPreviewDTO(stockCode, info.getStockName(),
+						StockSector.getSectorName(info.getSectorNum()), currentPrice, info.getPrevDayClosePrice());
 			}).filter(Objects::nonNull)
 					.sorted((o1, o2) -> Double.compare(o2.getDailyPriceChangeRate(), o1.getDailyPriceChangeRate())) // dailyChangeRate(당일 등락률) 기준 내림차순 정렬
 					.collect(Collectors.toList());

@@ -8,6 +8,7 @@ import lombok.Getter;
 public class StockPreviewDTO {
 	private String stockCode;
 	private String stockName;
+	private String sectorName;
 	private int price;
 	private int prevDayClosePrice;
 
