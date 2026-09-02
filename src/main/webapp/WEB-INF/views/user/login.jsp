@@ -19,16 +19,22 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
     <body>
         <form action="" method="post">
             아이디 :
-            <input type="text" name="uId" />
+            <input type="text" name="userId" />
             <br />
 
             비번 :
-            <input type="password" name="uPw" />
+            <input type="password" name="userPw" />
             <br />
 
             <br />
 
             <button type="submit">로그인</button>
+            
+            <c:if test="${not empty signupSuccess}">
+			    <script>
+			        alert("${signupSuccess}");
+			    </script>
+			</c:if>
             <c:if test="${loginfail == 'true'}">
                 <p class="error-msg">로그인 실패</p>
             </c:if>
