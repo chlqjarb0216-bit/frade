@@ -51,12 +51,18 @@ public class CommunityController {
     public <T> RestApiResponse<PageResultDTO<PostDTO>> getPostListData(@RequestParam(defaultValue = "1") int page,
 								    		@RequestParam(required = false, defaultValue = "") String keyword,
 								    		@RequestParam(defaultValue = "0") int type) {
-		
         // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
 		PageResultDTO<PostDTO> result = postService.getPostList(page, keyword, type);
-  
-        	return RestApiResponse.success(result);
-       
+		try {
+			if(result.getTotalCount()>0) {
+				return RestApiResponse.success(result);
+			}else {
+				return RestApiResponse.response(ResultCode.SUC_EMPTY, null);
+			}
+		}catch (Exception e) {
+			return RestApiResponse.error(ResultCode.FAIL);
+		}
+
     }
 	
 	@GetMapping("/write")
@@ -126,8 +132,16 @@ public class CommunityController {
 												@RequestParam(defaultValue = "1") int postNum) {
 
 		PageResultDTO<CommentDTO> result = commentService.getCommentList(postNum, page);
+		try {
+			if(result.getTotalCount()>0) {
+				return RestApiResponse.success(result);
+			}else {
+				return RestApiResponse.response(ResultCode.SUC_EMPTY, null);
+			}
+		}catch (Exception e) {
+			return RestApiResponse.error(ResultCode.FAIL);
+		}
 		
-		return RestApiResponse.success(result);
 	}
 	
 	@PostMapping("/api/comment-write")
