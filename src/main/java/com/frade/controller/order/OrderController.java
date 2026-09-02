@@ -7,15 +7,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.frade.common.order.PriceOptionCommon;
 import com.frade.common.order.TradeOptionCommon;
-import com.frade.dto.order.HistoryDTO;
 import com.frade.dto.order.OrderInfoDTO;
 import com.frade.service.order.OrderService;
+
 
 @Controller
 public class OrderController {
 
 	@Autowired
 	OrderService orderService;
+
 
 	@GetMapping("/stock/trade")
 	public String trade() {
@@ -34,6 +35,7 @@ public class OrderController {
 		
 		
 		
+		//시장가 저장로직 추후 구현 예정
 //		if(priceOption == PriceOptionCommon.LIMITPRICE) {
 //			orderService.saveMarketPrice(orderInfo);
 //			return "redirect:/stock/trade";

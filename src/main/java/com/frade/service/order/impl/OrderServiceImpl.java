@@ -13,16 +13,20 @@ import com.frade.dto.order.OrderInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
 import com.frade.service.order.OrderService;
+import com.frade.service.portfolio.PortfolioService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
 	@Autowired
-	PortfolioDAO orderDAO;
+	PortfolioDAO portfolioDAO;
 	@Autowired
 	CashDAO cashDAO;
 	@Autowired
 	HistoryDAO historyDAO;
+	
+	@Autowired
+	PortfolioService portfolioService;
 
 	@Override
 	public boolean processBuy(OrderInfoDTO orderInfo) { // 매수
@@ -63,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
 		portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
 		
 
-		updateOrInsertUserPortfolio(portfolio);
+		portfolioService.updateOrInsertUserPortfolio(portfolio);
 		
 
 		return true;
@@ -77,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
 		//임시 유저넘버
 		int userNum = 1;
 
-		PortfolioDTO portfolio = findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
+		PortfolioDTO portfolio = portfolioService.findUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
 
 		// 검증
 		if (portfolio == null) {
@@ -104,50 +108,13 @@ public class OrderServiceImpl implements OrderService {
 		portfolio.setUserBuyCost(portfolio.getUserBuyCost() 
 						- totalPrice);
 		if(portfolio.getUserStockCnt() == 0) {
-			deleteUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
+			portfolioService.deleteUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode());
 		}else {
-			updateUserPortfolio(portfolio);
+			portfolioService.updateUserPortfolio(portfolio);
 		}
 
 		return true;
 	}
-	
-
-//	================DAO==================
-
-//	=============t_portfolio==============
-	private List<PortfolioDTO> findUserPortfolioListByUserNum(int userNum) {
-		List<PortfolioDTO> portfolioList = orderDAO.findUserPortfolioListByUserNum(userNum);
-		return portfolioList;
-	}
-
-
-	private PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode) {
-		PortfolioDTO portfolio = orderDAO.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
-		return portfolio;
-	}
-
-	private int insertUserPortfolio(PortfolioDTO portfolio) { // 포트폴리오 저장
-		int result = orderDAO.insertUserPortfolio(portfolio);
-		return result;
-	}
-
-	private int updateUserPortfolio(PortfolioDTO portfolio) {
-		int result = orderDAO.updateUserPortfolio(portfolio);
-		return result;
-	}
-
-	private int deleteUserPortfolioByUserNumAndStockCode(int userNum, String stockCode) {
-		int result = orderDAO.deleteUserPortfolioByUserNumAndStockCode(userNum, stockCode);
-		return result;
-	}
-	
-	private int updateOrInsertUserPortfolio(PortfolioDTO portfolio) {
-		int result = orderDAO.updateOrInsertUserPortfolio(portfolio);
-		return result;
-		
-	}
-	
 	
 
 //	=============t_cash==============
