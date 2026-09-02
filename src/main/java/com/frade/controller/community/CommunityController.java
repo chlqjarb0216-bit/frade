@@ -144,7 +144,7 @@ public class CommunityController {
 		if(result>0) {
 			return RestApiResponse.success();
 		} else {
-			return RestApiResponse.error(ResultCode.SERVER_ERROR);
+			return RestApiResponse.error(ResultCode.FAIL);
 		}
 		
 	}
