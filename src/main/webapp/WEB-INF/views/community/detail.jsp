@@ -83,11 +83,10 @@
 	<script>
 		
 		window.onload = function(){
-			loadComments(1)
+			loadComments(1);
 		}
 		
 		function loadComments(page){
-
 			const postNum = "${post.postNum}";
 			
 			//게시글 번호에 맞는 댓글 정보 요청
@@ -95,11 +94,14 @@
 				method: 'GET',
 				headers:{
 					'Content-Type' : 'application/json'
-				},
-				body:null
+				}
 			})
 			.then(response => response.json())
 			.then(commentList=>{
+				if(commentList.code !== "suc_001") {
+					alert("댓글 데이터를 불러오지 못했습니다.");
+					return;
+				}
 				
 				console.log("받아온 댓글 리스트:" , commentList.data);
 				
@@ -108,20 +110,25 @@
 				
 				renderCommentList(commentList.data.list);
 				renderPaging(commentList.data);
-			})
-
+			});
 		}
 		
-		function renderCommentList(commentList.data){
+		function renderCommentList(commentList){
 			const commentTable = document.getElementById('commentList');
 			let html = '';
 			
+			if(!commentList || commentList.length === 0){
+				commentTable.innerHTML = '<p class="text-muted">등록된 댓글이 없습니다.</p>';
+				return;
+			}
+			
 			commentList.forEach(comment =>{
+				const dateStr = comment.commentedDateString || '';
 				html += `
-					<div>
-						<p>\${comment.userName} \${comment.commentContent}</p>
+					<div class="mb-2 p-2 border-bottom">
+						<p class="mb-1"><strong>\${comment.userName}</strong> <small class="text-muted">\${dateStr}</small></p>
+						<p class="mb-0">\${comment.commentContent}</p>
 					</div>
-				
 				`;
 			});
 			
@@ -189,7 +196,6 @@
 			})
 			.then(response =>response.json())
 			.then(writeInfo=>{
-				
 				if(writeInfo.code === "suc_001"){
 					//입력창 비우기
 					contentInput.value = '';
@@ -199,9 +205,7 @@
 				} else{
 					alert(writeInfo.message);
 				}
-
-				
-			})
+			});
 		}
 		
 	</script>

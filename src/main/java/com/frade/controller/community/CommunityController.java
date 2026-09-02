@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.frade.common.ResultCode;
 import com.frade.dto.community.CommentDTO;
+import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
 import com.frade.dto.rest.RestApiResponse;
 import com.frade.service.community.CommentService;
@@ -47,12 +48,12 @@ public class CommunityController {
 	
 	@GetMapping("/api/post-list")
     @ResponseBody
-    public <T> RestApiResponse<Map<String, Object>> getPostListData(@RequestParam(defaultValue = "1") int page,
+    public <T> RestApiResponse<PageResultDTO<PostDTO>> getPostListData(@RequestParam(defaultValue = "1") int page,
 								    		@RequestParam(required = false, defaultValue = "") String keyword,
 								    		@RequestParam(defaultValue = "0") int type) {
 		
         // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
-        Map<String, Object> result = postService.getPostList(page, keyword, type);
+		PageResultDTO<PostDTO> result = postService.getPostList(page, keyword, type);
   
         	return RestApiResponse.success(result);
        
@@ -121,10 +122,10 @@ public class CommunityController {
 	
 	@GetMapping("/api/comment-list")
 	@ResponseBody
-	public RestApiResponse<Map<String, Object>>  getCommentListData(@RequestParam(defaultValue = "1") int page,
+	public RestApiResponse<PageResultDTO<CommentDTO>>  getCommentListData(@RequestParam(defaultValue = "1") int page,
 												@RequestParam(defaultValue = "1") int postNum) {
 
-		Map<String, Object> result = commentService.getCommentList(postNum, page);
+		PageResultDTO<CommentDTO> result = commentService.getCommentList(postNum, page);
 		
 		return RestApiResponse.success(result);
 	}
@@ -138,7 +139,6 @@ public class CommunityController {
 		
 		int result = commentService.saveComment(comment);
 		
-		/*Map<String, Object> response = new HashMap<>();*/
 		
 		
 		if(result>0) {
@@ -148,6 +148,5 @@ public class CommunityController {
 		}
 		
 	}
-	
-	
+
 }
