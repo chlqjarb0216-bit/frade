@@ -136,7 +136,7 @@ public class CommunityController {
 			if(result.getTotalCount()>0) {
 				return RestApiResponse.success(result);
 			}else {
-				return RestApiResponse.response(ResultCode.SUC_EMPTY, result);
+				return RestApiResponse.response(ResultCode.SUC_EMPTY, null);
 			}
 		}catch (Exception e) {
 			return RestApiResponse.error(ResultCode.FAIL);
