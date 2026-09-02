@@ -29,13 +29,18 @@ public class OrderController {
 		boolean result = false;
 
 		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
-		
 		PriceOptionCommon priceOption = orderInfo.getPriceOption();
 		
-		if(priceOption == PriceOptionCommon.LIMITPRICE) {
-			orderService.saveMarketPrice(orderInfo);
-			return "redirect:/stock/trade";
-		}
+		
+		
+		
+//		if(priceOption == PriceOptionCommon.LIMITPRICE) {
+//			orderService.saveMarketPrice(orderInfo);
+//			return "redirect:/stock/trade";
+//		}
+		
+		
+		
 		
 		//매수 매도 및 DAO 호출 전 검증
 		if (tradeOption == (TradeOptionCommon.BUY)) {
