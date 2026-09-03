@@ -1,6 +1,9 @@
 package com.frade.service.user;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.frade.common.ResultCode;
+import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSignDTO;
 
 public interface UserService {
@@ -15,8 +18,13 @@ public interface UserService {
 	
 	ResultCode userSignup(UserSignDTO userSignDTO);//회원가입 처리 함수
 	
+	ResultCode updateUserProfile(UserProfileDTO userProfileDTO, MultipartFile profilePhoto, boolean defaultPhoto,boolean passwordChange);//프로필 정보 수정
+	//닉네임, 비밀번호, 프로필사진, 포트폴리오 공개 여부 수정
 	
 	
+	ResultCode deleteUser(int userNum); //로그인한 회원 탈퇴 처리
+	
+	UserProfileDTO getUserProfile(int userNum); //회원(번호로) 프로필 정보 조회
 	
 	
 	

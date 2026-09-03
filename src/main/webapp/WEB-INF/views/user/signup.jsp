@@ -103,7 +103,7 @@
 		        return;
 		    }
 		
-		    fetch("/api/checkId", {
+		    fetch("/user/api/checkId", {
 
 		        method: "POST",
 
@@ -185,7 +185,7 @@
 	            return;
 	        }
 	
-	        fetch("/api/checkNick", {
+	        fetch("/user/api/checkNick", {
 
 	            method: "POST",
 
@@ -267,7 +267,7 @@
 		        return;
 		    }
 		
-		    fetch("/api/checkEmail", {
+		    fetch("/user/api/checkEmail", {
 
 		        method: "POST",
 
