@@ -7,10 +7,13 @@ import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.dto.stock.StockPriceDTO;
 
 public interface StockService {
-	//메모리 캐시에서 종목코드로 StockPreviewDTO를 검색
+	//StockMemoryCache에서 검색
+	public List<StockInfoDTO> searchStockByName(String stockName);
+
+	//StockRankingCache에서 종목코드로 StockPreviewDTO를 검색
 	public StockPreviewDTO getStockPreviewByStockCode(String stockCode);
 
-	//메모리 캐시에서 정렬된 주식리스트를 받아옴(페이징)
+	//StockRankingCache에서 정렬된 주식리스트를 받아옴(페이징)
 	public List<StockPreviewDTO> getSortedStockRankingListPage(int pageIdx, int pageSize);
 
 	//KiwoomApiService에서 StockInfoRawDTO리스트를 받아와 StockInfoDTO리스트로 변환한뒤 DB에 저장
