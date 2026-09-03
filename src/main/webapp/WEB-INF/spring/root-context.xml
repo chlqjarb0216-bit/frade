@@ -73,7 +73,7 @@
 	<bean id="objectMapper"
 		class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
 		<!-- pom.xml에 등록한 JavaTimeModule 모듈명을 강제로 팩토리에 심어줍니다 -->
-		<property name="findModulesViaServiceLoader" value="true"/>
+		<property name="findModulesViaServiceLoader" value="true" />
 
 		<!-- 👇 이 프로퍼티 설정을 추가하면 LocalDateTime이 문자열로 예쁘게 출력됩니다 -->
 		<property name="featuresToDisable">
@@ -81,6 +81,32 @@
 				<util:constant
 					static-field="com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS" />
 			</array>
+		</property>
+	</bean>
+
+	<!-- 1. 최대 SSE 소켓 물리 통로 수 2만 개 확장 -->
+	<bean id="tomcatMaxConnectionsConfig"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass" value="java.lang.System" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>org.apache.tomcat.util.net.MAX_CONNECTIONS</value>
+				<value>20000</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 2. 일꾼 스레드 개수 200개 강제 고정 -->
+	<bean id="tomcatMaxThreadsConfig"
+		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass" value="java.lang.System" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>org.apache.tomcat.util.net.MAX_THREADS</value>
+				<value>200</value>
+			</list>
 		</property>
 	</bean>
 
@@ -107,11 +133,11 @@
 		class="com.frade.scheduler.StockDataScheduler" />
 	<task:scheduler id="stockDataSchedulerPool" pool-size="1" />
 	<task:executor id="stockDataTaskExecutor" pool-size="1" />
-	
+
 	<!-- 웹소켓 데이터 처리용 스레드 풀 -->
-	<task:executor id="stockBufferTaskExecutor" 
-               pool-size="1" 
-               queue-capacity="10" 
-               rejection-policy="CALLER_RUNS" />
+	<task:executor id="stockBufferTaskExecutor"
+		pool-size="1"
+		queue-capacity="10"
+		rejection-policy="CALLER_RUNS" />
 
 </beans>
