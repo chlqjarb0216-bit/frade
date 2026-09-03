@@ -24,7 +24,6 @@ public class StockMemoryCache {
 
 	private final StockDAO stockDAO;
 
-	// ★ [초고속 캐시 저장소] 멀티스레드 환경에서 동시성 락(Lock) 없이 데이터 오염을 막는 전용 맵
 	private Map<String, StockInfoDTO> codeCacheMap = new HashMap<>();
 	private List<StockInfoDTO> allStockList = new ArrayList<>();
 
