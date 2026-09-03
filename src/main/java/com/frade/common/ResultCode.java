@@ -10,7 +10,7 @@ public enum ResultCode {
 	//앞자리 0: 공통, 1: 회원가입, 2: 게시판, 3: 트레이딩, 더필요하면 추가
 
 	//공통 영역
-	SUCCESS("suc_001", "성공"),
+	SUCCESS("suc_001", "성공"), SUC_EMPTY("suc_002", "성공했으나 비어있음"), FAIL("rej_001", "실패"),
 
 	//개인정보 영역
 	DUP_ID("rej_101", "이미 사용 중인 아이디입니다."), DUP_NICK("rej_102", "이미 사용 중인 닉네임입니다."), DUP_EMAIL("rej_103", "이미 사용 중인 이메일입니다."),
@@ -19,12 +19,13 @@ public enum ResultCode {
 	INVALID_PASSWORD_INPUT("rej_108", "비밀번호를 모두 입력해주세요."),
 
 	//게시판 영역
-	SUC_NO_LIST("suc_202", "성공했으나 비어있음");
+
 
 	//트레이딩 영역
-
+	
 	//추가
 
+	;
 	private final String code;
 	private final String message;
 }

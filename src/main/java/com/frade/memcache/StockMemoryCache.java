@@ -2,6 +2,7 @@ package com.frade.memcache;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,8 +25,8 @@ public class StockMemoryCache {
 	private final StockDAO stockDAO;
 
 	// ★ [초고속 캐시 저장소] 멀티스레드 환경에서 동시성 락(Lock) 없이 데이터 오염을 막는 전용 맵
-	private final Map<String, StockInfoDTO> codeCacheMap = new java.util.concurrent.ConcurrentHashMap<>();
-	private final List<StockInfoDTO> allStockList = new java.util.concurrent.CopyOnWriteArrayList<>();
+	private Map<String, StockInfoDTO> codeCacheMap = new HashMap<>();
+	private List<StockInfoDTO> allStockList = new ArrayList<>();
 
 	/**
 	 * 서버가 켜질때 딱 1번 실행 
@@ -52,14 +53,17 @@ public class StockMemoryCache {
 		}
 
 		// 2. 기존 캐시 메모리 초기화
-		codeCacheMap.clear();
-		allStockList.clear();
+		Map<String, StockInfoDTO> newMap = new HashMap<>();
+		List<StockInfoDTO> newList = new ArrayList<>();
 
 		// 3. 초고속 조회를 위한 메모리 적재
 		for (StockInfoDTO stock : dbStocks) {
-			codeCacheMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
-			allStockList.add(stock); // 이름/자동완성 검색용 리스트 채우기
+			newMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
+			newList.add(stock); // 이름/자동완성 검색용 리스트 채우기
 		}
+
+		this.codeCacheMap = newMap;
+		this.allStockList = newList;
 
 		log.info("주식 정보 {}개 캐시 메모리 탑재 완료.", codeCacheMap.size());
 	}
@@ -117,5 +121,9 @@ public class StockMemoryCache {
 	//맵에서 key들만 뽑아다 리스트로 반환
 	public List<String> getCodeList() {
 		return new ArrayList<String>(codeCacheMap.keySet());
+	}
+
+	public List<StockInfoDTO> getAllStockList() {
+		return new ArrayList<>(this.allStockList);
 	}
 }

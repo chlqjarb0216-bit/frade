@@ -1,4 +1,4 @@
-package com.frade.common;
+package com.frade.common.stock;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +23,16 @@ public enum StockSector {
 	private final String scName;
 
 	// 업종명 탐색용 해시맵
-	private static final Map<String, Integer> CACHE_MAP = new HashMap<>();
+	private static final Map<String, Integer> NAME_TO_NUM_CACHE_MAP = new HashMap<>();
+	// 업종번호 탐색용 해시맵
+	private static final Map<Integer, String> NUM_TO_NAME_CACHE_MAP = new HashMap<>();
 	// 클래스가 메모리에 로드될 때(서버 부팅 시) 딱 1번만 실행되는 스태틱 블록
 	static {
 		for (StockSector sector : values()) {
-			CACHE_MAP.put(sector.getScName(), sector.getScNum());
+			NAME_TO_NUM_CACHE_MAP.put(sector.getScName(), sector.getScNum());
+		}
+		for (StockSector sector : values()) {
+			NUM_TO_NAME_CACHE_MAP.put(sector.getScNum(), sector.getScName());
 		}
 	}
 
@@ -36,6 +41,11 @@ public enum StockSector {
 		if (upName == null || upName.trim().isEmpty()) {
 			return ETC.scNum;
 		}
-		return CACHE_MAP.getOrDefault(upName, ETC.scNum);
+		return NAME_TO_NUM_CACHE_MAP.getOrDefault(upName, ETC.scNum);
+	}
+
+	// 업종번호 탐색 (기본값 99임시분류)
+	public static String getSectorName(int scNum) {
+		return NUM_TO_NAME_CACHE_MAP.getOrDefault(scNum, ETC.scName);
 	}
 }
