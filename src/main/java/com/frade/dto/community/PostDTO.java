@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class PostDTO {
 
-	private int postNum;             // p_num : 게시글 번호 (PK)
+	private Long postNum;             // p_num : 게시글 번호 (PK)
     private int userNum;             // u_num : 회원 번호 (작성자 FK)
     private String userName;		   // u_num 을 통해 유저 이름을 저장
     private int postCategoryNum;  // p_category_num : 카테고리 번호(0:질문 1:정보 2:자유)

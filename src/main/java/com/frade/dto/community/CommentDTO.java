@@ -10,8 +10,8 @@ import lombok.Data;
 
 @Data
 public class CommentDTO {
-	private int commentNum;
-	private int postNum;
+	private Long commentNum;
+	private Long postNum;
 	private int userNum;
 	
 	private String userName;	//유저번호를 통해 유저 이름 담을 변수

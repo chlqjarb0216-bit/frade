@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
 	public int savePost(PostDTO post, MultipartFile[] files) {
 		// 1. 게시글 시퀀스(번호) 먼저 따오기
         int nextNum = 3;//postMapper.getNextPostNum();
-        post.setPostNum(nextNum); // DTO에 번호 세팅 
+        post.setPostNum((long)nextNum); // DTO에 번호 세팅 
         
         // 2. 파일이 있을 경우에만 조립 및 저장 로직 실행
         if (files != null && files.length > 0) {
@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService {
 	            if (type == 1 && !writer.contains(keyword)) continue;
 	        }
 	        PostDTO post = new PostDTO();
-	        post.setPostNum( i);
+	        post.setPostNum((long) i);
 	        post.setPostCategoryNum(i % 3);
 	        post.setPostTitle(title);
 	        post.setUserNum(i%5);
@@ -136,7 +136,7 @@ public class PostServiceImpl implements PostService {
 		//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
 		//=========테스트데이터==============
 		PostDTO post = new PostDTO();
-		post.setPostNum(3);
+		post.setPostNum((long)3);
 		post.setPostTitle("testTitle");
 		post.setPostCategoryNum(2);
 		post.setPostContent("testContent");
