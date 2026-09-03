@@ -41,4 +41,14 @@ public class StockServiceImpl implements StockService {
 		return new StockPreviewDTO("000300", "3성전자", "전기·전자", 100000 - 3000, 90000);
 	}
 
+	@Override
+	public List<StockInfoDTO> searchStockByName(String stockName) {
+		// TODO Auto-generated method stub
+		List<StockInfoDTO> stockList = new ArrayList<StockInfoDTO>();
+		for (int i = 0; i < 10; i++) {
+			stockList.add(new StockInfoDTO("000" + i + "00", i + "성전자", i, 0, 90000 + i * 1000));
+		}
+		return stockList;
+	}
+
 }
