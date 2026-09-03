@@ -1,0 +1,345 @@
+@charset "UTF-8";
+
+:root {
+    --main-bg: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --color-up: #e53935;
+    --color-up-bg: #fee2e2;
+    --color-down: #1e88e5;
+    --color-down-bg: #dbeafe;
+    --color-primary: #2563eb;
+    --radius-card: 12px;
+}
+body {
+    background-color: var(--main-bg);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans KR", sans-serif;
+}
+
+
+.main-container {
+    max-width: 1200px;
+    margin: 24px auto 60px;
+    padding: 0 16px;
+}
+.main-page-title-box {
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #0f172a;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.main-page-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.main-page-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+}
+/* 2x2 레이아웃 (상단 행 / 하단 행) */
+.main-top-box,
+.main-bottom-box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+
+.dashboard-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-card);
+    padding: 20px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.dashboard-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.card-more-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.card-more-link:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+/* --------------------------------------------------------------------------
+   1. 실시간 인기 종목 리스트
+   -------------------------------------------------------------------------- */
+.stock-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.stock-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+.stock-item:hover {
+    background-color: #f8fafc;
+    border-color: var(--border-color);
+    transform: translateX(3px);
+}
+.stock-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rank-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.stock-item:nth-child(1) .rank-badge {
+    background-color: #fee2e2;
+    color: var(--color-up);
+}
+.stock-item:nth-child(2) .rank-badge {
+    background-color: #ffedd5;
+    color: #ea580c;
+}
+.stock-item:nth-child(3) .rank-badge {
+    background-color: #fef9c3;
+    color: #ca8a04;
+}
+.stock-name-box {
+    display: flex;
+    flex-direction: column;
+}
+.stock-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+}
+.stock-code-sector {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.stock-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.stock-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.stock-rate {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+.stock-rate.up {
+    color: var(--color-up);
+    background-color: var(--color-up-bg);
+}
+.stock-rate.down {
+    color: var(--color-down);
+    background-color: var(--color-down-bg);
+}
+.stock-rate.even {
+    color: var(--text-secondary);
+    background-color: #f1f5f9;
+}
+
+
+.post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.post-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+.post-item:hover {
+    background-color: #f8fafc;
+    border-color: var(--border-color);
+}
+.post-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+.post-rank-badge {
+    font-size: 14px;
+    font-weight: 800;
+    color: #64748b;
+    min-width: 18px;
+    text-align: center;
+}
+
+.post-item:nth-child(1) .post-rank-badge { color: var(--color-up); }
+.post-item:nth-child(2) .post-rank-badge { color: #ea580c; }
+.post-item:nth-child(3) .post-rank-badge { color: #ca8a04; }
+.post-info-box {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.post-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.post-item:hover .post-title {
+    color: var(--color-primary);
+}
+.post-meta-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+.post-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    margin-left: 12px;
+}
+
+.post-like-tag {
+    color: var(--color-up);
+    font-weight: 700;
+}
+/* --------------------------------------------------------------------------
+   준비 중 섹션 (KOSPI, 뉴스 등 컨트롤러 미연동 섹션)
+   -------------------------------------------------------------------------- */
+.placeholder-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+    padding: 24px 16px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+}
+.badge-preparing {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    background-color: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    margin-bottom: 12px;
+}
+.placeholder-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 14px 0;
+}
+
+.placeholder-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    color: #94a3b8;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.kospi-preview-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+}
+.kospi-val {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1e293b;
+}
+.kospi-change {
+    font-size: 14px;
+    font-weight: 700;
+}
+.kospi-change.up {
+    color: var(--color-up);
+}
+
+@media (max-width: 900px) {
+    .main-top-box,
+    .main-bottom-box {
+        grid-template-columns: 1fr;
+    }
+}
