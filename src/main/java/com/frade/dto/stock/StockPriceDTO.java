@@ -15,9 +15,9 @@ public class StockPriceDTO {
 	private int priceLow;
 	private int priceClose;
 	//매수량
-	private int volumeBuy = 0;
+	private long volumeBuy = 0;
 	//매도량
-	private int volumeSell = 0;
+	private long volumeSell = 0;
 
 	//종목코드 dateTime 가격 volume을 받는 생성자
 	public StockPriceDTO(String stockCode, LocalDateTime dateTime, int priceClose, String rawVolume) {
