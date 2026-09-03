@@ -19,7 +19,7 @@ public enum ResultCode {
 	INVALID_PASSWORD_INPUT("rej_108", "비밀번호를 모두 입력해주세요."),
 
 	//게시판 영역
-
+	COM_TEXT_FAIL("rej_200", "최대 글자수는 100자입니다.")
 
 	//트레이딩 영역
 	

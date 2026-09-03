@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <!DOCTYPE html>
 <html>
 
@@ -40,7 +41,28 @@
 			<p>${post.postedDateString}</p>
 			<p>${post.postViewCnt}</p>
 			<p>${post.postLikeCnt}</p>
+			<!-- <details> 태그로 감싸면 기본적으로 접혀있는 상태가 됩니다. -->
+			<details>
 
+				<!-- <summary> 태그 안의 내용이 클릭할 수 있는 버튼(제목) 역할이 됩니다. -->
+				<summary style="width: max-content;">첨부파일 보기</summary>
+
+				<!-- 버튼을 클릭해 펼쳐졌을 때 보여질 내용 -->
+				<div>
+					<c:if test="${not empty post.fileList}">
+						<ul>
+							<c:forEach var="fileName" items="${post.fileList}">
+								<img src="/file-storage/post_uploadfile/${fileName}"/>
+							</c:forEach>
+						</ul>
+					</c:if>
+
+					<c:if test="${empty post.fileList}">
+						<p>첨부된 파일이 없습니다.</p>
+					</c:if>
+				</div>
+
+			</details>
 		</div>
 		<div>
 			<p>${post.postContent}</p>
@@ -50,20 +72,22 @@
 		<div>
 			<div>
 				<textarea id="commentContent" placeholder="댓글을 입력하세요"></textarea>
-				<button type="button" onclick="submitComment()" >작성</button>
+				<button type="button" onclick="submitComment()">작성</button>
 			</div>
 		</div>
-		
+
 		<!-- 댓글리스트영역 -->
 		<!-- 헤더 -->
 		<div>
-			<h5>댓글 (<span id="commentCount">0</span>)개</h5>
+			<h5>
+				댓글 (<span id="commentCount">0</span>)개
+			</h5>
 		</div>
 		<!-- 본문 -->
 		<div id="commentList">
 			<!-- script에서 그려줌  -->
 		</div>
-		
+
 		<!-- 페이징(Pagination) 영역 -->
 		<nav aria-label="Page navigation">
 			<ul id="paging">
@@ -178,6 +202,12 @@
 			const contentInput = document.getElementById('commentContent');
 			const content = contentInput.value.trim();
 			
+		    if (content.length > 100) {
+		        alert("댓글은 최대 100자까지만 작성할 수 있습니다.");
+		        commentInput.focus();
+		        return;
+		    }
+		    
 			if(content == ""){
 				alert("댓글 내용을 입력해주세요.");
 				contentInput.focus();

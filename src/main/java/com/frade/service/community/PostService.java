@@ -21,10 +21,13 @@ public interface PostService {
 	// ++)추가로 uNum가지고 테이블 조인시켜서 작성자 이름 혹은 닉네임 가져와야함
 	public PageResultDTO<PostDTO> getPostList(int page, String keyword, int type);
 	
-	
 	//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기
 		//1.postNum 키를 가지오 유저 이름도 가져와야함
 	public PostDTO getPost(int postNum);
+	
+	//정렬된 게시글 리스트를 받아옴
+	public List<PostDTO> getPostListPagingSortedByView(int pageIdx, int pageSize);
+	
 	
 	
 }
