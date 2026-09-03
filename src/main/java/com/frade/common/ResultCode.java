@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ResultCode {
 	//성공:suc_ 으로 시작, 실패:rej_ 으로 시작
-	//앞자리 0: 공통, 1: 회원가입, 2: 게시판, 3: 트레이딩, 더필요하면 추가
+	//앞자리 0: 공통, 1: 회원가입, 2: 게시판, 3: 트레이딩, 4: 차트영역 더필요하면 추가
 
 	//공통 영역
 	SUCCESS("suc_001", "성공"), SUC_EMPTY("suc_002", "성공했으나 비어있음"), FAIL("rej_001", "실패"),
@@ -18,12 +18,15 @@ public enum ResultCode {
 
 	//게시판 영역
 
-
 	//트레이딩 영역
-	
+
+	//차트 영역
+	SAME_STOCK_CODE("rej_401", "이미 구독중인 차트입니다.")
+
 	//추가
 
 	;
+
 	private final String code;
 	private final String message;
 }
