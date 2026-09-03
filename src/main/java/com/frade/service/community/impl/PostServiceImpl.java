@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.frade.common.FilePath;
 import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
+import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.service.community.PostService;
 
 @Service
@@ -155,6 +156,13 @@ public class PostServiceImpl implements PostService {
             post.setFileList(new ArrayList<>()); // 파일이 없을 경우 빈 리스트
         }
 		return post;
+	}
+
+
+	@Override
+	public List<StockPreviewDTO> getPostListPagingSortedByView(int pageIdx, int pageSize) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

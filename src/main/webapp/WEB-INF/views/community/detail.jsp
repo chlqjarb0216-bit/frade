@@ -52,7 +52,7 @@
 					<c:if test="${not empty post.fileList}">
 						<ul>
 							<c:forEach var="fileName" items="${post.fileList}">
-								<li><a href="${path}/${fileName}">${fileName}</a></li>
+								<img src="/file-storage/post_uploadfile/${fileName}"/>
 							</c:forEach>
 						</ul>
 					</c:if>

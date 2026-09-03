@@ -35,150 +35,140 @@ import com.frade.service.community.PostService;
 public class CommunityController {
 	@Autowired
 	PostService postService;
-	
+
 	@Autowired
 	CommentService commentService;
 
 	@GetMapping("")
 	public String lists() {
-		
 
 		return "community/lists";
 	}
-	
-	
+
 	@GetMapping("/api/post-list")
-    @ResponseBody
-    public <T> RestApiResponse<PageResultDTO<PostDTO>> getPostListData(@RequestParam(defaultValue = "1") int page,
-								    		@RequestParam(required = false, defaultValue = "") String keyword,
-								    		@RequestParam(defaultValue = "0") int type) {
-        // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
+	@ResponseBody
+	public <T> RestApiResponse<PageResultDTO<PostDTO>> getPostListData(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(required = false, defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "0") int type) {
+		// 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
 		PageResultDTO<PostDTO> result = postService.getPostList(page, keyword, type);
 		try {
-			if(result.getTotalCount()>0) {
+			if (result.getTotalCount() > 0) {
 				return RestApiResponse.success(result);
-			}else {
+			} else {
 				return RestApiResponse.response(ResultCode.SUC_EMPTY, null);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return RestApiResponse.error(ResultCode.FAIL);
 		}
 
-    }
-	
+	}
+
 	@GetMapping("/write")
 	public String write(PostDTO post, @RequestParam(value = "error", required = false) String error, Model model) {
-		
-		//게시글 저장 서버 오류 발생 예외처리
+
+		// 게시글 저장 서버 오류 발생 예외처리
 		if (error != null) {
-	        model.addAttribute("msg", "게시글 작성 중 서버 오류가 발생했습니다.");
-	    }
-		
+			model.addAttribute("msg", "게시글 작성 중 서버 오류가 발생했습니다.");
+		}
+
 		return "community/write";
 	}
-	
+
 	@PostMapping("/write")
-	//게시글 저장 버튼 클릭시 하단 컨트롤러 동작
+	// 게시글 저장 버튼 클릭시 하단 컨트롤러 동작
 	public String writeAction(@Valid PostDTO post, BindingResult br,
 			@RequestParam(value = "uploadFiles", required = false) MultipartFile[] files) {
-		
-		//@Valid 검증 실패 시 처리
-	    if (br.hasErrors()) {
 
-	        return "redirect:/community-lists/write?error=true";
-	    }
-	    
-		//(test)로그인 했다고 가정시켜주는 코드
-		post.setUserNum(1);
-		
-		System.out.println(post); 
-		/*PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null,
-		   pTitle=test1, pContent=testest2222, pViewCnt=null, pLikeCnt=null,
-		   pPostedDate=null, pUpdatedDate=null, pTrNum1=null, pTrNum2=null,
-		   pTrNum3=null, pFiles=null, pIsPublic=null)
-		 */
-		
-		//(test)다중 파일이 잘 전달 되는지 확인 
-		if (files != null) {
-		    for (int i = 0; i < files.length; i++) {
-		        System.out.println((i + 1) + "번째 파일명: " + files[i].getOriginalFilename());
-		        System.out.println("크기: " + files[i].getSize() + " bytes");
-		    }
+		// @Valid 검증 실패 시 처리
+		if (br.hasErrors()) {
+
+			return "redirect:/community-lists/write?error=true";
 		}
-		
+
+		// (test)로그인 했다고 가정시켜주는 코드
+		post.setUserNum(1);
+
+		System.out.println(post);
+		/*
+		 * PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null, pTitle=test1,
+		 * pContent=testest2222, pViewCnt=null, pLikeCnt=null, pPostedDate=null,
+		 * pUpdatedDate=null, pTrNum1=null, pTrNum2=null, pTrNum3=null, pFiles=null,
+		 * pIsPublic=null)
+		 */
+
+		// (test)다중 파일이 잘 전달 되는지 확인
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				System.out.println((i + 1) + "번째 파일명: " + files[i].getOriginalFilename());
+				System.out.println("크기: " + files[i].getSize() + " bytes");
+			}
+		}
+
 		try {
-		    int result = postService.savePost(post, files);
-		    
-		    //  DB에 실제로 데이터가 들어갔는지 확인
-		    if (result > 0) {
-		    	return "redirect:/community-lists"; // 성공
-		    } else {
-		    	return "redirect:/community-lists/write?error=true"; // 실패 (0건 입력)
-		    }	
-		    
+			int result = postService.savePost(post, files);
+
+			// DB에 실제로 데이터가 들어갔는지 확인
+			if (result > 0) {
+				return "redirect:/community-lists"; // 성공
+			} else {
+				return "redirect:/community-lists/write?error=true"; // 실패 (0건 입력)
+			}
+
 		} catch (Exception e) {
-		    // 파일 저장 중 돌발 상황 방어
-		    e.printStackTrace(); //에러 로그 출력
-		    return "redirect:/community-lists/write?error=true";
+			// 파일 저장 중 돌발 상황 방어
+			e.printStackTrace(); // 에러 로그 출력
+			return "redirect:/community-lists/write?error=true";
 		}
 	}
-	
-	
+
 	@GetMapping("/detail")
 	public String postDetail(@RequestParam int postNum, Model model) {
-		
-		
+
 		System.out.println(postService.getPost(postNum));
 		model.addAttribute("post", postService.getPost(postNum));
 		model.addAttribute("path", FilePath.FILE_ROOT_PATH + FilePath.POST_UPLOADFILE_PATH);
-		
-		
+
 		return "community/detail";
 	}
-	
+
 	@GetMapping("/api/comment-list")
 	@ResponseBody
-	public RestApiResponse<PageResultDTO<CommentDTO>>  getCommentListData(
-												@RequestParam(defaultValue = "1") int page,
-												@RequestParam(defaultValue = "1") int postNum) {
+	public RestApiResponse<PageResultDTO<CommentDTO>> getCommentListData(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "1") int postNum) {
 
-		
-		
 		PageResultDTO<CommentDTO> result = commentService.getCommentList(postNum, page);
 		try {
-			if(result.getTotalCount()>0) {
+			if (result.getTotalCount() > 0) {
 				return RestApiResponse.success(result);
-			}else {
+			} else {
 				return RestApiResponse.response(ResultCode.SUC_EMPTY, null);
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			return RestApiResponse.error(ResultCode.FAIL);
 		}
-		
+
 	}
-	
+
 	@PostMapping("/api/comment-write")
 	@ResponseBody
 	public <T> RestApiResponse<T> saveComment(@Valid @RequestBody CommentDTO comment, BindingResult br) {
-		
+
 		if (br.hasErrors()) {
-	        return RestApiResponse.error(ResultCode.COM_TEXT_FAIL); 
-	    }
-		
-		//로그인 기능 x 임시번호 붕
+			return RestApiResponse.error(ResultCode.COM_TEXT_FAIL);
+		}
+
+		// 로그인 기능 x 임시번호 붕
 		comment.setUserNum(1);
-		
 
 		int result = commentService.saveComment(comment);
-		
-		
-		
-		if(result>0) {
+
+		if (result > 0) {
 			return RestApiResponse.success();
 		} else {
 			return RestApiResponse.error(ResultCode.FAIL);
 		}
-		
+
 	}
 
 }
