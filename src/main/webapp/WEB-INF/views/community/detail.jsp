@@ -202,6 +202,12 @@
 			const contentInput = document.getElementById('commentContent');
 			const content = contentInput.value.trim();
 			
+		    if (content.length > 100) {
+		        alert("댓글은 최대 100자까지만 작성할 수 있습니다.");
+		        commentInput.focus();
+		        return;
+		    }
+		    
 			if(content == ""){
 				alert("댓글 내용을 입력해주세요.");
 				contentInput.focus();

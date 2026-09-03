@@ -138,9 +138,12 @@ public class CommunityController {
 	
 	@GetMapping("/api/comment-list")
 	@ResponseBody
-	public RestApiResponse<PageResultDTO<CommentDTO>>  getCommentListData(@RequestParam(defaultValue = "1") int page,
+	public RestApiResponse<PageResultDTO<CommentDTO>>  getCommentListData(
+												@RequestParam(defaultValue = "1") int page,
 												@RequestParam(defaultValue = "1") int postNum) {
 
+		
+		
 		PageResultDTO<CommentDTO> result = commentService.getCommentList(postNum, page);
 		try {
 			if(result.getTotalCount()>0) {
@@ -156,11 +159,16 @@ public class CommunityController {
 	
 	@PostMapping("/api/comment-write")
 	@ResponseBody
-	public <T> RestApiResponse<T> saveComment(@RequestBody CommentDTO comment) {
+	public <T> RestApiResponse<T> saveComment(@Valid @RequestBody CommentDTO comment, BindingResult br) {
+		
+		if (br.hasErrors()) {
+	        return RestApiResponse.error(ResultCode.COM_TEXT_FAIL); 
+	    }
 		
 		//로그인 기능 x 임시번호 붕
 		comment.setUserNum(1);
 		
+
 		int result = commentService.saveComment(comment);
 		
 		
