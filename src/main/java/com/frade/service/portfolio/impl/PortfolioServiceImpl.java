@@ -32,9 +32,14 @@ public class PortfolioServiceImpl implements PortfolioService {
 
 	@Override
 	public AssetsInfoDTO getAssetsInfo() {
-		
+
 		List<PortfolioDTO> portfolioList = findUserPortfolioListByUserNum(1);
 		UserCashDTO userCash = cashDAO.findUserCashByUserNum(1);
+
+		//NullPointerException
+		if (userCash == null)
+			return null;
+
 		List<HistoryDTO> historyList = historyDAO.findTradeHistoryByUserNum(1);
 
 		AssetsInfoDTO assetsInfo = new AssetsInfoDTO();
@@ -47,7 +52,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 		assetsInfo.setStockCnt(portfolioList.size());
 		assetsInfo.setTradeCnt(historyList.size());
 		assetsInfo.setTotalRevenue(assetsInfo.getTotalAsset() - 10000000);
-		assetsInfo.setRevenuePercent((double)assetsInfo.getTotalRevenue() / 10000000 * 100);
+		assetsInfo.setRevenuePercent((double) assetsInfo.getTotalRevenue() / 10000000 * 100);
 
 		return assetsInfo;
 	}
@@ -73,7 +78,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 		return result;
 	}
 
-//	=============t_portfolio DAO==============
+	//	=============t_portfolio DAO==============
 
 	@Override
 	public List<PortfolioDTO> findUserPortfolioListByUserNum(int userNum) {
