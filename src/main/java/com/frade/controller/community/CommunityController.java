@@ -1,5 +1,7 @@
 package com.frade.controller.community;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,13 +14,19 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.frade.common.ResultCode;
+import com.frade.dto.community.CommentDTO;
+import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
+import com.frade.dto.rest.RestApiResponse;
+import com.frade.service.community.CommentService;
 import com.frade.service.community.PostService;
 
 @Controller
@@ -26,6 +34,9 @@ import com.frade.service.community.PostService;
 public class CommunityController {
 	@Autowired
 	PostService postService;
+	
+	@Autowired
+	CommentService commentService;
 
 	@GetMapping("")
 	public String lists() {
@@ -37,14 +48,21 @@ public class CommunityController {
 	
 	@GetMapping("/api/post-list")
     @ResponseBody
-    public Map<String, Object> getPostListData(@RequestParam(defaultValue = "1") int page,
+    public <T> RestApiResponse<PageResultDTO<PostDTO>> getPostListData(@RequestParam(defaultValue = "1") int page,
 								    		@RequestParam(required = false, defaultValue = "") String keyword,
 								    		@RequestParam(defaultValue = "0") int type) {
-		
         // 서비스에서 10개의 글과 페이징 정보(Map)를 가져옴
-        Map<String, Object> result = postService.getPostList(page, keyword, type);
-        
-        return result;
+		PageResultDTO<PostDTO> result = postService.getPostList(page, keyword, type);
+		try {
+			if(result.getTotalCount()>0) {
+				return RestApiResponse.success(result);
+			}else {
+				return RestApiResponse.response(ResultCode.SUC_EMPTY, null);
+			}
+		}catch (Exception e) {
+			return RestApiResponse.error(ResultCode.FAIL);
+		}
+
     }
 	
 	@GetMapping("/write")
@@ -70,7 +88,7 @@ public class CommunityController {
 	    }
 	    
 		//(test)로그인 했다고 가정시켜주는 코드
-		post.setUserNum(1L);
+		post.setUserNum(1);
 		
 		System.out.println(post); 
 		/*PostDTO(pNum=null, uNum=null, pCategoryNum=null, scNum=null,
@@ -108,4 +126,41 @@ public class CommunityController {
 		return "community/detail";
 	}
 	
+	@GetMapping("/api/comment-list")
+	@ResponseBody
+	public RestApiResponse<PageResultDTO<CommentDTO>>  getCommentListData(@RequestParam(defaultValue = "1") int page,
+												@RequestParam(defaultValue = "1") int postNum) {
+
+		PageResultDTO<CommentDTO> result = commentService.getCommentList(postNum, page);
+		try {
+			if(result.getTotalCount()>0) {
+				return RestApiResponse.success(result);
+			}else {
+				return RestApiResponse.response(ResultCode.SUC_EMPTY, null);
+			}
+		}catch (Exception e) {
+			return RestApiResponse.error(ResultCode.FAIL);
+		}
+		
+	}
+	
+	@PostMapping("/api/comment-write")
+	@ResponseBody
+	public <T> RestApiResponse<T> saveComment(@RequestBody CommentDTO comment) {
+		
+		//로그인 기능 x 임시번호 붕
+		comment.setUserNum(1);
+		
+		int result = commentService.saveComment(comment);
+		
+		
+		
+		if(result>0) {
+			return RestApiResponse.success();
+		} else {
+			return RestApiResponse.error(ResultCode.FAIL);
+		}
+		
+	}
+
 }

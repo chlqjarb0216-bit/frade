@@ -24,7 +24,7 @@
 			value=".jsp"></beans:property>
 	</beans:bean>
 
-	<resources location="file://D:/fileStorage_Frade/" mapping="/fileStorage/**" />
+	<resources location="file:///D:/fileStorage_Frade/" mapping="/file-storage/**" />
 	<resources
 		location="/resources/"
 		mapping="/resources/**"></resources>

@@ -103,10 +103,10 @@
 
 	<!-- 다른 스케줄러와 풀을 나눠쓰지 않을 특수 스케줄러 -->
 	<bean
-		id="stockBatchScheduler"
-		class="com.frade.scheduler.StockBatchScheduler" />
-	<task:scheduler id="stockBatchSchedulerPool" pool-size="1" />
-	<task:executor id="stockBatchTaskExecutor" pool-size="1" />
+		id="stockDataScheduler"
+		class="com.frade.scheduler.StockDataScheduler" />
+	<task:scheduler id="stockDataSchedulerPool" pool-size="1" />
+	<task:executor id="stockDataTaskExecutor" pool-size="1" />
 	
 	<!-- 웹소켓 데이터 처리용 스레드 풀 -->
 	<task:executor id="stockBufferTaskExecutor" 

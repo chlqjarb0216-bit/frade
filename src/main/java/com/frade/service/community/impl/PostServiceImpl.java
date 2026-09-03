@@ -11,6 +11,7 @@ import java.util.Date;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
 
@@ -24,7 +25,7 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Map<String, Object> getPostList(int page, String keyword, int type) {
+	public PageResultDTO<PostDTO> getPostList(int page, String keyword, int type) {
 		//********테스트용 데이터(서버개발자는 참고해도 되고 지워도 됨)**********
 		
 		// 1. 임시로 전체 105개의 가짜 데이터 생성
@@ -39,10 +40,10 @@ public class PostServiceImpl implements PostService {
 	            if (type == 1 && !writer.contains(keyword)) continue;
 	        }
 	        PostDTO post = new PostDTO();
-	        post.setPostNum((long) i);
+	        post.setPostNum( i);
 	        post.setPostCategoryNum(i % 3);
 	        post.setPostTitle(title);
-	        post.setUserNum((long)i%5);
+	        post.setUserNum(i%5);
 	        post.setPostViewCnt((int) (Math.random() * 100));
 	        post.setPostPostedDate(LocalDateTime.now());
 	        allPosts.add(post);
@@ -66,15 +67,17 @@ public class PostServiceImpl implements PostService {
 	    int endPage = Math.min(startPage + blockSize - 1, totalPages);
 
 	    // 3. 자른 목록과 페이징 정보를 Map에 담아서 반환
-	    Map<String, Object> resultMap = new HashMap<>();
-	    resultMap.put("list", pagedList); // 10개의 데이터
-	    resultMap.put("currentPage", page);
-	    resultMap.put("totalPages", totalPages);
-	    resultMap.put("startPage", startPage);
-	    resultMap.put("endPage", endPage);
+	    PageResultDTO<PostDTO> resultPage = new PageResultDTO<>(
+	    	    pagedList,           // 1. list (10개의 데이터)
+	    	    page,                // 2. currentPage (현재 페이지)
+	    	    totalPages,          // 3. totalPages (총 페이지)
+	    	    startPage,           // 4. startPage (시작 페이지)
+	    	    endPage,             // 5. endPage (끝 페이지)
+	    	    allPosts.size()   // 6. totalCount (총 댓글 개수)
+	    	);
 	    
 	  //********테스트용 데이터**********
-	    return resultMap;
+	    return resultPage;
 	}
 
 	@Override
@@ -83,6 +86,7 @@ public class PostServiceImpl implements PostService {
 		//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
 		//=========테스트데이터==============
 		PostDTO post = new PostDTO();
+		post.setPostNum(12);
 		post.setPostTitle("testTitle");
 		post.setPostCategoryNum(2);
 		post.setPostContent("testContent");
