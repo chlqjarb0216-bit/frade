@@ -41,22 +41,23 @@ SELECT * FROM DUAL;
 CREATE SEQUENCE seq_t_user START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE t_user (
-  user_num NUMBER(8) DEFAULT seq_t_user.NEXTVAL,
+  user_num NUMBER(9) DEFAULT seq_t_user.NEXTVAL, --java int 최대자리 대응
   user_id VARCHAR2(16) NOT NULL,
   user_nick VARCHAR2(48) NOT NULL,
   user_email VARCHAR2(320) NOT NULL,
   user_pw VARCHAR2(100) NOT NULL,
   user_registed_date DATE DEFAULT SYSDATE NOT NULL,
   user_portfolio_is_public NUMBER(1) DEFAULT 0 NOT NULL,
-  user_photo VARCHAR2(13),
+  user_photo VARCHAR2(14), --user_num 자릿수 + 5
   user_is_deleted NUMBER(1),
   CONSTRAINT pk_t_user PRIMARY KEY (user_num)
 );
 
 
 CREATE TABLE t_cash (
-  user_num NUMBER(8),
-  cash NUMBER DEFAULT 10000000 NOT NULL,
+  user_num NUMBER(9), --t_user user_num
+  cash NUMBER(18) DEFAULT 10000000 NOT NULL, --java long 대응
+  margine NUMBER(18) DEFAULT 0 NOT NULL, --증거금
   CONSTRAINT pk_t_cash PRIMARY KEY (user_num)
 );
 
@@ -110,7 +111,7 @@ INSERT ALL
   INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('010120','LS ELECTRIC',3,0)
   INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000810','삼성화재',19,0)
   INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('042660','한화오션',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005490','POsectorO홀딩스',6,0)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005490','POSCO홀딩스',6,0)
   INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('267260','HD현대일렉트릭',3,0)
   INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('298040','효성중공업',3,0)
   INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('009540','HD한국조선해양',2,0)
@@ -189,21 +190,21 @@ SELECT * FROM DUAL;
 CREATE SEQUENCE seq_t_post START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE t_post (
-  post_num NUMBER DEFAULT seq_t_post.NEXTVAL,
-  user_num NUMBER(8) NOT NULL,
+  post_num NUMBER(18) DEFAULT seq_t_post.NEXTVAL, --java long 대응
+  user_num NUMBER(9) NOT NULL, --t_user user_num
   post_category_num NUMBER(1) NOT NULL,
   sector_num NUMBER(2),
   post_title VARCHAR2(90) NOT NULL,
   post_content VARCHAR2(4000) NOT NULL,
   post_view_cnt NUMBER(9) DEFAULT 0 NOT NULL,
-  post_like_cnt NUMBER(8) DEFAULT 0 NOT NULL,
+  post_like_cnt NUMBER(8) DEFAULT 0 NOT NULL, --어느유저가 좋아요 눌렀는지 체크할 방법이?
   post_posted_date DATE DEFAULT SYSDATE NOT NULL,
   post_updated_date DATE,
-  post_trade_num1 NUMBER,
-  post_trade_num2 NUMBER,
-  post_trade_num3 NUMBER,
+  post_trade_num1 NUMBER(18), --t_history trade_num
+  post_trade_num2 NUMBER(18), --t_history trade_num
+  post_trade_num3 NUMBER(18), --t_history trade_num
   post_files VARCHAR2(100),
-  post_is_public NUMBER(1) NOT NULL,
+  post_is_public NUMBER(1) DEFAULT 1 NOT NULL,
   CONSTRAINT pk_t_post PRIMARY KEY (post_num)
 );
 
@@ -211,20 +212,20 @@ CREATE TABLE t_post (
 CREATE TABLE t_stock_price (
   stock_code VARCHAR2(6),
   date_time DATE,
-  price_open NUMBER(8) NOT NULL,
-  price_high NUMBER(8) NOT NULL,
-  price_low NUMBER(8) NOT NULL,
-  price_close NUMBER(8) NOT NULL,
-  volume NUMBER NOT NULL,
+  price_open NUMBER(9) NOT NULL, --java int 최대자리 대응
+  price_high NUMBER(9) NOT NULL, --java int 최대자리 대응
+  price_low NUMBER(9) NOT NULL, --java int 최대자리 대응
+  price_close NUMBER(9) NOT NULL, --java int 최대자리 대응
+  volume NUMBER(18) NOT NULL, --java long 대응
   CONSTRAINT pk_t_stock_price PRIMARY KEY (stock_code, date_time)
 );
 
 
 CREATE TABLE t_portfolio (
-  user_num NUMBER(8),
+  user_num NUMBER(9), --t_user user_num
   stock_code VARCHAR2(6) NOT NULL,
-  user_stock_cnt NUMBER NOT NULL,
-  user_buy_cost NUMBER NOT NULL,
+  user_stock_cnt NUMBER(9) NOT NULL, --java int 최대자리 대응
+  user_buy_cost NUMBER(18) NOT NULL, --java long 대응
   CONSTRAINT pk_t_portfolio PRIMARY KEY (user_num, stock_code)
 );
 
@@ -232,11 +233,11 @@ CREATE TABLE t_portfolio (
 CREATE SEQUENCE seq_t_history START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE t_history (
-  trade_num NUMBER DEFAULT seq_t_history.NEXTVAL,
-  user_num NUMBER(8) NOT NULL,
+  trade_num NUMBER(18) DEFAULT seq_t_history.NEXTVAL, --java long 대응
+  user_num NUMBER(9) NOT NULL, --t_user user_num
   stock_code VARCHAR2(6) NOT NULL,
-  trade_price NUMBER NOT NULL,
-  trade_cnt NUMBER NOT NULL,
+  trade_price NUMBER(9) NOT NULL, --t_stock_price price
+  trade_cnt NUMBER(9) NOT NULL, --t_portfolio stock_cnt
   trade_date DATE DEFAULT SYSDATE NOT NULL,
   CONSTRAINT pk_t_history PRIMARY KEY (trade_num)
 );
@@ -245,10 +246,10 @@ CREATE TABLE t_history (
 CREATE SEQUENCE seq_t_comment START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE t_comment (
-  comment_num NUMBER DEFAULT seq_t_comment.NEXTVAL,
-  post_num NUMBER NOT NULL,
-  user_num NUMBER(8) NOT NULL,
-  comment_content VARCHAR2(90) NOT NULL,
+  comment_num NUMBER(18) DEFAULT seq_t_comment.NEXTVAL, --java long 대응
+  post_num NUMBER(18) NOT NULL, --t_post post_num
+  user_num NUMBER(9) NOT NULL, --t_user user_num
+  comment_content VARCHAR2(300) NOT NULL, --30자 너무 짧을수도?->100자로
   comment_date DATE DEFAULT SYSDATE NOT NULL,
   comment_updated_date DATE,
   CONSTRAINT pk_t_comment PRIMARY KEY (comment_num)
