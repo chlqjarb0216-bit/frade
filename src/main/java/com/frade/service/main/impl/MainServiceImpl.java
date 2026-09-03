@@ -1,11 +1,15 @@
 package com.frade.service.main.impl;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
+
 import com.frade.dto.community.PostDTO;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.service.main.MainService;
+
 /**
  * 메인 대시보드 화면 서비스 구현체
  * (API 설계 전 테스트용 Mock 데이터 제공)
@@ -23,12 +27,13 @@ public class MainServiceImpl implements MainService {
 		stockList.add(new StockPreviewDTO("035420", "NAVER", "IT서비스", 172300, 173300));
 		return stockList;
 	}
+
 	@Override
 	public List<PostDTO> getTop5Posts() {
 		List<PostDTO> postList = new ArrayList<>();
 		// 2. 커뮤니티 인기글 상위 5개 테스트 데이터
 		PostDTO p1 = new PostDTO();
-		p1.setPostNum(1);
+		p1.setPostNum(1L);
 		p1.setUserNum(101);
 		p1.setUserName("화성갈끄니까");
 		p1.setPostCategoryNum(2); // 자유
@@ -39,7 +44,7 @@ public class MainServiceImpl implements MainService {
 		p1.setPostPostedDate(LocalDateTime.now().minusHours(1));
 		postList.add(p1);
 		PostDTO p2 = new PostDTO();
-		p2.setPostNum(2);
+		p2.setPostNum(2L);
 		p2.setUserNum(102);
 		p2.setUserName("배당파이프라인");
 		p2.setPostCategoryNum(1); // 정보
@@ -50,7 +55,7 @@ public class MainServiceImpl implements MainService {
 		p2.setPostPostedDate(LocalDateTime.now().minusHours(2));
 		postList.add(p2);
 		PostDTO p3 = new PostDTO();
-		p3.setPostNum(3);
+		p3.setPostNum(3L);
 		p3.setUserNum(103);
 		p3.setUserName("차트의정석");
 		p3.setPostCategoryNum(1); // 정보
@@ -61,7 +66,7 @@ public class MainServiceImpl implements MainService {
 		p3.setPostPostedDate(LocalDateTime.now().minusHours(3));
 		postList.add(p3);
 		PostDTO p4 = new PostDTO();
-		p4.setPostNum(4);
+		p4.setPostNum(4L);
 		p4.setUserNum(104);
 		p4.setUserName("스캘핑장인");
 		p4.setPostCategoryNum(2); // 자유
@@ -72,7 +77,7 @@ public class MainServiceImpl implements MainService {
 		p4.setPostPostedDate(LocalDateTime.now().minusHours(4));
 		postList.add(p4);
 		PostDTO p5 = new PostDTO();
-		p5.setPostNum(5);
+		p5.setPostNum(5L);
 		p5.setUserNum(105);
 		p5.setUserName("단타요정");
 		p5.setPostCategoryNum(1); // 정보
