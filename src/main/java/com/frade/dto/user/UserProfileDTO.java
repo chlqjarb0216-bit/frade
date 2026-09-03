@@ -1,6 +1,7 @@
 package com.frade.dto.user;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import lombok.Data;
 
@@ -19,5 +20,20 @@ public class UserProfileDTO {	// 프로필 정보 및 수정
     
     
     int userPortfolioIsPublic; //포트폴리오 공개,비공개 여부
+    
+    //가입화면 출력용
+    public String getUserRegistedDateText() {
+
+        if(userRegistedDate == null) {
+            return "";
+        }
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyy.MM.dd");
+
+        return userRegistedDate.format(formatter);
+    }
+    
+    
 
 }
