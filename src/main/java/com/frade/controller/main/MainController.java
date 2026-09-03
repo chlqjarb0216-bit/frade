@@ -34,12 +34,6 @@ public class MainController {
 		return "main/main";
 	}
 
-	/**
-	 * 기존 TestController에서 제공하던 부트스트랩 샘플 화면 매핑
-	 */
-	@GetMapping("/sample-bootstrap")
-	public String sampleBootstrap() {
-		return "sample-bootstrap";
-	}
+	
 
 }
