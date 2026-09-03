@@ -267,6 +267,23 @@
             const orderPrice = Number(orderPriceInput.value) || 0;
             const orderCount = Number(orderCountInput.value) || 0;
 
+/*             const validationMessages = []; */
+
+            if (orderPrice <= 0) {
+            	alert("가격이 0보다 커야 합니다.");
+            	return;
+            }
+
+            if (orderCount <= 0) {
+            	alert("수량이 0보다 커야 합니다.");
+            	return;
+            }
+
+/*             if (validationMessages.length > 0) {
+                alert(validationMessages.join("\n"));
+                return;
+            } */
+
             const tradeOption = document.querySelector('input[name="tradeOption"]:checked').value;
             const priceOption = document.querySelector('input[name="priceOption"]:checked').value;
 
