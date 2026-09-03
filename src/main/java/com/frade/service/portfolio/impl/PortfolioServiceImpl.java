@@ -28,8 +28,6 @@ public class PortfolioServiceImpl implements PortfolioService {
 	@Autowired
 	HistoryDAO historyDAO;
 
-	@Autowired
-
 	@Override
 	public AssetsInfoDTO getAssetsInfo() {
 
