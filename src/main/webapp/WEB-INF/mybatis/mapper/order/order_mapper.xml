@@ -17,6 +17,12 @@
 		select * from t_portfolio
 		where user_num = #{userNum} and stock_code = #{stockCode}
 	</select>
+
+	<select id="findUserPortfolioByUserNumAndStockCodeForUpdate" parameterType="map" resultType="PortfolioDTO">
+		select * from t_portfolio
+		where user_num = #{userNum} and stock_code = #{stockCode}
+		for update
+	</select>
 	
 	<insert id="insertUserPortfolio" parameterType="PortfolioDTO">
 		insert into t_portfolio(user_num, stock_code, user_stock_cnt, user_buy_cost)
@@ -65,6 +71,12 @@
 	<select id="findUserCashByUserNum" parameterType="int" resultType="UserCashDTO">
 		select * from t_cash
 		where user_num = #{userNum}
+	</select>
+
+	<select id="findUserCashByUserNumForUpdate" parameterType="int" resultType="UserCashDTO">
+		select * from t_cash
+		where user_num = #{userNum}
+		for update
 	</select>
 	
 	<update id="updateUserCash" parameterType="map">

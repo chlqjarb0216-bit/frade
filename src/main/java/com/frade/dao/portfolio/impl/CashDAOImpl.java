@@ -21,6 +21,11 @@ public class CashDAOImpl implements CashDAO{
 		UserCashDTO userCash = sqlSessionTemplate.selectOne("order_mapper.findUserCashByUserNum", userNum);
 		return userCash;
 	}
+
+	@Override
+	public UserCashDTO findUserCashByUserNumForUpdate(int userNum) {
+		return sqlSessionTemplate.selectOne("order_mapper.findUserCashByUserNumForUpdate", userNum);
+	}
 	
 	@Override
 	public int updateUserCash(int userNum, int add) {
