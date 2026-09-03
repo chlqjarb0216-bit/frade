@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
-import com.frade.dto.stock.StockPreviewDTO;
 
 public interface PostService {
 	
@@ -27,7 +26,7 @@ public interface PostService {
 	public PostDTO getPost(int postNum);
 	
 	//정렬된 게시글 리스트를 받아옴
-	public List<StockPreviewDTO> getPostListPagingSortedByView(int pageIdx, int pageSize);
+	public List<PostDTO> getPostListPagingSortedByView(int pageIdx, int pageSize);
 	
 	
 	
