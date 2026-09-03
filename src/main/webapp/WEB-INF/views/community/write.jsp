@@ -30,15 +30,15 @@
 			<div>
 				<label >카테고리 선택:</label><br>
 				<div >
-					<input type="radio" name="postCategoryNum" id="catQ" value="0">
+					<input type="radio" name="postCategoryNum" id="catQ" value="3">
 					<label for="catQ">질문</label>
 				</div>
 				<div >
-					<input type="radio" name="postCategoryNum" id="catI" value="1">
+					<input type="radio" name="postCategoryNum" id="catI" value="2">
 					<label  for="catI">정보</label>
 				</div>
 				<div>
-					<input type="radio" name="postCategoryNum" id="catF" value="2">
+					<input type="radio" name="postCategoryNum" id="catF" value="1">
 					<label for="catF">자유</label>
 				</div>
 			</div>

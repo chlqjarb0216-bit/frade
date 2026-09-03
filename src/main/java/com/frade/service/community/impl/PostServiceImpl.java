@@ -8,11 +8,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.frade.common.FilePath;
+import com.frade.dao.community.PostDAO;
 import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
@@ -20,14 +22,19 @@ import com.frade.service.community.PostService;
 @Service
 public class PostServiceImpl implements PostService {
 
+	@Autowired
+	PostDAO postDAO;
+	
 	@Transactional // 파일 저장이나 DB 인서트 중 하나라도 실패하면 롤백되도록 선언
 	@Override
-	public int savePost(PostDTO post, MultipartFile[] files) {
-		// 1. 게시글 시퀀스(번호) 먼저 따오기
-		int nextNum = 3;//postMapper.getNextPostNum();
+	public long savePost(PostDTO post, MultipartFile[] files) {
+
+		//게시글 시퀀스 먼저 따오기
+		long nextNum = postDAO.getNextPostNum();
+		
 		post.setPostNum((long) nextNum); // DTO에 번호 세팅 
 
-		// 2. 파일이 있을 경우에만 조립 및 저장 로직 실행
+		// 파일이 있을 경우에만 조립 및 저장 로직 실행
 		if (files != null && files.length > 0) {
 			StringJoiner sj = new StringJoiner(",");
 
@@ -65,8 +72,8 @@ public class PostServiceImpl implements PostService {
 			post.setPostFiles(sj.toString());
 		}
 
-		// 3. 파일명까지 모두 완벽하게 세팅된 DTO를 DB에 INSERT!
-		return 1;//postMapper.insertPost(post); 
+		// DB에 INSERT
+		return postDAO.insertPost(post); 
 	}
 
 	@Override

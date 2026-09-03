@@ -42,14 +42,16 @@ public class CommunityController {
 	public String writeAction(@Valid PostDTO post, BindingResult br,
 			@RequestParam(value = "uploadFiles", required = false) MultipartFile[] files) {
 
+		//로그인 기능 전까지 테스트용
+		post.setUserNum(1);
+		
 		if (br.hasErrors()) {
 			return "redirect:/community-lists/write?error=true";
 		}
 
-		post.setUserNum(1); // (test) 로그인 가정
 
 		try {
-			int result = postService.savePost(post, files);
+			long result = postService.savePost(post, files);
 			if (result > 0) {
 				return "redirect:/community-lists"; 
 			} else {
