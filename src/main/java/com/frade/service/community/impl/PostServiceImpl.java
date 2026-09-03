@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +136,7 @@ public class PostServiceImpl implements PostService {
 		//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기 
 		//=========테스트데이터==============
 		PostDTO post = new PostDTO();
-		post.setPostNum(12);
+		post.setPostNum(3);
 		post.setPostTitle("testTitle");
 		post.setPostCategoryNum(2);
 		post.setPostContent("testContent");
@@ -143,9 +144,16 @@ public class PostServiceImpl implements PostService {
 		post.setPostLikeCnt(552);
 		post.setPostViewCnt(123);
 		post.setPostPostedDate(LocalDateTime.now());
+		post.setPostFiles("3_1.jpg,3_2.png");
 		
 		//=========테스트데이터==============
 		
+		// DB에서 가져온 파일명 문자열을 배열로 쪼개서 세팅
+        if (post.getPostFiles() != null && !post.getPostFiles().isEmpty()) {
+            post.setFileList(Arrays.asList(post.getPostFiles().split(",")));
+        } else {
+            post.setFileList(new ArrayList<>()); // 파일이 없을 경우 빈 리스트
+        }
 		return post;
 	}
 

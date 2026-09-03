@@ -2,6 +2,7 @@ package com.frade.dto.community;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -34,6 +35,8 @@ public class PostDTO {
 //    private Integer postTrNum2;          // p_tr_num2 : 관련 거래/참조 번호 2
 //    private Integer postTrNum3;          // p_tr_num3 : 관련 거래/참조 번호 3
     private String postFiles;         // p_files : 첨부파일 경로 또는 식별자
+    //파일 화면 전달용 배열 추가
+    private List<String> fileList;	
 //    private int postIsPublic = 1;     // p_is_public : 공개 여부 (예: 1=공개, 0=비공개)
     
     

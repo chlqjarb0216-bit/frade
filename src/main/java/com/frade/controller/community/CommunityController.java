@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.frade.common.FilePath;
 import com.frade.common.ResultCode;
 import com.frade.dto.community.CommentDTO;
 import com.frade.dto.community.PageResultDTO;
@@ -129,6 +130,7 @@ public class CommunityController {
 		
 		System.out.println(postService.getPost(postNum));
 		model.addAttribute("post", postService.getPost(postNum));
+		model.addAttribute("path", FilePath.FILE_ROOT_PATH + FilePath.POST_UPLOADFILE_PATH);
 		
 		
 		return "community/detail";
