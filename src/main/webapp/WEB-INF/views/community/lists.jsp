@@ -17,16 +17,101 @@
 	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
 	crossorigin="anonymous">
 
-<!-- 커스텀 CSS (테이블 제목 링크 밑줄 제거 및 색상 유지) -->
+<!-- 대시보드 톤앤매너 커스텀 스타일 -->
 <style>
+body {
+	background-color: #f8f9fa;
+	color: #212529;
+	font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, "Noto Sans KR", sans-serif;
+}
+
+
+.custom-card {
+	background-color: #ffffff;
+	border: 1px solid #e9ecef;
+	border-radius: 1rem; 
+}
+
+
+.custom-table thead th {
+	background-color: #ffffff;
+	color: #6c757d;
+	font-weight: 600;
+	font-size: 0.875rem;
+	border-bottom: 1px solid #edf0f2;
+	padding: 14px 12px;
+}
+
+.custom-table tbody td {
+	padding: 16px 12px;
+	border-bottom: 1px solid #f1f3f5;
+	font-size: 0.93rem;
+	vertical-align: middle;
+}
+
+.custom-table tbody tr:hover {
+	background-color: #fbfcfd;
+}
+
+
 .post-title-link {
 	text-decoration: none;
 	color: #212529;
+	font-weight: 500;
+	transition: color 0.15s ease-in-out;
 }
 
 .post-title-link:hover {
-	text-decoration: underline;
 	color: #0d6efd;
+	text-decoration: none;
+}
+
+
+.category-badge {
+	font-size: 0.78rem;
+	font-weight: 500;
+	padding: 4px 8px;
+	border-radius: 6px;
+	background-color: #f1f3f5;
+	color: #495057;
+}
+
+
+.form-check-input:checked {
+	background-color: #212529;
+	border-color: #212529;
+}
+
+.search-input {
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	padding: 7px 12px;
+}
+
+.search-input:focus {
+	border-color: #adb5bd;
+	box-shadow: none;
+}
+
+
+.pagination .page-link {
+	color: #495057;
+	border: 1px solid #e9ecef;
+	margin: 0 3px;
+	border-radius: 8px !important;
+	font-size: 0.875rem;
+	padding: 6px 12px;
+}
+
+.pagination .page-item.active .page-link {
+	background-color: #212529;
+	border-color: #212529;
+	color: #ffffff;
+}
+
+.pagination .page-link:hover {
+	background-color: #e9ecef;
 }
 </style>
 </head>
@@ -37,66 +122,74 @@
 	<jsp:include page="../common/navbar.jsp"></jsp:include>
 
 	<!-- 본문 영역 -->
-	<div class="container mt-5">
+	<div class="container my-5" style="max-width: 1080px;">
 
-		<!-- 헤더 영역 -->
+		
 		<div class="mb-4">
-			<h2 class="fw-bold">질문 게시판</h2>
-			<p class="text-muted">투자 아이디어와 궁금한 점을 자유롭게 공유하세요.</p>
+			<h3 class="fw-bold mb-1"> 질문 게시판</h3>
+			<p class="text-secondary small mb-0">투자 아이디어와 궁금한 점을 한눈에 확인하고 자유롭게 공유하세요.</p>
+			<hr class="mt-3 mb-4 text-muted opacity-25">
 		</div>
 
-		<!-- 상단 컨트롤 영역 (검색 & 글작성 버튼) -->
-		<div>
+		
+		<div class="custom-card p-3 mb-4">
+			<div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+				
+				<!-- 검색 폼 -->
+				<form onsubmit="searchPosts(event)" method="get" class="d-flex align-items-center gap-3 m-0">
+					<!-- 라디오 버튼 그룹 -->
+					<div class="d-flex align-items-center gap-3 text-secondary small">
+						<div class="form-check m-0">
+							<input class="form-check-input" type="radio" name="type" id="postT" value="0" checked>
+							<label class="form-check-label text-dark" for="postT">제목</label>
+						</div>
+						<div class="form-check m-0">
+							<input class="form-check-input" type="radio" name="type" id="postW" value="1">
+							<label class="form-check-label text-dark" for="postW">작성자</label>
+						</div>
+					</div>
 
-			<!-- 검색 폼 -->
-			<form onsubmit="searchPosts(event)" method="get"
-				class="d-flex align-items-center">
-				<!-- 라디오 버튼 그룹 -->
+					<!-- 검색어 입력 및 버튼 -->
+					<div class="input-group" style="width: 270px;">
+						<input type="text" class="form-control search-input" name="keyword" id="keyword" placeholder="검색어를 입력하세요">
+						<button class="btn btn-dark btn-sm px-3 rounded-end" type="submit">검색</button>
+					</div>
+				</form>
+
+				<!-- 글작성 버튼 -->
 				<div>
-					<div>
-						<input type="radio" name="type" id="postT" value="0" checked>
-						<label for="postT">제목</label>
-					</div>
-					<div>
-						<input type="radio" name="type" id="postW" value="1"> <label
-							for="postW">작성자</label>
-					</div>
+					<a href="/community-lists/write" class="btn btn-dark btn-sm px-3 py-1 fw-medium" style="border-radius: 8px;">
+						+ 글작성
+					</a>
 				</div>
-				<!-- 검색어 입력 및 버튼 -->
-				<div style="width: 300px;">
-					<input type="text" name="keyword" id="keyword"
-						placeholder="검색어를 입력하세요">
-					<button type="submit">검색</button>
-				</div>
-			</form>
 
-			<!-- 글작성 버튼 -->
-			<div>
-				<a href="/community-lists/write">글작성</a>
 			</div>
-
 		</div>
 
 		<!-- 게시글 목록 테이블 영역 -->
-		<table>
-			<thead>
-				<tr>
-					<th scope="col" width="10%">번호</th>
-					<th scope="col" width="15%">카테고리</th>
-					<th scope="col" width="40%">제목</th>
-					<th scope="col" width="15%">작성자</th>
-					<th scope="col" width="10%">조회수</th>
-					<th scope="col" width="10%">작성일</th>
-				</tr>
-			</thead>
-			<tbody id="postTableBody">
-				<!-- 	script 영역 에서 그려줌 -->
-			</tbody>
-		</table>
+		<div class="custom-card overflow-hidden mb-4">
+			<div class="table-responsive">
+				<table class="table custom-table mb-0 text-center">
+					<thead>
+						<tr>
+							<th scope="col" width="10%">번호</th>
+							<th scope="col" width="14%">카테고리</th>
+							<th scope="col" width="46%" class="text-start ps-4">제목</th>
+							<th scope="col" width="12%">작성자</th>
+							<th scope="col" width="8%">조회수</th>
+							<th scope="col" width="10%">작성일</th>
+						</tr>
+					</thead>
+					<tbody id="postTableBody">
+						<!-- script 영역 에서 그려줌 -->
+					</tbody>
+				</table>
+			</div>
+		</div>
 
 		<!-- 페이징(Pagination) 영역 -->
-		<nav aria-label="Page navigation">
-			<ul id="paging">
+		<nav aria-label="Page navigation" class="mt-4">
+			<ul id="paging" class="pagination justify-content-center">
 				<!-- script 영역에서 그려줌 -->
 			</ul>
 		</nav>
@@ -164,14 +257,14 @@
 	            let category = post.postCategoryNum == 0 ? "질문" : (post.postCategoryNum == 1 ? "정보" : "자유");
 	            html += `
 	                <tr>
-	                    <td>\${post.postNum}</td>
-	                    <td>\${category}</td>
-	                    <td>
-	                        <a href="/community-lists/detail?postNum=\${post.postNum}">\${post.postTitle}</a>
+	                    <td class="text-secondary small">\${post.postNum}</td>
+	                    <td><span class="category-badge">\${category}</span></td>
+	                    <td class="text-start ps-4">
+	                        <a class="post-title-link" href="/community-lists/detail?postNum=\${post.postNum}">\${post.postTitle}</a>
 	                    </td>
-	                    <td>\${post.userNum}</td>
-	                    <td>\${post.postViewCnt}</td>
-	                    <td>\${post.postedDateString}</td>
+	                    <td class="text-secondary small">\${post.userNum}</td>
+	                    <td class="text-secondary small">\${post.postViewCnt}</td>
+	                    <td class="text-secondary small">\${post.postedDateString}</td>
 	                </tr>
 	            `;
 	        });
@@ -184,12 +277,11 @@
 			let html = '';
 			
 			html += `
-				<div>
-					<p5>조회된 게시글이 없습니다.</p5>
+				<div class="text-center py-5 text-secondary">
+					<p class="mb-0 small">조회된 게시글이 없습니다.</p>
 				</div>
-				
 			`;
-			 paging.innerHTML = html;
+			paging.innerHTML = html;
 		}
 		
 		function renderPaging(pageInfo){
@@ -199,8 +291,8 @@
 	        // [이전] 버튼 (시작 페이지가 1보다 클 때만 활성화)
 	        if (pageInfo.startPage > 1) {
 	            html += `
-		            <li>
-		            	<a href="#" onclick="loadPosts(\${pageInfo.startPage - 1}); return false;">이전</a>
+		            <li class="page-item">
+		            	<a class="page-link" href="#" onclick="loadPosts(\${pageInfo.startPage - 1}); return false;">‹</a>
 		            </li>
 		        `;
 	        }
@@ -210,8 +302,8 @@
 	            // 현재 페이지면 active 클래스 추가
 	            let active = (i === pageInfo.currentPage) ? "active" : "";
 	            html += `
-		            <li>
-		            	<a href="#" onclick="loadPosts(\${i}); return false;">\${i}</a>
+		            <li class="page-item \${active}">
+		            	<a class="page-link" href="#" onclick="loadPosts(\${i}); return false;">\${i}</a>
 		            </li>
 	            `;
 	        }
@@ -219,8 +311,8 @@
 	        // [다음] 버튼 (끝 페이지가 총 페이지수보다 작을 때만 활성화)
 	        if (pageInfo.endPage < pageInfo.totalPages) {
 	            html += `
-		            <li>
-		           		<a href="#" onclick="loadPosts(\${pageInfo.endPage + 1}); return false;">다음</a>
+		            <li class="page-item">
+		           		<a class="page-link" href="#" onclick="loadPosts(\${pageInfo.endPage + 1}); return false;">›</a>
 		            </li>
 	            `;
 	        }

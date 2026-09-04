@@ -92,19 +92,18 @@ body {
     gap: 6px;
 }
 .card-more-link {
-	border: 2px solid #dbeafe;
-	border-radius: var(--radius-card);
-	background-color:#e4effe;
+	background-color:#ffffff;
 	padding:5px 5px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--color-primary);
+    color: #c7c7c7;
     text-decoration: none;
     transition: opacity 0.2s;
 }
 
 .card-more-link:hover {
-    transform: scale(1.01)
+    transform: scale(1.01);
+    color : #b6b6b6;
 }
 /* --------------------------------------------------------------------------
    1. 실시간 인기 종목 리스트
@@ -151,16 +150,16 @@ body {
     justify-content: center;
 }
 .stock-item:nth-child(1) .rank-badge {
-    background-color: #fee2e2;
-    color: var(--color-up);
+    
+    color: #FFD700;
 }
 .stock-item:nth-child(2) .rank-badge {
-    background-color: #ffedd5;
-    color: #ea580c;
+    
+    color: #C0C0C0;
 }
 .stock-item:nth-child(3) .rank-badge {
-    background-color: #fef9c3;
-    color: #ca8a04;
+    
+    color: #CD7F32;
 }
 .stock-name-box {
     display: flex;
@@ -195,11 +194,11 @@ body {
 }
 .stock-rate.up {
     color: var(--color-up);
-    background-color: var(--color-up-bg);
+    
 }
 .stock-rate.down {
     color: var(--color-down);
-    background-color: var(--color-down-bg);
+    
 }
 .stock-rate.even {
     color: var(--text-secondary);
@@ -243,9 +242,15 @@ body {
     text-align: center;
 }
 
-.post-item:nth-child(1) .post-rank-badge { color: var(--color-up); }
-.post-item:nth-child(2) .post-rank-badge { color: #ea580c; }
-.post-item:nth-child(3) .post-rank-badge { color: #ca8a04; }
+.post-item:nth-child(1) .post-rank-badge { 
+	color: #FFD700; 
+	}
+.post-item:nth-child(2) .post-rank-badge { 
+	color: #C0C0C0;
+	}
+.post-item:nth-child(3) .post-rank-badge { 
+	color: #CD7F32; 
+	}
 .post-info-box {
     display: flex;
     flex-direction: column;
