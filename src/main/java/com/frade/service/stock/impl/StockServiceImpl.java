@@ -2,16 +2,39 @@ package com.frade.service.stock.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.frade.dto.api.StockInfoRawDTO;
 import com.frade.dto.stock.StockInfoDTO;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.dto.stock.StockPriceDTO;
+import com.frade.service.api.KiwoomApiService;
 import com.frade.service.stock.StockService;
 
 @Service
 public class StockServiceImpl implements StockService {
+
+	@Autowired
+	KiwoomApiService kiwoomApiService;
+
+	@Override
+	public List<StockInfoDTO> searchStockByName(String stockName) {
+		// TODO Auto-generated method stub
+		List<StockInfoDTO> stockList = new ArrayList<StockInfoDTO>();
+		for (int i = 0; i < 10; i++) {
+			stockList.add(new StockInfoDTO("000" + i + "00", i + "성전자", i, 0, 90000 + i * 1000));
+		}
+		return stockList;
+	}
+
+	@Override
+	public StockPreviewDTO getStockPreviewByStockCode(String stockCode) {
+		// TODO Auto-generated method stub
+		return new StockPreviewDTO("000300", "3성전자", "전기·전자", 100000 - 3000, 90000);
+	}
 
 	@Override
 	public List<StockPreviewDTO> getSortedStockRankingListPage(int pageIdx, int pageSize) {
@@ -24,31 +47,22 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public List<StockInfoDTO> updateStockInfoList() {
-		// TODO Auto-generated method stub
-		return new ArrayList<StockInfoDTO>();
-	}
-
-	@Override
 	public int saveMinuteStockPrice(List<StockPriceDTO> stockPriceList) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public StockPreviewDTO getStockPreviewByStockCode(String stockCode) {
-		// TODO Auto-generated method stub
-		return new StockPreviewDTO("000300", "3성전자", "전기·전자", 100000 - 3000, 90000);
+	public void revokeApiToken() {
+		kiwoomApiService.revokeToken();
 	}
 
 	@Override
-	public List<StockInfoDTO> searchStockByName(String stockName) {
-		// TODO Auto-generated method stub
-		List<StockInfoDTO> stockList = new ArrayList<StockInfoDTO>();
-		for (int i = 0; i < 10; i++) {
-			stockList.add(new StockInfoDTO("000" + i + "00", i + "성전자", i, 0, 90000 + i * 1000));
-		}
-		return stockList;
+	public List<StockInfoDTO> updateStockInfoList() {
+		List<StockInfoRawDTO> rawInfoList = kiwoomApiService.getMarketAllStockInfo();
+		List<StockInfoDTO> infoList = rawInfoList.stream().map(rawInfo -> rawInfo.toStockInfo())
+				.collect(Collectors.toList());
+		return infoList;
 	}
 
 }
