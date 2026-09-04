@@ -138,4 +138,26 @@ public class PostServiceImpl implements PostService {
 		return mainPosts;
 	}
 
+	@Override
+	public int deletePost(int postNum) {
+
+		PostDTO post = postDAO.selectPost(postNum);
+		
+		int result = postDAO.deletePost(postNum);
+		
+		if(result> 0 && post != null && post.getPostFiles() != null && !post.getPostFiles().isEmpty()) {
+			String baseDir = FilePath.FILE_ABSOLUTE_STORE_PATH + FilePath.POST_UPLOADFILE_PATH;
+		
+		for (String fileName : post.getFileList()) {
+            File targetFile = new File(baseDir, fileName);
+            
+            if (targetFile.exists()) {
+                	targetFile.delete(); // 실제 D드라이브에서 파일 싹둑!
+                	log.info("첨부파일 삭제 완료: " + fileName);
+            	}
+        	}
+		}
+		return result;
+	}
+
 }

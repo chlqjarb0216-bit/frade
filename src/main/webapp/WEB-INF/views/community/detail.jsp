@@ -107,8 +107,36 @@ details summary {
 				</div>
 			</div>
 
+			<p>${post.postTitle}</p>
+			<c:if
+				test="${not empty sessionScope.loginUserNum and sessionScope.loginUserNum == post.userNum}">
+
+				<!-- 수정 버튼 (GET) -->
+				<a href="/community-lists/edit?postNum=${post.postNum}">수정</a>
+
+				<!-- 삭제 버튼 (POST) -->
+				<form action="/community-lists/delete" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+					<input type="hidden" name="postNum" value="${post.postNum}">
+					<button type="submit">삭제</button>
+				</form>
+
+			</c:if>
+			<p>${post.userName}</p>
+			<p>${post.postedDateString}</p>
+			<p>${post.postViewCnt}</p>
+			<p>${post.postLikeCnt}</p>
+			<p>${post.postContent}</p>
+
+			
+				
+				
+			<!-- <details> 태그로 감싸면 기본적으로 접혀있는 상태가 됩니다. -->
 			<details class="bg-light p-3 rounded-3 mb-4 border">
+
+				<!-- <summary> 태그 안의 내용이 클릭할 수 있는 버튼(제목) 역할이 됩니다. -->
 				<summary class="fw-semibold text-secondary small">첨부파일 보기</summary>
+
+				<!-- 버튼을 클릭해 펼쳐졌을 때 보여질 내용 -->
 				<div class="mt-3 pt-2 border-top">
 					<c:if test="${not empty post.fileList}">
 						<div class="d-flex flex-column gap-3">
