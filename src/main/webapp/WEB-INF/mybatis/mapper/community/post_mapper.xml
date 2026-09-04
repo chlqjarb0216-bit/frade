@@ -108,4 +108,10 @@
     ]]>
 
 </select>
+
+<delete id="deletePost" parameterType="int">
+	DELETE FROM t_post
+	WHERE post_num = #{postNum}
+</delete>
+
 </mapper>

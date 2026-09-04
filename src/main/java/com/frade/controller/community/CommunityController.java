@@ -126,4 +126,37 @@ public class CommunityController {
 	    model.addAttribute("post", post);
 		return "community/detail";
 	}
+	
+	@PostMapping("/delete")
+	public String deleteAction(@RequestParam("postNum") int postNum, HttpSession session) {
+	    
+	    // 현재 로그인한 사람의 세션 번호 가져오기
+	    Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
+	    
+	    if (loginUserNum == null) {
+	        return "redirect:/community-lists"; // 로그인이 안 되어있으면 튕겨냄
+	    }
+
+	    try {
+	        // DB에서 삭제하려는 게시글 정보 먼저 조회
+	        PostDTO post = postService.getPost(postNum, false);
+	        
+	        // 남의 글을 지우려고 하면 강제로 튕겨냄(화면에서 비활성화 하지만 추가 검증)
+	        if (post == null || post.getUserNum() != loginUserNum) {
+	            return "redirect:/community-lists/detail?postNum=" + postNum + "&error=auth"; 
+	        }
+
+	        // 4. 진짜 주인이 맞으면 삭제 진행
+	        int result = postService.deletePost(postNum);
+	        
+	        if (result > 0) {
+	            return "redirect:/community-lists"; 
+	        } else {
+	            return "redirect:/community-lists/detail?postNum=" + postNum + "&error=true";
+	        }
+	    } catch (Exception e) {
+	        log.error("게시글 삭제 중 에러 발생", e);
+	        return "redirect:/community-lists";
+	    }
+	}
 }
