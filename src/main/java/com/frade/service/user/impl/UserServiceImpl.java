@@ -10,8 +10,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.frade.common.FilePath;
 import com.frade.common.ResultCode;
+import com.frade.dto.user.UserDTO;
+import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
-import com.frade.dto.user.UserSignDTO;
+import com.frade.dto.user.UserSignupDTO;
 import com.frade.service.user.UserService;
 import com.frade.util.SHA256Encryptor;
 
@@ -19,11 +21,11 @@ import com.frade.util.SHA256Encryptor;
 public class UserServiceImpl implements UserService{
 
 	@Override
-	public int userLogin(UserSignDTO userSignDTO) {
+	public int userLogin(UserLoginDTO userLoginDTO) {
 		
-		// 로그인 확인용 아이디 비밀번호 아이디:test 비번:1234
+		// 로그인 확인용 아이디 비밀번호 아이디:test123 비번:test1234!!
 		
-		if("test".equals(userSignDTO.getUserId()) && "1234".equals(userSignDTO.getUserPw()) ) {
+		if("test123".equals(userLoginDTO.getUserId()) && "test1234!!".equals(userLoginDTO.getUserPw()) ) {
 			
 			return 1;
 			
@@ -63,194 +65,347 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public ResultCode userSignup(UserSignDTO userSignDTO) {
+	public ResultCode userSignup(UserSignupDTO userSignupDTO) {
 
-	    boolean idResult = checkUserId(userSignDTO.getUserId());
+	    boolean idResult = checkUserId(userSignupDTO.getUserId());
 	    	
 	    if(idResult) {
 	        return ResultCode.DUP_ID;
 	    }
 
-	    boolean nickResult = checkUserNick(userSignDTO.getUserNick());
+	    boolean nickResult = checkUserNick(userSignupDTO.getUserNick());
 
 	    if(nickResult) {
 	        return ResultCode.DUP_NICK;
 	    }
 
-	    boolean emailResult = checkUserEmail(userSignDTO.getUserEmail());
+	    boolean emailResult = checkUserEmail(userSignupDTO.getUserEmail());
 	    
 	    if(emailResult) {
 	        return ResultCode.DUP_EMAIL;
 	    }
+	    
+	    // 비밀번호 암호화
+	    String encryptedPw = null;
 
-	    System.out.println("회원가입 정보 : " + userSignDTO);
+	    try {
+
+			encryptedPw = SHA256Encryptor.encrypt(userSignupDTO.getUserPw());
+
+	    } catch(NoSuchAlgorithmException e) {
+
+	        e.printStackTrace();
+
+	        return ResultCode.PASSWORD_ENCRYPT_FAIL; 
+	    }
+
+	    
+	    // Controller용 DTO → DB용 DTO 변환
+	    UserDTO userDTO = new UserDTO(
+	            0,                              // userNum
+	            userSignupDTO.getUserId(),        // userId
+	            userSignupDTO.getUserNick(),      // userNick
+	            userSignupDTO.getUserEmail(),     // userEmail
+	            encryptedPw,        // userPw
+	            null,                           // userRegistedDate
+	            0,                              // userPortfolioIsPublic
+	            null,                           // userPhoto
+	            null                            // userIsDeleted null이면 정상회원
+	    );
+
+	    System.out.println("DB에 전달할 회원가입 정보 : " + userDTO);
+
+	    // 나중에 DAO
+	    // userDAO.saveUser(userDTO);
 
 	    return ResultCode.SUCCESS;
 		}
 
 	@Override
-	public ResultCode updateUserProfile(UserProfileDTO userProfileDTO, 
-			MultipartFile profilePhoto, boolean defaultPhoto, boolean passwordChange) {
-		
-		//프로필 수정정보 확인용
-		System.out.println("service 프로필 수정 정보: " + userProfileDTO);
-		
-		 // 비밀번호 변경 처리
-	   if(passwordChange) {
+	public ResultCode updateUserProfile(
+	        UserProfileDTO userProfileDTO,
+	        MultipartFile profilePhoto,
+	        boolean defaultPhoto,
+	        boolean passwordChange,
+	        String oldProfilePhoto) {
+
+	    // 프로필 수정정보 확인용
+	    System.out.println(
+	            "service 프로필 수정 정보: "
+	            + userProfileDTO);
+
+
+	    /*
+	     * DB에 전달할 값
+	     * 모든 처리가 끝난 후
+	     * 마지막에 UserDTO 생성
+	     */
+
+	    // 비밀번호를 변경하지 않으면 null
+	    String encryptedNewPw = null;
+	  
+
+	    // 변경 후 DB에 저장할 프로필 사진명
+	    // 사진 변경이 없으면 기존 사진명 유지
+	    String newProfilePhoto =
+	            oldProfilePhoto;
+
+
+	    /*
+	     * 비밀번호 변경 처리
+	     */
+	    if(passwordChange) {
 
 	        try {
 
 	            // 임시 DB 비밀번호
-	            // 나중에 DAO에서 암호화된 비밀번호를 조회하도록 변경
-	            String dbPw = SHA256Encryptor.encrypt("1234");
+	            // 나중에 DAO에서 암호화된 비밀번호 조회
+				String dbPw = SHA256Encryptor.encrypt("test1234!!");
 
 	            // 현재 비밀번호 확인
-	            boolean pwMatch = SHA256Encryptor.matches(
-	                    userProfileDTO.getCurrentPw(),
-	                    dbPw);
+				boolean pwMatch = SHA256Encryptor.matches(userProfileDTO.getCurrentPw(), dbPw);
 
 	            if(pwMatch == false) {
 	                return ResultCode.CURRENT_PW_NOT_MATCH;
 	            }
 
 	            // 새 비밀번호 암호화
-	            String encryptedNewPw =
-	                    SHA256Encryptor.encrypt(
-	                            userProfileDTO.getNewPw());
+				encryptedNewPw = SHA256Encryptor.encrypt(userProfileDTO.getNewPw());
 
-	            userProfileDTO.setNewPw(encryptedNewPw);
-
-	            System.out.println("암호화된 새 비밀번호 : "
-	                    + encryptedNewPw);
-
-	            // 나중에 DAO 비밀번호 수정 처리
+				System.out.println("암호화된 새 비밀번호 : " + encryptedNewPw);
 
 	        } catch(NoSuchAlgorithmException e) {
 	            e.printStackTrace();
+	            return ResultCode.PASSWORD_ENCRYPT_FAIL;
 	        }
 	    }
-		
-		
-		 String uploadPath = "D:/fileStorage_Frade" + FilePath.USER_PROFILE_PATH;
-		 
-		 
 
-		    File uploadFolder = new File(uploadPath);
 
-		    // 폴더가 없으면 생성
-		    if(!uploadFolder.exists()) {
-		        uploadFolder.mkdirs();
-		    }
+	    /*
+	     * 프로필 사진 저장 경로
+	     */
+	    String uploadPath =
+	            "D:/fileStorage_Frade"
+	            + FilePath.USER_PROFILE_PATH;
 
-		    String userNum = String.valueOf(userProfileDTO.getUserNum());
+	    File uploadFolder =
+	            new File(uploadPath);
 
-		    String[] extensions = {".png", ".jpg", ".jpeg"};
+	    // 폴더가 없으면 생성
+	    if(!uploadFolder.exists()) {
+	        uploadFolder.mkdirs();
+	    }
 
-		    // 기본 이미지로 변경하는 경우
-		    if(defaultPhoto) {
 
-		        // 기존 프로필 사진 삭제
-		        for(String ext : extensions) {
+	    /*
+	     * 기본 프로필로 변경
+	     */
+	    if(defaultPhoto) {
 
-		            File oldFile = new File(uploadFolder, userNum + ext);
+	        // 기존 프로필 사진 삭제
+	        if(oldProfilePhoto != null) {
 
-		            if(oldFile.exists()) {
-		                oldFile.delete();
-		            }
-		        }
+	            File oldFile =
+	                    new File(
+	                            uploadFolder,
+	                            oldProfilePhoto);
 
-		        // DB 연결 후에는 프로필 사진값을 null 또는 기본값으로 수정
-		        userProfileDTO.setUserPhoto(null);
+	            if(oldFile.exists()) {
+	                oldFile.delete();
+	            }
+	        }
 
-		        // 확인용
-		        System.out.println("기본 이미지로 변경");
-		    }
+	        // DB에는 null
+	        newProfilePhoto = null;
 
-		    // 새 프로필 사진을 선택한 경우
-		    if(profilePhoto != null && !profilePhoto.isEmpty()) {
+	        System.out.println(
+	                "기본 이미지로 변경");
+	    }
 
-		        // 원래 파일명
-		        String originalFileName = profilePhoto.getOriginalFilename();
 
-		        // 확장자 가져오기
-		        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+	    /*
+	     * 새 프로필 사진 선택
+	     */
+	    else if(profilePhoto != null
+	            && !profilePhoto.isEmpty()) {
 
-		        // 프로필 사진 확장자 확인
-		        if(!extension.equalsIgnoreCase(".png")
-		                && !extension.equalsIgnoreCase(".jpg")
-		                && !extension.equalsIgnoreCase(".jpeg")) {
+	        String originalFileName =
+	                profilePhoto.getOriginalFilename();
 
-		            return ResultCode.INVALID_PROFILE_FILE;
-		        }
+	        String extension =
+	                originalFileName.substring(
+	                        originalFileName.lastIndexOf("."));
 
-		        // MIME 타입 확인
-		        String contentType = profilePhoto.getContentType();
 
-		        if(contentType == null || (!contentType.equals("image/png")
-		                && !contentType.equals("image/jpeg"))) {
+	        // 확장자 확인
+	        if(!extension.equalsIgnoreCase(".png")
+	                && !extension.equalsIgnoreCase(".jpg")
+	                && !extension.equalsIgnoreCase(".jpeg")) {
 
-		            return ResultCode.INVALID_PROFILE_FILE;
-		        }
+	            return ResultCode.INVALID_PROFILE_FILE;
+	        }
 
-		        // 기존 프로필 사진 삭제
-		        for(String ext : extensions) {
 
-		            File oldFile = new File(uploadFolder, userNum + ext);
+	        // MIME 타입 확인
+	        String contentType =
+	                profilePhoto.getContentType();
 
-		            if(oldFile.exists()) {
-		                oldFile.delete();
-		            }
-		        }
+	        if(contentType == null
+	                || (!contentType.equals("image/png")
+	                && !contentType.equals("image/jpeg"))) {
 
-		        // 유저번호 + 확장자로 저장
-		        String saveFileName = userProfileDTO.getUserNum() + extension;
+	            return ResultCode.INVALID_PROFILE_FILE;
+	        }
 
-		        try {
 
-		            // 실제 저장 위치
-		            File saveFile = new File(uploadFolder, saveFileName);
+	        // 유저번호 + 확장자로 저장
+	        String saveFileName =
+	                userProfileDTO.getUserNum()
+	                + extension;
 
-		            // 파일 저장
-		            profilePhoto.transferTo(saveFile);
+	        try {
 
-		            // 나중에 DB에 저장할 파일명
-		            userProfileDTO.setUserPhoto(saveFileName);
+	            File saveFile =
+	                    new File(
+	                            uploadFolder,
+	                            saveFileName);
 
-		            // 확인용
-		            System.out.println("저장된 프로필 사진: " + userProfileDTO.getUserPhoto());
+	            // 새 프로필 사진 저장
+	            profilePhoto.transferTo(saveFile);
 
-		        } catch(IOException e) {
-		            e.printStackTrace();
-		            
-		            return ResultCode.PROFILE_FILE_SAVE_FAIL;
-		        }
-		    }
 
-		    return ResultCode.SUCCESS;
-		}
+	            /*
+	             * 새 사진 저장 성공 후
+	             * 기존 사진과 파일명이 다르면 기존 사진 삭제
+	             */
+	            if(oldProfilePhoto != null
+	                    && !oldProfilePhoto.equals(
+	                            saveFileName)) {
+
+	                File oldFile =
+	                        new File(
+	                                uploadFolder,
+	                                oldProfilePhoto);
+
+	                if(oldFile.exists()) {
+	                    oldFile.delete();
+	                }
+	            }
+
+
+	            // DB에 저장할 새 파일명
+	            newProfilePhoto =
+	                    saveFileName;
+
+	            System.out.println(
+	                    "저장된 프로필 사진: "
+	                    + newProfilePhoto);
+
+	        } catch(IOException e) {
+
+	            e.printStackTrace();
+
+	            /*
+	             * 사진 저장 실패
+	             * → 기본 프로필 처리
+	             */
+	            newProfilePhoto = null;
+
+	            // 기존 프로필 사진도 삭제
+	            if(oldProfilePhoto != null) {
+
+	                File oldFile =
+	                        new File(
+	                                uploadFolder,
+	                                oldProfilePhoto);
+
+	                if(oldFile.exists()) {
+	                    oldFile.delete();
+	                }
+	            }
+
+	            System.out.println(
+	                    "프로필 사진 저장 실패"
+	                    + " → 기본 프로필로 변경");
+	        }
+	    }
+
+
+	    /*
+	     * 모든 처리 완료 후
+	     * DB용 UserDTO 생성
+	     */
+	    UserDTO userDTO = new UserDTO(
+	            userProfileDTO.getUserNum(),                 // userNum
+	            null,                                        // userId
+	            userProfileDTO.getUserNick(),                // userNick
+	            null,                                        // userEmail
+	            encryptedNewPw,                              // userPw
+	            null,                                        // userRegistedDate
+	            userProfileDTO.getUserPortfolioIsPublic(),   // userPortfolioIsPublic
+	            newProfilePhoto,                             // userPhoto
+	            null                                         // userIsDeleted
+	    );
+
+
+	    System.out.println(
+	            "DB에 전달할 프로필 수정 정보 : "
+	            + userDTO);
+
+	    // 나중에 DAO
+	    // userDAO.updateUserProfile(userDTO);
+
+	    return ResultCode.SUCCESS;
+	}
+	
+	
 
 	@Override
 	public ResultCode deleteUser(int userNum) {
 		
 		//확인용
-		System.out.println("회원 탈퇴 요청 suerNum: "+ userNum);
+		System.out.println("회원 탈퇴 요청 userNum: "+ userNum);
 		
 		return ResultCode.SUCCESS;
 	}
 
 	@Override
 	public UserProfileDTO getUserProfile(int userNum) {
+
+		// 임시 DB 조회 결과
+		UserDTO userDTO = new UserDTO(
+		        userNum,                                   // userNum
+		        null,                                      // userId
+		        "개미하이",                                // userNick
+		        null,                                      // userEmail
+		        null,                                      // userPw
+		        LocalDateTime.of(2026, 9, 1, 5, 30),      // userRegistedDate
+		        0,                                         // userPortfolioIsPublic
+		        "1.png",                                   // userPhoto
+		        0                                          // userIsDeleted
+		);
 		
-		//정보 확인용 하드코딩
-		UserProfileDTO userProfileDTO = new UserProfileDTO();
 		
-		userProfileDTO.setUserNum(userNum);
-		userProfileDTO.setUserNick("개미하이");
-		userProfileDTO.setUserPhoto("1.png");
-		userProfileDTO.setUserPortfolioIsPublic(0);
-		userProfileDTO.setUserRegistedDate(LocalDateTime.of(2026, 9, 1, 5, 30));
-		
-		return userProfileDTO;
+	    // DB용 DTO → Controller용 DTO 변환
+	    UserProfileDTO userProfileDTO =
+	            new UserProfileDTO();
+
+	    userProfileDTO.setUserNum(
+	            userDTO.getUserNum());
+
+	    userProfileDTO.setUserNick(
+	            userDTO.getUserNick());
+
+	    userProfileDTO.setUserPhoto(
+	            userDTO.getUserPhoto());
+
+	    userProfileDTO.setUserPortfolioIsPublic(
+	            userDTO.getUserPortfolioIsPublic());
+
+	    userProfileDTO.setUserRegistedDate(
+	            userDTO.getUserRegistedDate());
+
+	    return userProfileDTO;
 	}
 
 	

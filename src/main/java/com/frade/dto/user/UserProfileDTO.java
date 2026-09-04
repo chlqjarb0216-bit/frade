@@ -3,9 +3,12 @@ package com.frade.dto.user;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileDTO {	// 프로필 정보 및 수정
 	
 	int userNum;		//유저 고유 식별번호?
@@ -20,6 +23,16 @@ public class UserProfileDTO {	// 프로필 정보 및 수정
     
     
     int userPortfolioIsPublic; //포트폴리오 공개,비공개 여부
+    
+    public boolean isNewPwMatch() {
+        return newPw.equals(newPwCheck);
+    }
+
+    public boolean isDifferentPw() {
+        return !currentPw.equals(newPw);
+    }
+    
+    
     
     //가입화면 출력용
     public String getUserRegistedDateText() {
