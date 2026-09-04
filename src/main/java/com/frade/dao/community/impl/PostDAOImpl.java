@@ -1,4 +1,4 @@
-package com.frade.dao.community.Impl;
+package com.frade.dao.community.impl;
 
 import java.util.List;
 
