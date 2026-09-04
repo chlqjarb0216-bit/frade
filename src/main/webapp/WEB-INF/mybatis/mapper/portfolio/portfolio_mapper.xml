@@ -11,6 +11,13 @@
 		where user_num = #{userNum}
 	</select>
 
+	<select id="findUserPortfolioStockNameListByUserNum" parameterType="int" resultType="string">
+		select s.stock_name
+		from t_portfolio p
+		join t_stock s on s.stock_code = p.stock_code
+		where p.user_num = #{userNum}
+	</select>
+
 	<select id="findUserPortfolioByUserNumAndStockCode" parameterType="map" resultType="PortfolioDTO">
 		select * from t_portfolio
 		where user_num = #{userNum} and stock_code = #{stockCode}

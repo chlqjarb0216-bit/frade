@@ -11,6 +11,7 @@ public interface PortfolioDAO {
 	
 
 	public List<PortfolioDTO> findUserPortfolioListByUserNum(int userNum); //portfolio 테이블 정보를 list로 받기
+	public List<String> findUserPortfolioStockNameListByUserNum(int userNum); //유저가 가진 종목이름 리스트
 	public PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode); //종목별 포트폴리오 찾기
 
 	//매도 검증용 행 잠금

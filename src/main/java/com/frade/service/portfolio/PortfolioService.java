@@ -17,6 +17,9 @@ public interface PortfolioService {
 	//userNum으로 포트폴리오 리스트
 	List<PortfolioDTO> findUserPortfolioListByUserNum(int userNum);
 
+	//유저가 가진 종목이름 리스트
+	List<String> findUserPortfolioStockNameListByUserNum(int userNum);
+
 	//userNum, stockCode로 특정 종목 관련 정보
 	PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode);
 	

@@ -85,6 +85,11 @@ public class PortfolioServiceImpl implements PortfolioService {
 	}
 
 	@Override
+	public List<String> findUserPortfolioStockNameListByUserNum(int userNum) {
+		return portfolioDAO.findUserPortfolioStockNameListByUserNum(userNum);
+	}
+
+	@Override
 	public PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode) {
 		PortfolioDTO portfolio = portfolioDAO.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
 		return portfolio;

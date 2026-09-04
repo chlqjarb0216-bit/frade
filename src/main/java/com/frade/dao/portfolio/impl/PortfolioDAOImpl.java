@@ -25,6 +25,11 @@ public class PortfolioDAOImpl implements PortfolioDAO{
 		List<PortfolioDTO> portfolio = sqlSessionTemplate.selectList("portfolio_mapper.findUserPortfolioListByUserNum", userNum);
 		return portfolio;
 	}
+
+	@Override
+	public List<String> findUserPortfolioStockNameListByUserNum(int userNum) {
+		return sqlSessionTemplate.selectList("portfolio_mapper.findUserPortfolioStockNameListByUserNum", userNum);
+	}
 	
 	@Override
 	public PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode) {
