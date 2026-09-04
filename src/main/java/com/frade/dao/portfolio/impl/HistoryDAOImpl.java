@@ -18,8 +18,31 @@ public class HistoryDAOImpl implements HistoryDAO {
 //	==========t_history===========
 	@Override
 	public List<HistoryDTO> findTradeHistoryByUserNum(int userNum) {
-	    List<HistoryDTO> history = sqlSessionTemplate.selectList("history_mapper.findTradeHistoryByUserNum", userNum);
+	    List<HistoryDTO> history = sqlSessionTemplate.selectList
+	    					("history_mapper.findTradeHistoryByUserNum", userNum);
 	    return history;
+	}
+	
+
+	@Override
+	public List<HistoryDTO> findTradeHistoryTodayByUserNum(int userNum) {
+		List<HistoryDTO> history = sqlSessionTemplate.selectList
+							("history_mapper.findTradeHistoryByUserNum", userNum);
+		return history;
+	}
+
+	@Override
+	public List<HistoryDTO> findTradeHistoryRecentOneWeekByUserNum(int userNum) {
+		List<HistoryDTO> history = sqlSessionTemplate.selectList
+							("history_mapper.findTradeHistoryRecentOneWeekByUserNum", userNum);
+		return history;
+	}
+
+	@Override
+	public List<HistoryDTO> findTradeHistoryRecentOneMonthByUserNum(int userNum) {
+		List<HistoryDTO> history = sqlSessionTemplate.selectList
+							("history_mapper.findTradeHistoryRecentOneMonthByUserNum", userNum);
+		return history;
 	}
 	
 	@Override
