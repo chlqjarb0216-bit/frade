@@ -65,15 +65,15 @@ public class OrderServiceImpl implements OrderService {
 		
 
 		if (portfolioService.updateOrInsertUserPortfolio(portfolio) == 0) {
-			throw new IllegalStateException("포트폴리오 갱신 실패");
+			throw new OrderProcessingException("포트폴리오 갱신 실패");
 		}
 
 		// 거래기록 저장
 		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, 
-				orderInfo.getOrderPrice(), orderInfo.getOrderCount() * -1);
+				orderInfo.getOrderPrice(), orderInfo.getOrderCount());
 
 		if (insertTradeHistory(history) == 0) {
-			throw new IllegalStateException("거래 기록 insert 실패.");
+			throw new OrderProcessingException("거래 기록 insert 실패.");
 		}
 
 		return true;
@@ -107,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
 
 		// 현금정보 저장
 		if (updateUserCash(userNum, totalPrice) == 0) {
-			throw new IllegalStateException("현금 정보 갱신 실패");
+			throw new OrderProcessingException("현금 정보 갱신 실패");
 		}
 
 		// 포트폴리오 업데이트
@@ -116,11 +116,11 @@ public class OrderServiceImpl implements OrderService {
 						- totalPrice);
 		if(portfolio.getUserStockCnt() == 0) {
 			if (portfolioService.deleteUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode()) == 0) {
-				throw new IllegalStateException("포트폴리오 삭제 실패");
+				throw new OrderProcessingException("포트폴리오 삭제 실패");
 			}
 		}else {
 			if (portfolioService.updateUserPortfolio(portfolio) == 0) {
-				throw new IllegalStateException("포트폴리오 갱신 실패");
+				throw new OrderProcessingException("포트폴리오 갱신 실패");
 			}
 		}
 
@@ -130,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
 		
 
 		if (insertTradeHistory(history) == 0) {
-			throw new IllegalStateException("거래기록 insert 실패");
+			throw new OrderProcessingException("거래기록 insert 실패");
 		}
 
 		return true;
