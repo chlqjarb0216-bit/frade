@@ -18,13 +18,13 @@ public class HistoryDAOImpl implements HistoryDAO {
 //	==========t_history===========
 	@Override
 	public List<HistoryDTO> findTradeHistoryByUserNum(int userNum) {
-	    List<HistoryDTO> history = sqlSessionTemplate.selectList("order_mapper.findTradeHistoryByUserNum", userNum);
+	    List<HistoryDTO> history = sqlSessionTemplate.selectList("history_mapper.findTradeHistoryByUserNum", userNum);
 	    return history;
 	}
 	
 	@Override
 	public int insertTradeHistory(HistoryDTO history) {
-		int result = sqlSessionTemplate.insert("order_mapper.insertTradeHistory", history);
+		int result = sqlSessionTemplate.insert("history_mapper.insertTradeHistory", history);
 		return result;
 	}
 

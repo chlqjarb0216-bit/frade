@@ -3,10 +3,8 @@
 		   "-//mybatis.org//DTD Mapper 3.0//EN" 
 		   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="order_mapper">
+<mapper namespace="portfolio_mapper">
 
-
-	<!-- ====================t_portfolio================== -->
 
 	<select id="findUserPortfolioListByUserNum" parameterType="int" resultType="PortfolioDTO">
 		select * from t_portfolio
@@ -59,58 +57,7 @@
     	insert (user_num, stock_code, user_stock_cnt, user_buy_cost) 
     	values (#{userNum}, #{stockCode}, #{userStockCnt}, #{userBuyCost})
 		
-		
 	</update>
-	
-	
-	
-	
-	
-	<!-- ====================t_cash================== -->
-	
-	<select id="findUserCashByUserNum" parameterType="int" resultType="UserCashDTO">
-		select * from t_cash
-		where user_num = #{userNum}
-	</select>
 
-	<select id="findUserCashByUserNumForUpdate" parameterType="int" resultType="UserCashDTO">
-		select * from t_cash
-		where user_num = #{userNum}
-		for update
-	</select>
-	
-	<update id="updateUserCash" parameterType="map">
-		update t_cash
-		set cash = cash + #{add}
-		where user_num = #{userNum}
-	</update>
-	
-	
-	
-	
-	
-	
-	
-	
-	<!-- ====================t_history=============== -->
-	
-	<select id="findTradeHistoryByUserNum" parameterType="int" resultType="HistoryDTO">
-		select * from t_history
-		where user_num = #{userNum}
-	</select>
-	
-	
-	
-	<insert id="insertTradeHistory" parameterType="HistoryDTO">
-		
-		insert into t_history(user_num, stock_code, trade_price, trade_cnt)
-		values (
-			#{userNum},
-			#{stockCode},
-			#{tradePrice},
-			#{tradeCnt}
-		)
-	</insert>
-	
 	
 </mapper>

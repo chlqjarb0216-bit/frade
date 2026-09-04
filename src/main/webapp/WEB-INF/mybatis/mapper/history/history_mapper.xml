@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="history_mapper">
+
+	<select id="findTradeHistoryByUserNum" parameterType="int" resultType="HistoryDTO">
+		select * from t_history
+		where user_num = #{userNum}
+	</select>
+	
+	
+	
+	<insert id="insertTradeHistory" parameterType="HistoryDTO">
+		
+		insert into t_history(user_num, stock_code, trade_price, trade_cnt)
+		values (
+			#{userNum},
+			#{stockCode},
+			#{tradePrice},
+			#{tradeCnt}
+		)
+	</insert>
+
+</mapper>
