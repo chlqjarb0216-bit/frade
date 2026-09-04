@@ -56,6 +56,13 @@ public class PostDAOImpl implements PostDAO{
 		int result = sqlSessionTemplate.update("post_mapper.updateViewCount", postNum);
 		return result;
 	}
+
+	@Override
+	public List<PostDTO> selectMainPosts(int pageSize) {
+		
+		List<PostDTO> result = sqlSessionTemplate.selectList("post_mapper.selectMainPosts",pageSize);
+		return result;
+	}
 	
 	
 }

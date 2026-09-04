@@ -20,4 +20,7 @@ public interface PostDAO {
     // 상세조회
 	public PostDTO selectPost(int postNum);
 	public int updateViewCount(int postNum);
+	
+	//메인페이지 표시 게시글
+	public List<PostDTO> selectMainPosts(int pageSize);
 }

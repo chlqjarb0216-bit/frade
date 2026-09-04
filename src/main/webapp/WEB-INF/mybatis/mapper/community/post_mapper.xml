@@ -77,4 +77,18 @@
     SET post_view_cnt = NVL(post_view_cnt, 0) + 1
     WHERE post_num = #{postNum}
 </update>
+
+<select id="selectMainPosts" resultType="postDTO">
+	SELECT *
+    FROM (
+        SELECT p.post_num, p.post_title, p.post_view_cnt, p.post_posted_date, u.user_nick AS user_name
+        FROM t_post p
+        INNER JOIN t_user u ON p.user_num = u.user_num
+        ORDER BY p.post_view_cnt DESC, p.post_num DESC
+    )
+    <![CDATA[
+    WHERE ROWNUM <= ${pageSize}
+    ]]>
+
+</select>
 </mapper>

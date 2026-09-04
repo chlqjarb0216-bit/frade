@@ -132,9 +132,10 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<PostDTO> getPostListPagingSortedByView(int pageIdx, int pageSize) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<PostDTO> getPostListPagingSortedByView(int pageSize) {
+		
+		List<PostDTO> mainPosts = postDAO.selectMainPosts(pageSize);
+		return mainPosts;
 	}
 
 }

@@ -26,7 +26,7 @@ public interface PostService {
 	public PostDTO getPost(int postNum, boolean isViewUp);
 	
 	//정렬된 게시글 리스트를 받아옴
-	public List<PostDTO> getPostListPagingSortedByView(int pageIdx, int pageSize);
+	public List<PostDTO> getPostListPagingSortedByView(int pageSize);
 	
 	
 	
