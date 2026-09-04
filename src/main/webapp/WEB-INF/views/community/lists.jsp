@@ -261,7 +261,7 @@ body {
 	                    <td class="text-start ps-4">
 	                        <a class="post-title-link" href="/community-lists/detail?postNum=\${post.postNum}">\${post.postTitle}</a>
 	                    </td>
-	                    <td class="text-secondary small">\${post.userNum}</td>
+	                    <td class="text-secondary small">\${post.userName}</td>
 	                    <td class="text-secondary small">\${post.postViewCnt}</td>
 	                    <td class="text-secondary small">\${post.postedDateString}</td>
 	                </tr>
