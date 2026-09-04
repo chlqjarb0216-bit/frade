@@ -16,7 +16,7 @@
 		select *
 		from t_history
 		where user_num = #{userNum}
-		and trade_date >= trunc(sysdate)
+		and trade_date &gt;= trunc(sysdate)
   		and trade_date &lt; trunc(sysdate) + 1
 		order by trade_date desc
 	</select>
@@ -27,7 +27,7 @@
 		select *
 		from t_history
 		where user_num = #{userNum}
-		and trade_date >= trunc(sysdate) - 6
+		and trade_date &gt;= trunc(sysdate) - 6
   		and trade_date &lt; trunc(sysdate) + 1
 		order by trade_date desc
 	</select>
@@ -38,7 +38,7 @@
 		select *
 		from t_history
 		where user_num = #{userNum}
-		and trade_date >= add_months(trunc(sysdate), -1)
+		and trade_date &gt;= add_months(trunc(sysdate), -1)
  		and trade_date &lt; trunc(sysdate) + 1
 		order by trade_date desc
 	</select>
