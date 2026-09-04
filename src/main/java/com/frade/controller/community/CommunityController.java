@@ -117,10 +117,6 @@ public class CommunityController {
 	        viewedPosts += "[" + postNum + "]";
 	        Cookie newCookie = new Cookie("viewedPosts", viewedPosts);
 	        
-	        // 쿠키 유지 시간 설정  24시간 (60초 * 60분 * 24시간)
-	        newCookie.setMaxAge(60 * 60 * 24); 
-	        newCookie.setPath("/"); // 모든 경로에서 이 쿠키 접근 허용
-	        
 	        response.addCookie(newCookie); // 사용자 브라우저에 쿠키 저장
 	    }
 
