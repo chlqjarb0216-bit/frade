@@ -11,9 +11,12 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostDTO {
 
 	private Long postNum;             // p_num : 게시글 번호 (PK)
@@ -46,7 +49,7 @@ public class PostDTO {
         if (this.postPostedDate == null) {
             return "";
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return this.postPostedDate.format(formatter);
     }
     

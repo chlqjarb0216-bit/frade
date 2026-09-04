@@ -1,5 +1,8 @@
 package com.frade.controller.community;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,8 +88,42 @@ public class CommunityController {
 
 	// 게시글 상세 페이지 이동
 	@GetMapping("/detail")
-	public String postDetail(@RequestParam int postNum, Model model) {
-		model.addAttribute("post", postService.getPost(postNum));
+	public String postDetail(@RequestParam int postNum, Model model,
+								HttpServletRequest request,
+								HttpServletResponse response) {
+		
+		boolean isViewUp = true; // 기본적으로는 조회수를 올린다고 가정
+	    Cookie[] cookies = request.getCookies();
+	    String viewedPosts = "";
+
+	    // 기존 쿠키들 중에서 "viewedPosts"가 있는지 검사
+	    if (cookies != null) {
+	        for (Cookie cookie : cookies) {
+	            if (cookie.getName().equals("viewedPosts")) {
+	                viewedPosts = cookie.getValue();
+	                
+	                // 쿠키 값에 현재 글 번호가 포함되어 있다면? (예: "[105][106]")
+	                if (viewedPosts.contains("[" + postNum + "]")) {
+	                    isViewUp = false; // 이미 읽은 글 => 조회수 카운트 xx
+	                }
+	                break;
+	            }
+	        }
+	    }
+
+	    //  처음 읽는 글이라면 (true) 쿠키에 글 번호를 추가해서 다시 구워줌
+	    if (isViewUp) {
+	        // 기존 쿠키 문자열에 새 글 번호를 누적 (숫자가 겹치지 않게 대괄호 사용)
+	        viewedPosts += "[" + postNum + "]";
+	        Cookie newCookie = new Cookie("viewedPosts", viewedPosts);
+	        
+	        response.addCookie(newCookie); // 사용자 브라우저에 쿠키 저장
+	    }
+
+
+	    PostDTO post = postService.getPost(postNum, isViewUp);
+	    
+	    model.addAttribute("post", post);
 		return "community/detail";
 	}
 }

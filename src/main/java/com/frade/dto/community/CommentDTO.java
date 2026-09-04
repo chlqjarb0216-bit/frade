@@ -6,9 +6,13 @@ import java.time.format.DateTimeFormatter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentDTO {
 	private Long commentNum;
 	private Long postNum;
