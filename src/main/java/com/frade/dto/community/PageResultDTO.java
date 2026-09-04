@@ -2,9 +2,12 @@ package com.frade.dto.community;
 
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PageResultDTO<T> {
 	
 	private List<T> list;       // 현재 페이지의 데이터 목록 (게시글 리스트, 댓글 리스트 등..)

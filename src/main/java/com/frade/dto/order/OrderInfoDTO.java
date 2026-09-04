@@ -3,8 +3,11 @@ package com.frade.dto.order;
 import com.frade.common.order.PriceOptionCommon;
 import com.frade.common.order.TradeOptionCommon;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class OrderInfoDTO {	//사용자가 입력한 주문정보
 	

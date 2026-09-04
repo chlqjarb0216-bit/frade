@@ -1,6 +1,7 @@
 package com.frade.service.order;
 
 import com.frade.dto.order.OrderInfoDTO;
+import com.frade.dto.user.UserCashDTO;
 
 
 public interface OrderService {
@@ -10,6 +11,8 @@ public interface OrderService {
 	//매도 검증
 	public boolean processSell(OrderInfoDTO orderInfo); 
 	//시장가 주문 저장
-	public boolean saveMarketPrice(OrderInfoDTO orderInfo); 
+	public boolean saveMarketPrice(OrderInfoDTO orderInfo);
+	
+	public UserCashDTO findUserCashByUserNum(int userNum);
 	
 }

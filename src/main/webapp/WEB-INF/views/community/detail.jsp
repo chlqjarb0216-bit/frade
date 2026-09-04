@@ -171,7 +171,8 @@ details summary {
 		function loadComments(page){
 			const postNum = "${post.postNum}";
 			
-			fetch(`/community-lists/api/comment-list?page=\${page}&postNum=\${postNum}`,{
+			//게시글 번호에 맞는 댓글 정보 요청
+			fetch(`/api/community-lists/comment-list?page=\${page}&postNum=\${postNum}`,{
 				method: 'GET',
 				headers:{
 					'Content-Type' : 'application/json'
@@ -275,7 +276,7 @@ details summary {
 					commentContent: content
 			};
 			
-			fetch(`/community-lists/api/comment-write`,{
+			fetch(`/api/community-lists/comment-write`,{
 				method : 'POST',
 				headers:{
 					'Content-Type' : 'application/json'
