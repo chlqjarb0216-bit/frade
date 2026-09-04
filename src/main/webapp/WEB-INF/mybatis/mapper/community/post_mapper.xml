@@ -49,36 +49,37 @@
 </select>
 
 <select id="selectPostList" parameterType="map" resultType="PostDTO">
-	SELECT *
-    FROM (
-        SELECT a.*, ROWNUM AS rnum
-        FROM (
-            
-            SELECT p.post_num, p.post_category_num, p.post_title, u.user_nick AS user_name, p.post_view_cnt, p.post_posted_date
-            FROM t_post p
-            INNER JOIN t_user u ON p.user_num = u.user_num
-            <where>
-                <if test="keyword != null and keyword != ''">
-                    <if test="type == 0">
-                        p.post_title LIKE '%' || #{keyword} || '%'
-                    </if>
-                    <if test="type == 1">
-                        u.user_nick LIKE '%' || #{keyword} || '%'
-                    </if>
-                </if>
-            </where>
-            ORDER BY p.post_num DESC
-           
-        ) a
-        <!-- 가져올 마지막 번호 (offset + limit) -->
-        <![CDATA[
-        WHERE ROWNUM <= #{offset} + #{limit}
-        ]]>
-    )
-    <!-- 건너뛸 시작 번호 (offset) -->
-    <![CDATA[
-    WHERE rnum > #{offset}
-    ]]>
+
+    SELECT 
+        p.post_num,
+        p.post_category_num,
+        p.post_title,
+        u.user_nick AS user_name,
+        p.post_view_cnt,
+        p.post_posted_date
+    FROM t_post p
+    INNER JOIN t_user u 
+        ON p.user_num = u.user_num
+
+    <where>
+        <if test="keyword != null and keyword != ''">
+
+            <if test="type == 0">
+                p.post_title LIKE '%' || #{keyword} || '%'
+            </if>
+
+            <if test="type == 1">
+                u.user_nick LIKE '%' || #{keyword} || '%'
+            </if>
+
+        </if>
+    </where>
+
+    ORDER BY p.post_num DESC
+
+    OFFSET #{offset} ROWS
+    FETCH NEXT #{limit} ROWS ONLY
+
 </select>
 	
 <select id="selectPost"  resultType="postDTO">
