@@ -13,6 +13,7 @@ import com.frade.dto.order.HistoryDTO;
 import com.frade.dto.order.OrderInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
+import com.frade.exception.OrderProcessingException;
 import com.frade.service.order.OrderService;
 import com.frade.service.portfolio.PortfolioService;
 
@@ -52,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
 
 		// 현금정보 저장
 		if (updateUserCash(userNum, -1 * totalPrice) == 0) {
-			throw new IllegalStateException("현금 정보 갱신 실패");
+			throw new OrderProcessingException("현금 정보 갱신 실패");
 		}
 
 		// 포트폴리오 merge into
@@ -157,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 //	=============t_history==============
-	private List<HistoryDTO> findTradeHistoryByUsernum(int userNum) {
+	private List<HistoryDTO> findTradeHistoryByUserNum(int userNum) {
 		List<HistoryDTO> history = historyDAO.findTradeHistoryByUserNum(userNum);
 		return history;
 	}
