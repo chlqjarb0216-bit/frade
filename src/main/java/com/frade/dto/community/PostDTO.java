@@ -2,6 +2,8 @@ package com.frade.dto.community;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
@@ -35,8 +37,6 @@ public class PostDTO {
 //    private Integer postTrNum2;          // p_tr_num2 : 관련 거래/참조 번호 2
 //    private Integer postTrNum3;          // p_tr_num3 : 관련 거래/참조 번호 3
     private String postFiles;         // p_files : 첨부파일 경로 또는 식별자
-    //파일 화면 전달용 배열 추가
-    private List<String> fileList;	
 //    private int postIsPublic = 1;     // p_is_public : 공개 여부 (예: 1=공개, 0=비공개)
     
     
@@ -50,5 +50,15 @@ public class PostDTO {
         return this.postPostedDate.format(formatter);
     }
     
+    //postFiles 쪼개기(화면전달용 Getter)
+    public List<String> getFileList() {
+        // 첨부파일이 아예 없는 경우 (빈 리스트 반환)
+        if (this.postFiles == null || this.postFiles.trim().isEmpty()) {
+            return new ArrayList<>(); 
+        }
+        
+        //  쉼표를 기준으로 문자열을 쪼개서 리스트로 변환해 반환
+        return Arrays.asList(this.postFiles.split(","));
+    }
 
 }

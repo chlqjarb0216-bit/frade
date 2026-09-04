@@ -128,7 +128,7 @@
 			const type = document.querySelector('input[name="type"]:checked').value
 			
 			//contrller에 게시글 데이터 요청 경로
-			fetch(`/community-lists/api/post-list?page=\${page}&keyword=\${keyword}&type=\${type}`,{
+			fetch(`/api/community-lists/post-list?page=\${page}&keyword=\${keyword}&type=\${type}`,{
 				method: 'GET',
 				headers:{
 					'Content-Type' : 'application/json'

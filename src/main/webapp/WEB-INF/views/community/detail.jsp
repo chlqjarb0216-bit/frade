@@ -114,7 +114,7 @@
 			const postNum = "${post.postNum}";
 			
 			//게시글 번호에 맞는 댓글 정보 요청
-			fetch(`/community-lists/api/comment-list?page=\${page}&postNum=\${postNum}`,{
+			fetch(`/api/community-lists/comment-list?page=\${page}&postNum=\${postNum}`,{
 				method: 'GET',
 				headers:{
 					'Content-Type' : 'application/json'
@@ -220,7 +220,7 @@
 					commentContent: content
 			};
 			
-			fetch(`/community-lists/api/comment-write`,{
+			fetch(`/api/community-lists/comment-write`,{
 				method : 'POST',
 				headers:{
 					'Content-Type' : 'application/json'
