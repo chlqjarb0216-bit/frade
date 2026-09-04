@@ -1,5 +1,7 @@
 package com.frade.controller.order;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import com.frade.common.order.PriceOptionCommon;
 import com.frade.common.order.TradeOptionCommon;
 import com.frade.dto.order.OrderInfoDTO;
 import com.frade.dto.user.AssetsInfoDTO;
+import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
 import com.frade.service.order.OrderService;
 import com.frade.service.portfolio.PortfolioService;
@@ -31,10 +34,15 @@ public class OrderController {
 
 		
 		int userNum = 1; //userNum 임시데이터 
+		String stockCode = "005930";
 		
 		UserCashDTO cash = orderService.findUserCashByUserNum(userNum);
 		
+		PortfolioDTO portfolio = portfolioService.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
+		
+		
 		model.addAttribute("userCash", cash.getCash());
+		model.addAttribute("stockCnt", portfolio.getUserStockCnt());
 		
 		
 		

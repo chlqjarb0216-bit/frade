@@ -183,6 +183,7 @@
 
         <div class="caculPrice">
             <p>주문 가능 금액 <span>${userCash} 원</span></p>
+            <p>보유 수량 <span style ="margin-left: 167px">${stockCnt} 주</span></p>
             <p>예상 주문 금액 <span id="expectedOrderAmount">100원</span></p>
         </div>
 
