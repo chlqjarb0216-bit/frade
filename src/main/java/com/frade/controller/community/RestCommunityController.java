@@ -20,7 +20,7 @@ import com.frade.service.community.CommentService;
 import com.frade.service.community.PostService;
 
 @RestController // 내부적으로 모든 메서드에 @ResponseBody가 적용됨
-@RequestMapping("/api") // 공통 API 경로 세팅
+@RequestMapping("/api/community-lists") // 공통 API 경로 세팅
 public class RestCommunityController {
 
 	@Autowired

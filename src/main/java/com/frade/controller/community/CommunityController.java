@@ -58,7 +58,7 @@ public class CommunityController {
 				return "redirect:/community-lists/write?error=true"; 
 			}
 		} catch (Exception e) {
-			e.printStackTrace(); 
+			e.getMessage(); 
 			return "redirect:/community-lists/write?error=true";
 		}
 	}
@@ -67,7 +67,6 @@ public class CommunityController {
 	@GetMapping("/detail")
 	public String postDetail(@RequestParam int postNum, Model model) {
 		model.addAttribute("post", postService.getPost(postNum));
-		model.addAttribute("path", FilePath.FILE_ROOT_PATH + FilePath.POST_UPLOADFILE_PATH);
 		return "community/detail";
 	}
 }
