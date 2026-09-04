@@ -49,7 +49,7 @@
 </select>
 
 <select id="selectPostList" parameterType="map" resultType="PostDTO">
-	SELECT p.post_num, p.post_category_num, p.post_title,  u.user_nick AS userName, p.post_view_cnt, p.post_posted_date
+	SELECT p.post_num, p.post_category_num, p.post_title,  u.user_nick AS user_name, p.post_view_cnt, p.post_posted_date
 	FROM t_post p
 	INNER JOIN t_user u ON p.user_num = u.user_num
 	<where>
@@ -65,5 +65,10 @@
 	ORDER BY p.post_num DESC
 </select>
 	
-
+<select id="selectPost"  resultType="postDTO">
+	SELECT p.*, u.user_nick AS user_name
+	FROM t_post p
+	INNER JOIN t_user u ON p.user_num = u.user_num
+	WHERE post_num = #{postNum}
+</select>
 </mapper>

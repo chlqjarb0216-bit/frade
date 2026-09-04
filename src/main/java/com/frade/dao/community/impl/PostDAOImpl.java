@@ -46,7 +46,8 @@ public class PostDAOImpl implements PostDAO{
 	@Override
 	public PostDTO selectPost(int postNum) {
 		
-		return null;
+		PostDTO result = sqlSessionTemplate.selectOne("post_mapper.selectPost", postNum);
+		return result;
 	}
 
 	@Override
