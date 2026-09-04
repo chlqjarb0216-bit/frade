@@ -1,8 +1,11 @@
 package com.frade.dto.order;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @AllArgsConstructor
 public class HistoryDTO {	//체결 내역
