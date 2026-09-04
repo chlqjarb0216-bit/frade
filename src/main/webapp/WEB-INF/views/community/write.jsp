@@ -11,6 +11,59 @@
 <!-- 부트스트랩 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
+<style>
+body {
+	background-color: #f8f9fa;
+	color: #212529;
+	font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, "Noto Sans KR", sans-serif;
+}
+
+.custom-card {
+	background-color: #ffffff;
+	border: 1px solid #e9ecef;
+	border-radius: 1rem;
+}
+
+.custom-form-control {
+	border: 1px solid #dee2e6;
+	border-radius: 8px;
+	font-size: 0.93rem;
+	padding: 10px 14px;
+}
+
+.custom-form-control:focus {
+	border-color: #adb5bd;
+	box-shadow: none;
+}
+
+textarea.custom-form-control {
+	resize: vertical;
+	min-height: 240px;
+	line-height: 1.6;
+}
+
+.form-label {
+	font-weight: 600;
+	font-size: 0.875rem;
+	color: #495057;
+	margin-bottom: 8px;
+}
+
+.btn-group .btn-outline-secondary {
+	border-color: #dee2e6;
+	color: #495057;
+}
+
+.btn-check:checked + .btn-outline-secondary {
+	background-color: #212529;
+	border-color: #212529;
+	color: #ffffff;
+}
+
+btn-outline-secondary:hover {
+	color:#f1f5f9;
+}
+</style>
 </head>
 <body>
 
@@ -18,52 +71,57 @@
 	<jsp:include page="../common/navbar.jsp"></jsp:include>
 
 	<!-- 본문 영역 -->
-	<div class="container mt-5">
+	<div class="container my-5" style="max-width: 1080px;">
 		
-		<div>
-			<h2>게시글 작성</h2>
-			<a href="/community-lists" class="btn btn-outline-secondary"><- 커뮤니티로</a>
+		<div class="mb-4">
+			<a href="/community-lists" class="btn btn-outline-secondary btn-sm px-3 mb-3 border-0" style="border-radius: 8px;">← 커뮤니티로</a>
+			<h3 class="fw-bold text-dark mb-1"> 게시글 작성</h3>
+			<p class="text-secondary small mb-0">투자 아이디어, 질문, 정보를 자유롭게 나눠보세요.</p>
+			<hr class="mt-3 mb-4 text-muted opacity-25">
 		</div>
 
-		<form id="postForm" action="/community-lists/write" method="post" enctype="multipart/form-data" onsubmit="postValidate(event)">
-			
-			<div>
-				<label >카테고리 선택:</label><br>
-				<div >
-					<input type="radio" name="postCategoryNum" id="catQ" value="0">
-					<label for="catQ">질문</label>
+		<div class="custom-card p-4 p-md-5 shadow-sm">
+			<form id="postForm" action="/community-lists/write" method="post" enctype="multipart/form-data" onsubmit="postValidate(event)">
+				
+				<div class="mb-4">
+					<label class="form-label d-block">카테고리</label>
+					<div class="btn-group btn-group-sm" role="group" aria-label="카테고리 선택">
+						<input type="radio" class="btn-check" name="postCategoryNum" id="catQ" value="0">
+						<label class="btn btn-outline-secondary px-3 py-2" for="catQ">질문</label>
+
+						<input type="radio" class="btn-check" name="postCategoryNum" id="catI" value="1">
+						<label class="btn btn-outline-secondary px-3 py-2" for="catI">정보</label>
+
+						<input type="radio" class="btn-check" name="postCategoryNum" id="catF" value="2">
+						<label class="btn btn-outline-secondary px-3 py-2" for="catF">자유</label>
+					</div>
 				</div>
-				<div >
-					<input type="radio" name="postCategoryNum" id="catI" value="1">
-					<label  for="catI">정보</label>
+				
+				<div class="mb-4">
+					<label for="postTitle" class="form-label">제목</label>
+					<input type="text" class="form-control custom-form-control" placeholder="제목을 입력해주세요 (최대 한글 30자)" id="postTitle" name="postTitle">
 				</div>
-				<div>
-					<input type="radio" name="postCategoryNum" id="catF" value="2">
-					<label for="catF">자유</label>
+				
+				<div class="mb-4">
+					<label for="postContent" class="form-label">내용</label>
+					<textarea class="form-control custom-form-control" placeholder="내용을 입력해주세요" id="postContent" name="postContent" rows="10"></textarea>
 				</div>
-			</div>
-			
-			<div >
-				<label for="postTitle" >제목</label>
-				<input type="text"  placeholder="제목을 입력해주세요" id="postTitle" name="postTitle">
-			</div>
-			
-			<div>
-				<label for="postContent" >내용</label>
-				<textarea placeholder="내용을 입력해주세요" id="postContent" name="postContent" rows="10"></textarea>
-			</div>
-			
-			<div>
-				<label for="uploadFiles" >첨부파일</label>
-				<input type="file" id="uploadFiles" name="uploadFiles" multiple>
-			</div>
-			
-			<div >
-				<button type="submit">작성</button> 
-				<a href="/community-lists">취소</a>
-			</div>
-			
-		</form>
+				
+				<div class="mb-4">
+					<label for="uploadFiles" class="form-label">첨부파일</label>
+					<input class="form-control custom-form-control" type="file" id="uploadFiles" name="uploadFiles" multiple>
+					<div class="text-secondary small mt-2" style="font-size: 0.8rem;">
+						* 파일은 최대 3개, 개당 10MB 이하로 첨부 가능합니다.
+					</div>
+				</div>
+				
+				<div class="d-flex align-items-center justify-content-end gap-2 pt-3 border-top">
+					<a href="/community-lists" class="btn btn-outline-secondary btn-sm px-4 py-2" style="border-radius: 8px;">취소</a>
+					<button type="submit" class="btn btn-dark btn-sm px-4 py-2 fw-medium" style="border-radius: 8px;">작성</button> 
+				</div>
+				
+			</form>
+		</div>
 	</div>
 
 	<!-- 부트스트랩 JS -->

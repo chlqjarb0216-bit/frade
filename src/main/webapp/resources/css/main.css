@@ -27,9 +27,8 @@ body {
     padding: 0 16px;
 }
 .main-page-title-box {
-    margin-bottom: 24px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #0f172a;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -47,6 +46,8 @@ body {
     font-size: 13px;
     color: var(--text-secondary);
     margin: 4px 0 0;
+    padding-bottom:10px;
+    border-bottom: 2px solid rgb(128, 128, 128);
 }
 /* 2x2 레이아웃 (상단 행 / 하단 행) */
 .main-top-box,
@@ -60,8 +61,9 @@ body {
 
 .dashboard-card {
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
+    border: 1px solid #c0c0c0;
     border-radius: var(--radius-card);
+    border-shadow:0 1px 2px 0 rgba(0, 0, 0, 0.05);
     padding: 20px 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     display: flex;
@@ -90,16 +92,18 @@ body {
     gap: 6px;
 }
 .card-more-link {
+	background-color:#ffffff;
+	padding:5px 5px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--color-primary);
+    color: #c7c7c7;
     text-decoration: none;
     transition: opacity 0.2s;
 }
 
 .card-more-link:hover {
-    text-decoration: underline;
-    opacity: 0.8;
+    transform: scale(1.01);
+    color : #b6b6b6;
 }
 /* --------------------------------------------------------------------------
    1. 실시간 인기 종목 리스트
@@ -114,7 +118,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 12px;
-    border-radius: 8px;
+    border-radius: 10px;
     text-decoration: none;
     color: inherit;
     border: 1px solid transparent;
@@ -123,8 +127,9 @@ body {
 }
 .stock-item:hover {
     background-color: #f8fafc;
-    border-color: var(--border-color);
+    border-color: #c6caca;
     transform: translateX(3px);
+    transition: transform 0.2s ease;
 }
 .stock-left {
     display: flex;
@@ -145,16 +150,16 @@ body {
     justify-content: center;
 }
 .stock-item:nth-child(1) .rank-badge {
-    background-color: #fee2e2;
-    color: var(--color-up);
+    
+    color: #FFD700;
 }
 .stock-item:nth-child(2) .rank-badge {
-    background-color: #ffedd5;
-    color: #ea580c;
+    
+    color: #C0C0C0;
 }
 .stock-item:nth-child(3) .rank-badge {
-    background-color: #fef9c3;
-    color: #ca8a04;
+    
+    color: #CD7F32;
 }
 .stock-name-box {
     display: flex;
@@ -189,11 +194,11 @@ body {
 }
 .stock-rate.up {
     color: var(--color-up);
-    background-color: var(--color-up-bg);
+    
 }
 .stock-rate.down {
     color: var(--color-down);
-    background-color: var(--color-down-bg);
+    
 }
 .stock-rate.even {
     color: var(--text-secondary);
@@ -237,9 +242,15 @@ body {
     text-align: center;
 }
 
-.post-item:nth-child(1) .post-rank-badge { color: var(--color-up); }
-.post-item:nth-child(2) .post-rank-badge { color: #ea580c; }
-.post-item:nth-child(3) .post-rank-badge { color: #ca8a04; }
+.post-item:nth-child(1) .post-rank-badge { 
+	color: #FFD700; 
+	}
+.post-item:nth-child(2) .post-rank-badge { 
+	color: #C0C0C0;
+	}
+.post-item:nth-child(3) .post-rank-badge { 
+	color: #CD7F32; 
+	}
 .post-info-box {
     display: flex;
     flex-direction: column;

@@ -57,8 +57,10 @@ CREATE TABLE t_user (
 CREATE TABLE t_cash (
   user_num NUMBER(9), --t_user user_num
   cash NUMBER(18) DEFAULT 10000000 NOT NULL, --java long 대응
-  margine NUMBER(18) DEFAULT 0 NOT NULL, --증거금
-  CONSTRAINT pk_t_cash PRIMARY KEY (user_num)
+  margin NUMBER(18) DEFAULT 0 NOT NULL, --증거금
+  CONSTRAINT pk_t_cash PRIMARY KEY (user_num),
+  CONSTRAINT ck_t_cash_cash CHECK (cash>=0),
+  CONSTRAINT ck_t_cash_margin CHECK (margin>=0 AND margin<=cash)
 );
 
 
@@ -80,110 +82,112 @@ CREATE TABLE t_stock (
   stock_name VARCHAR2(60) NOT NULL,
   sector_num NUMBER(2) NOT NULL,
   stock_status NUMBER(1) NOT NULL,
-  CONSTRAINT pk_t_stock PRIMARY KEY (stock_code)
+  prev_day_close_price NUMBER(9) NOT NULL,
+  CONSTRAINT pk_t_stock PRIMARY KEY (stock_code),
+  CONSTRAINT ck_t_stock_prev CHECK (prev_day_close_price>0)
 );
 
 INSERT ALL
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005930','삼성전자',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000660','SK하이닉스',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005935','삼성전자우',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('402340','SK스퀘어',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('009150','삼성전기',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005380','현대차',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('373220','LG에너지솔루션',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('207940','삼성바이오로직스',7,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('028260','삼성물산',4,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('105560','KB금융',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('032830','삼성생명',19,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('012450','한화에어로스페이스',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000270','기아',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('034020','두산에너빌리티',11,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('055550','신한지주',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('329180','HD현대중공업',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('012330','현대모비스',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('068270','셀트리온',7,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('006400','삼성SDI',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('034730','SK',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('086790','하나금융지주',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('035420','NAVER',15,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('066570','LG전자',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('010130','고려아연',6,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('010120','LS ELECTRIC',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000810','삼성화재',19,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('042660','한화오션',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005490','POSCO홀딩스',6,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('267260','HD현대일렉트릭',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('298040','효성중공업',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('009540','HD한국조선해양',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('316140','우리금융지주',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('011200','HMM',14,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('017670','SK텔레콤',24,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('096770','SK이노베이션',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('015760','한국전력',21,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('042700','한미반도체',11,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('138040','메리츠금융지주',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('006800','미래에셋증권',12,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('051910','LG화학',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('033780','KT&G',8,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('010140','삼성중공업',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000150','두산',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('018260','삼성에스디에스',15,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('003550','LG',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('267250','HD현대',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('278470','에이피알',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('024110','기업은행',25,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('086280','현대글로비스',14,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('035720','카카오',15,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('079550','LIG디펜스앤에어로스페이스',6,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('010950','S-Oil',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('003670','포스코퓨처엠',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('064350','현대로템',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('011070','LG이노텍',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('272210','한화시스템',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000720','현대건설',9,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('030200','KT',24,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('047810','한국항공우주',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('307950','현대오토에버',15,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005830','DB손해보험',19,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('078930','GS',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('003230','삼양식품',8,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('071050','한국금융지주',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('323410','카카오뱅크',25,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('259960','크래프톤',15,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005940','NH투자증권',12,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('003490','대한항공',14,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('047050','포스코인터내셔널',4,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('443060','HD현대마린솔루션',10,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('006260','LS',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('0126Z0','삼성에피스홀딩스',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('028050','삼성E&A',10,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('090430','아모레퍼시픽',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('161390','한국타이어앤테크놀로지',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('180640','한진칼',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('016360','삼성증권',12,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('007660','이수페타시스',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('352820','하이브',20,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('009830','한화솔루션',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('047040','대우건설',9,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('039490','키움증권',12,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('064400','LG씨엔에스',15,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('005387','현대차2우B',5,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('021240','코웨이',10,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000100','유한양행',7,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('326030','SK바이오팜',10,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('267270','HD건설기계',11,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('128940','한미약품',7,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('032640','LG유플러스',24,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('000880','한화',1,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('377300','카카오페이',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('241560','두산밥캣',11,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('353200','대덕전자',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('001440','대한전선',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('029780','삼성카드',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('062040','산일전기',3,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('010060','OCI홀딩스',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('175330','JB금융지주',2,0)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status) VALUES ('271560','오리온',8,0)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('005930','삼성전자',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('000660','SK하이닉스',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('005935','삼성전자우',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('402340','SK스퀘어',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('009150','삼성전기',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('005380','현대차',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('373220','LG에너지솔루션',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('207940','삼성바이오로직스',7,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('028260','삼성물산',4,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('105560','KB금융',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('032830','삼성생명',19,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('012450','한화에어로스페이스',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('000270','기아',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('034020','두산에너빌리티',11,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('055550','신한지주',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('329180','HD현대중공업',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('012330','현대모비스',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('068270','셀트리온',7,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('006400','삼성SDI',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('034730','SK',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('086790','하나금융지주',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('035420','NAVER',15,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('066570','LG전자',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('010130','고려아연',6,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('010120','LS ELECTRIC',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('000810','삼성화재',19,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('042660','한화오션',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('005490','POSCO홀딩스',6,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('267260','HD현대일렉트릭',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('298040','효성중공업',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('009540','HD한국조선해양',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('316140','우리금융지주',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('011200','HMM',14,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('017670','SK텔레콤',24,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('096770','SK이노베이션',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('015760','한국전력',21,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('042700','한미반도체',11,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('138040','메리츠금융지주',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('006800','미래에셋증권',12,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('051910','LG화학',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('033780','KT&G',8,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('010140','삼성중공업',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('000150','두산',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('018260','삼성에스디에스',15,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('003550','LG',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('267250','HD현대',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('278470','에이피알',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('024110','기업은행',25,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('086280','현대글로비스',14,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('035720','카카오',15,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('079550','LIG디펜스앤에어로스페이스',6,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('010950','S-Oil',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('003670','포스코퓨처엠',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('064350','현대로템',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('011070','LG이노텍',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('272210','한화시스템',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('000720','현대건설',9,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('030200','KT',24,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('047810','한국항공우주',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('307950','현대오토에버',15,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('005830','DB손해보험',19,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('078930','GS',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('003230','삼양식품',8,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('071050','한국금융지주',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('323410','카카오뱅크',25,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('259960','크래프톤',15,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('005940','NH투자증권',12,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('003490','대한항공',14,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('047050','포스코인터내셔널',4,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('443060','HD현대마린솔루션',10,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('006260','LS',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('0126Z0','삼성에피스홀딩스',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('028050','삼성E&A',10,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('090430','아모레퍼시픽',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('161390','한국타이어앤테크놀로지',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('180640','한진칼',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('016360','삼성증권',12,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('007660','이수페타시스',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('352820','하이브',20,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('009830','한화솔루션',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('047040','대우건설',9,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('039490','키움증권',12,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('064400','LG씨엔에스',15,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('005387','현대차2우B',5,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('021240','코웨이',10,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('000100','유한양행',7,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('326030','SK바이오팜',10,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('267270','HD건설기계',11,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('128940','한미약품',7,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('032640','LG유플러스',24,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('000880','한화',1,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('377300','카카오페이',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('241560','두산밥캣',11,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('353200','대덕전자',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('001440','대한전선',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('029780','삼성카드',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('062040','산일전기',3,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('010060','OCI홀딩스',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('175330','JB금융지주',2,0,50000)
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('271560','오리온',8,0,50000)
 SELECT * FROM DUAL;
 
 
@@ -211,13 +215,20 @@ CREATE TABLE t_post (
 
 CREATE TABLE t_stock_price (
   stock_code VARCHAR2(6),
-  date_time DATE,
+  date_time DATE DEFAULT SYSDATE NOT NULL,
   price_open NUMBER(9) NOT NULL, --java int 최대자리 대응
   price_high NUMBER(9) NOT NULL, --java int 최대자리 대응
   price_low NUMBER(9) NOT NULL, --java int 최대자리 대응
   price_close NUMBER(9) NOT NULL, --java int 최대자리 대응
-  volume NUMBER(18) NOT NULL, --java long 대응
-  CONSTRAINT pk_t_stock_price PRIMARY KEY (stock_code, date_time)
+  volume_buy NUMBER(18) DEFAULT 0 NOT NULL, --java long 대응
+  volume_sell NUMBER(18) DEFAULT 0 NOT NULL, --java long 대응
+  CONSTRAINT pk_t_stock_price PRIMARY KEY (stock_code, date_time),
+  CONSTRAINT ck_t_stock_price_open CHECK (price_open>0),
+  CONSTRAINT ck_t_stock_price_high CHECK (price_high>0),
+  CONSTRAINT ck_t_stock_price_low CHECK (price_low>0),
+  CONSTRAINT ck_t_stock_price_close CHECK (price_close>0),
+  CONSTRAINT ck_t_stock_volume_buy CHECK (volume_buy>=0),
+  CONSTRAINT ck_t_stock_volume_sell CHECK (volume_sell>=0)
 );
 
 
@@ -226,7 +237,9 @@ CREATE TABLE t_portfolio (
   stock_code VARCHAR2(6) NOT NULL,
   user_stock_cnt NUMBER(9) NOT NULL, --java int 최대자리 대응
   user_buy_cost NUMBER(18) NOT NULL, --java long 대응
-  CONSTRAINT pk_t_portfolio PRIMARY KEY (user_num, stock_code)
+  CONSTRAINT pk_t_portfolio PRIMARY KEY (user_num, stock_code),
+  CONSTRAINT ck_t_portfolio_user_stock_cnt CHECK (user_stock_cnt>=0),
+  CONSTRAINT ck_t_portfolio_user_buy_cost CHECK (user_buy_cost>=0)
 );
 
 
@@ -239,7 +252,9 @@ CREATE TABLE t_history (
   trade_price NUMBER(9) NOT NULL, --t_stock_price price
   trade_cnt NUMBER(9) NOT NULL, --t_portfolio stock_cnt
   trade_date DATE DEFAULT SYSDATE NOT NULL,
-  CONSTRAINT pk_t_history PRIMARY KEY (trade_num)
+  CONSTRAINT pk_t_history PRIMARY KEY (trade_num),
+  CONSTRAINT ck_t_history_trade_price CHECK (trade_price>0),
+  CONSTRAINT ck_t_history_trade_cnt CHECK (trade_cnt<>0)
 );
 
 

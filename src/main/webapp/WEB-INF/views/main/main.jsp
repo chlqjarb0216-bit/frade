@@ -9,7 +9,7 @@
 <meta charset="UTF-8">
 <!-- 스마트폰 등의 환경에서 원래 크기로 보이도록 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frade - 메인 페이지</title>
+<title>Frade</title>
 <!-- 부트스트랩 CSS -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
@@ -26,7 +26,7 @@
 		<!-- 상단 타이틀 영역 -->
 		<div class="main-page-title-box">
 			<div>
-				<h1 class="main-page-title">📊 오늘의 시장</h1>
+				<h1 class="main-page-title"> 오늘의 시장</h1>
 				<p class="main-page-desc">실시간 인기 주식과 커뮤니티 주요 토픽을 한눈에 확인하세요.</p>
 				
 				</div>
@@ -36,8 +36,8 @@
 			<!-- 1. 실시간 인기 종목 (StockController 연결) -->
 			<div class="dashboard-card">
 				<div class="card-header-row">
-					<h2 class="card-title">🔥 실시간 인기 종목</h2>
-					<a href="${pageContext.request.contextPath}/stock" class="card-more-link">더보기 &gt;</a>
+					<h2 class="card-title">🔥 실시간 인기 종목 TOP 5</h2>
+					<a href="${pageContext.request.contextPath}/stock" class="card-more-link">더보기</a>
 				</div>
 				<div class="stock-list">
 					<c:forEach var="stock" items="${topStocks}" varStatus="status">
@@ -75,15 +75,13 @@
 			<div class="dashboard-card">
 				<div class="card-header-row">
 					<h2 class="card-title">📰 주식뉴스</h2>
-					<span class="card-more-link" style="color: #94a3b8; cursor: default;">준비 중</span>
+					<span class="card-more-link" style="color: #94a3b8; cursor: default;">더보기</span>
 				</div>
 				<div class="placeholder-section">
 					<span class="badge-preparing">뉴스 컨트롤러 준비 중</span>
 					<p class="placeholder-text">실시간 주요 증시 및 기업 뉴스 피드 연동 예정입니다.</p>
 					<ul class="placeholder-list">
-						<li>· 반도체 대형주 중심 외국인 프로그램 순매수 지속</li>
-						<li>· 하반기 글로벌 금리 인하 기대감에 증시 강세</li>
-						<li>· 글로벌 친환경차 누적 판매 500만대 조기 돌파</li>
+						
 					</ul>
 				</div>
 			</div>
@@ -93,8 +91,7 @@
 			<!-- 3. KOSPI 지수 (컨트롤러 미연동: 제외 및 안내 처리) -->
 			<div class="dashboard-card">
 				<div class="card-header-row">
-					<h2 class="card-title">📈 KOSPI 종합지수</h2>
-					<span class="card-more-link" style="color: #94a3b8; cursor: default;">준비 중</span>
+					<h2 class="card-title">KOSPI 종합지수</h2>
 					
 					</div>
 				<div class="placeholder-section">
@@ -110,7 +107,7 @@
 			<div class="dashboard-card">
 				<div class="card-header-row">
 					<h2 class="card-title">💬 커뮤니티 인기글</h2>
-					<a href="${pageContext.request.contextPath}/community-lists" class="card-more-link">더보기 &gt;</a>
+					<a href="${pageContext.request.contextPath}/community-lists" class="card-more-link">더보기</a>
 				</div>
 				<div class="post-list">
 					<c:forEach var="post" items="${topPosts}" varStatus="status">
