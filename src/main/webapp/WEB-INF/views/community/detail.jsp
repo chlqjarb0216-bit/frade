@@ -37,6 +37,19 @@
 		<div>
 
 			<p>${post.postTitle}</p>
+			<c:if
+				test="${not empty sessionScope.loginUserNum and sessionScope.loginUserNum == post.userNum}">
+
+				<!-- 수정 버튼 (GET) -->
+				<a href="/community-lists/edit?postNum=${post.postNum}">수정</a>
+
+				<!-- 삭제 버튼 (POST) -->
+				<form action="/community-lists/delete" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+					<input type="hidden" name="postNum" value="${post.postNum}">
+					<button type="submit">삭제</button>
+				</form>
+
+			</c:if>
 			<p>${post.userName}</p>
 			<p>${post.postedDateString}</p>
 			<p>${post.postViewCnt}</p>
@@ -53,7 +66,7 @@
 					<c:if test="${not empty post.fileList}">
 						<ul>
 							<c:forEach var="fileName" items="${post.fileList}">
-								<img src="/file-storage/post_uploadfile/${fileName}"/>
+								<img src="/file-storage/post_uploadfile/${fileName}" />
 							</c:forEach>
 						</ul>
 					</c:if>

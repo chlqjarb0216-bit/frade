@@ -23,4 +23,7 @@ public interface PostDAO {
 	
 	//메인페이지 표시 게시글
 	public List<PostDTO> selectMainPosts(int pageSize);
+	
+	//게시글 삭제
+	public int deletePost(int postNum);
 }

@@ -28,6 +28,7 @@ public interface PostService {
 	//정렬된 게시글 리스트를 받아옴
 	public List<PostDTO> getPostListPagingSortedByView(int pageSize);
 	
+	public int deletePost(int postNum);
 	
 	
 }
