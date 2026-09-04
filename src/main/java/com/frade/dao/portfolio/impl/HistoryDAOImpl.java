@@ -27,7 +27,7 @@ public class HistoryDAOImpl implements HistoryDAO {
 	@Override
 	public List<HistoryDTO> findTradeHistoryTodayByUserNum(int userNum) {
 		List<HistoryDTO> history = sqlSessionTemplate.selectList
-							("history_mapper.findTradeHistoryByUserNum", userNum);
+							("history_mapper.findTradeHistoryTodayByUserNum", userNum);
 		return history;
 	}
 
