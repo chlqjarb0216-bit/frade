@@ -119,12 +119,14 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostDTO getPost(int postNum) {
+	public PostDTO getPost(int postNum, boolean isViewUp) {
 
-		// 1. 게시글을 클릭해서 볼 때마다 조회수(pViewCnt) 1 증가
-		postDAO.updateViewCount(postNum);
+		// 컨트롤러에서 true라고 할 때만 조회수 증가
+	    if (isViewUp) {
+	        postDAO.updateViewCount(postNum);
+	    }
 
-		// 2. DB에서 실제 게시글 상세 정보 가져와서 그대로 리턴
+		// DB에서 실제 게시글 상세 정보 가져와서 그대로 리턴
 		return postDAO.selectPost(postNum);
 
 	}

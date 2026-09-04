@@ -71,4 +71,10 @@
 	INNER JOIN t_user u ON p.user_num = u.user_num
 	WHERE post_num = #{postNum}
 </select>
+
+<update id="updateViewCount" parameterType="int">
+    UPDATE t_post
+    SET post_view_cnt = NVL(post_view_cnt, 0) + 1
+    WHERE post_num = #{postNum}
+</update>
 </mapper>

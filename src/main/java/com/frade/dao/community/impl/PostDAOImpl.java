@@ -52,8 +52,9 @@ public class PostDAOImpl implements PostDAO{
 
 	@Override
 	public int updateViewCount(int postNum) {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		int result = sqlSessionTemplate.update("post_mapper.updateViewCount", postNum);
+		return result;
 	}
 	
 	
