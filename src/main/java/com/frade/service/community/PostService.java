@@ -11,7 +11,7 @@ import com.frade.dto.community.PostDTO;
 public interface PostService {
 	
 	//작성한 게시글 db에 저장
-	public long savePost(PostDTO post, MultipartFile[] files);
+	public int savePost(PostDTO post, MultipartFile[] files);
 
 	//게시글 목록 데이터 가져오기
     // 1.페이징 수학 계산

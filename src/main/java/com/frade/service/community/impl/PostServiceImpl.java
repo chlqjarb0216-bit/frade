@@ -19,15 +19,17 @@ import com.frade.dto.community.PageResultDTO;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class PostServiceImpl implements PostService {
 
 	@Autowired
 	PostDAO postDAO;
 	
-	@Transactional // 파일 저장이나 DB 인서트 중 하나라도 실패하면 롤백되도록 선언
 	@Override
-	public long savePost(PostDTO post, MultipartFile[] files) {
+	public int savePost(PostDTO post, MultipartFile[] files) {
 
 		//게시글 시퀀스 먼저 따오기
 		long nextNum = postDAO.getNextPostNum();
@@ -48,7 +50,7 @@ public class PostServiceImpl implements PostService {
 			for (int i = 0; i < files.length; i++) {
 				MultipartFile file = files[i];
 				if (!file.isEmpty()) {
-					try {
+					
 						// 원본 파일명에서 확장자 추출 (.jpg, .png 등)
 						String originalName = file.getOriginalFilename();
 						String ext = originalName.substring(originalName.lastIndexOf("."));
@@ -59,13 +61,13 @@ public class PostServiceImpl implements PostService {
 
 						// 물리적 폴더에 실제 파일 저장
 						File saveFile = new File(baseDir, savedFileName);
-						file.transferTo(saveFile);
-						System.out.println(saveFile);
-
-					} catch (IOException e) {
-						// 예외 발생 시 RuntimeException으로 던져야 @Transactional이 인식하고 DB 롤백을 수행함
-						throw new RuntimeException("파일 저장 중 오류가 발생했습니다.", e);
-					}
+						
+						try {
+							file.transferTo(saveFile);
+						} catch (IllegalStateException | IOException e) {
+							e.printStackTrace();
+							log.warn(e.getMessage());
+						}
 				}
 			}
 			// 조립된 문자열 (예: 105-1.jpg,105-2.png)을 DTO에 세팅
@@ -148,15 +150,8 @@ public class PostServiceImpl implements PostService {
 		post.setPostViewCnt(123);
 		post.setPostPostedDate(LocalDateTime.now());
 		post.setPostFiles("3_1.jpg,3_2.png");
-
 		//=========테스트데이터==============
-
-		// DB에서 가져온 파일명 문자열을 배열로 쪼개서 세팅
-		if (post.getPostFiles() != null && !post.getPostFiles().isEmpty()) {
-			post.setFileList(Arrays.asList(post.getPostFiles().split(",")));
-		} else {
-			post.setFileList(new ArrayList<>()); // 파일이 없을 경우 빈 리스트
-		}
+		
 		return post;
 	}
 
