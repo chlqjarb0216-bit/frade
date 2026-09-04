@@ -16,6 +16,9 @@ import com.frade.common.FilePath;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 @RequestMapping("/community-lists")
 public class CommunityController {
@@ -74,7 +77,8 @@ public class CommunityController {
 				return "redirect:/community-lists/write?error=true";
 			}
 		} catch (Exception e) {
-			e.getMessage();
+
+			log.error(e.getMessage());
 			return "redirect:/community-lists/write?error=true";
 		}
 	}

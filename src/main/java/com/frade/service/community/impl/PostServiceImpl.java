@@ -36,7 +36,7 @@ public class PostServiceImpl implements PostService {
 		// 게시글 시퀀스 먼저 따오기
 		long nextNum = postDAO.getNextPostNum();
 
-		post.setPostNum((long) nextNum); // DTO에 번호 세팅
+		post.setPostNum(nextNum); // DTO에 번호 세팅
 
 		// 파일이 있을 경우에만 조립 및 저장 로직 실행
 		if (files != null && files.length > 0) {
