@@ -138,7 +138,6 @@
 				.then(response => response.json())
 				.then(postList=>{
 
-						console.log(postList.code);
 					if(postList.code == "suc_002"){
 						renderTable([]);
 						clearPaging();
@@ -169,7 +168,7 @@
 	                    <td>
 	                        <a href="/community-lists/detail?postNum=\${post.postNum}">\${post.postTitle}</a>
 	                    </td>
-	                    <td>\${post.userNum}</td>
+	                    <td>\${post.userName}</td>
 	                    <td>\${post.postViewCnt}</td>
 	                    <td>\${post.postedDateString}</td>
 	                </tr>

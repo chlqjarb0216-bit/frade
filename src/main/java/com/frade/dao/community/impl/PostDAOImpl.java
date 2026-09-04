@@ -32,21 +32,20 @@ public class PostDAOImpl implements PostDAO{
 
 	@Override
 	public int selectPostTotalCount(Map<String, Object> params) {
-
 			int result = sqlSessionTemplate.selectOne("post_mapper.selectPostTotalCount", params);
 		
-		return 0;
+		return result;
 	}
 
 	@Override
 	public List<PostDTO> selectPostList(Map<String, Object> params) {
-		// TODO Auto-generated method stub
-		return null;
+		List<PostDTO> result = sqlSessionTemplate.selectList("post_mapper.selectPostList", params);
+		return result;
 	}
 
 	@Override
 	public PostDTO selectPost(int postNum) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 

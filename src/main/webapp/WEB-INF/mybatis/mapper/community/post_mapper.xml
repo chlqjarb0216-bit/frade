@@ -27,21 +27,43 @@
 </insert>
 
 <select id="selectPostTotalCount" parameterType="map" resultType="int">
-	SELECT COUNT(*)
-	FROM t_post
-	<where>
-		<if test="keyword != null and keyword != ''">
-			<!-- type 0은 제목 검색  -->
-			<if test="type == 0">
-				post_title LIKE '%' || #{keyword} || '%'
-			</if>
-			<if test="type == 1">
-				AND user_num = #{keyword}
-			</if>
-		</if>
-	</where>
+    SELECT COUNT(*) 
+    FROM t_post p
+    INNER JOIN t_user u ON p.user_num = u.user_num
+    <where>
+        <!-- keyword가 비어있지 않을 때만 검색 조건 발동 -->
+        <if test="keyword != null and keyword != ''">
+            
+            <!-- type이 0이면 제목 검색 (t_post 테이블) -->
+            <if test="type == 0">
+                p.post_title LIKE '%' || #{keyword} || '%'
+            </if>
+            
+            <!-- type이 1이면 닉네임 검색 (t_user 테이블) -->
+            <if test="type == 1">
+                u.user_nick LIKE '%' || #{keyword} || '%'
+            </if>
+            
+        </if>
+    </where>
 </select>
 
+<select id="selectPostList" parameterType="map" resultType="PostDTO">
+	SELECT p.post_num, p.post_category_num, p.post_title,  u.user_nick AS userName, p.post_view_cnt, p.post_posted_date
+	FROM t_post p
+	INNER JOIN t_user u ON p.user_num = u.user_num
+	<where>
+	    <if test="keyword != null and keyword != ''">
+	        <if test="type == 0">
+	            p.post_title LIKE '%' || #{keyword} || '%'
+	        </if>
+	        <if test="type == 1">
+	            u.user_nick LIKE '%' || #{keyword} || '%'
+	        </if>
+	    </if>
+	</where>
+	ORDER BY p.post_num DESC
+</select>
 	
 
 </mapper>

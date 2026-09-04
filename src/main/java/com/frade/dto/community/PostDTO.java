@@ -46,7 +46,7 @@ public class PostDTO {
         if (this.postPostedDate == null) {
             return "";
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return this.postPostedDate.format(formatter);
     }
     
