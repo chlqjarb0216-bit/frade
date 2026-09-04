@@ -1,10 +1,18 @@
 package com.frade.dto.order;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
+@AllArgsConstructor
 public class HistoryDTO {	//체결 내역
 	
+	public HistoryDTO(String stockCode2, int userNum2, int orderPrice, int orderCnt) {
+		this.stockCode = stockCode2;
+		this.userNum = userNum2;
+		this.tradePrice = orderPrice;
+		this.tradeCnt = orderCnt;
+	}
 	long tradeNum; //거래 번호
 	int userNum; //유저 번호
 	String stockCode; //종목 코드

@@ -34,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
 	public boolean processBuy(OrderInfoDTO orderInfo) { // 매수
 		
 		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
-		
+
 		//임시 유저넘버
 		int userNum = 1;
 
@@ -68,11 +68,9 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		// 거래기록 저장
-		HistoryDTO history = new HistoryDTO();
-		history.setStockCode(orderInfo.getStockCode());
-		history.setUserNum(userNum);
-		history.setTradePrice(orderInfo.getOrderPrice());
-		history.setTradeCnt(orderInfo.getOrderCount());
+		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, 
+				orderInfo.getOrderPrice(), orderInfo.getOrderCount() * -1);
+
 		if (insertTradeHistory(history) == 0) {
 			throw new IllegalStateException("거래 기록 insert 실패.");
 		}
@@ -126,11 +124,10 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		// 거래기록 저장
-		HistoryDTO history = new HistoryDTO();
-		history.setStockCode(orderInfo.getStockCode());
-		history.setUserNum(userNum);
-		history.setTradePrice(orderInfo.getOrderPrice());
-		history.setTradeCnt(orderInfo.getOrderCount() * -1); // 음수로 매도 구분
+		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, 
+				orderInfo.getOrderPrice(), orderInfo.getOrderCount() * -1);
+		
+
 		if (insertTradeHistory(history) == 0) {
 			throw new IllegalStateException("거래기록 insert 실패");
 		}
