@@ -1,6 +1,7 @@
 package com.frade.dao.community.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,13 @@ public class PostDAOImpl implements PostDAO{
 	}
 
 	@Override
-	public int selectPostTotalCount(String keyword, int type) {
+	public int selectPostTotalCount(Map<String, Object> params) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public List<PostDTO> selectPostList(String keyword, int type, int offset, int limit) {
+	public List<PostDTO> selectPostList(Map<String, Object> params) {
 		// TODO Auto-generated method stub
 		return null;
 	}
