@@ -26,6 +26,22 @@
 	)
 </insert>
 
+<select id="selectPostTotalCount" parameterType="map" resultType="int">
+	SELECT COUNT(*)
+	FROM t_post
+	<where>
+		<if test="keyword != null and keyword != ''">
+			<!-- type 0은 제목 검색  -->
+			<if test="type == 0">
+				post_title LIKE '%' || #{keyword} || '%'
+			</if>
+			<if test="type == 1">
+				AND user_num = #{keyword}
+			</if>
+		</if>
+	</where>
+</select>
+
 	
 
 </mapper>
