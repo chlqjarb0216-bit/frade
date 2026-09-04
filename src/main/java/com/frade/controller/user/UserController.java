@@ -194,16 +194,13 @@ public class UserController {
 
 		if (result == ResultCode.SUCCESS) {
 
-		    // 수정된 최신 프로필 정보 조회
-		    UserProfileDTO updatedProfile =
-		            userService.getUserProfile(loginUserNumber);
 
 		    // 세션의 로그인 유저 정보도 최신 정보로 변경
 		    UserSessionDTO updatedLoginUser =
 		            new UserSessionDTO(
 		                    loginUserNumber,
-		                    updatedProfile.getUserNick(),
-		                    updatedProfile.getUserPhoto()
+		                    userProfileDTO.getUserNick(),
+		                    userProfileDTO.getUserPhoto()
 		            );
 
 		    session.setAttribute("loginUser", updatedLoginUser);

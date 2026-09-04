@@ -1,10 +1,12 @@
 package com.frade.dto.user;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserSessionDTO {
 
@@ -12,13 +14,4 @@ public class UserSessionDTO {
     String userNick;
     String userPhoto;
 
-    public UserSessionDTO(
-            int userNum,
-            String userNick,
-            String userPhoto) {
-
-        this.userNum = userNum;
-        this.userNick = userNick;
-        this.userPhoto = userPhoto;
-    }
 }

@@ -351,6 +351,7 @@ public class UserServiceImpl implements UserService{
 	        }
 	    }
 
+	    userProfileDTO.setUserPhoto(newProfilePhoto);
 
 	    /*
 	     * 모든 처리 완료 후
