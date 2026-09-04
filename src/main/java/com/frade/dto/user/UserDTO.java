@@ -3,14 +3,10 @@ package com.frade.dto.user;
 import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
-@AllArgsConstructor
-@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
 	
@@ -45,8 +41,36 @@ public class UserDTO {
     String userPhoto;
     // INSERT : 기본 프로필이면 null
     // UPDATE : 변경된 프로필 사진명 또는 null
+    
+    
+    // 회원가입용 생성자
+    public UserDTO(
+            String userId,
+            String userNick,
+            String userEmail,
+            String userPw) {
 
-    Integer userIsDeleted;
+        this.userId = userId;
+        this.userNick = userNick;
+        this.userEmail = userEmail;
+        this.userPw = userPw;
+    }
+
+    // 프로필 수정용 생성자
+    public UserDTO(
+            int userNum,
+            String userNick,
+            String userPw,
+            int userPortfolioIsPublic,
+            String userPhoto) {
+
+        this.userNum = userNum;
+        this.userNick = userNick;
+        this.userPw = userPw;
+        this.userPortfolioIsPublic = userPortfolioIsPublic;
+        this.userPhoto = userPhoto;
+    }
+   
 
 
 }

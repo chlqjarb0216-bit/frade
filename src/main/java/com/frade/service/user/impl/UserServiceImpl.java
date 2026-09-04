@@ -13,6 +13,7 @@ import com.frade.common.ResultCode;
 import com.frade.dto.user.UserDTO;
 import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
+import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
 import com.frade.service.user.UserService;
 import com.frade.util.SHA256Encryptor;
@@ -21,18 +22,18 @@ import com.frade.util.SHA256Encryptor;
 public class UserServiceImpl implements UserService{
 
 	@Override
-	public int userLogin(UserLoginDTO userLoginDTO) {
-		
-		// 로그인 확인용 아이디 비밀번호 아이디:test123 비번:test1234!!
-		
-		if("test123".equals(userLoginDTO.getUserId()) && "test1234!!".equals(userLoginDTO.getUserPw()) ) {
-			
-			return 1;
-			
+	public UserSessionDTO userLogin(UserLoginDTO userLoginDTO) {
+
+		// 로그인 확인용 임시 데이터
+		if ("test123".equals(userLoginDTO.getUserId()) && "test1234!!".equals(userLoginDTO.getUserPw())) {
+
+			return new UserSessionDTO(1, // userNum
+					"개미하이", // userNick
+					"1.png" // userPhoto
+			);
 		}
-		
-		
-		return -1;
+
+		return null;
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class UserServiceImpl implements UserService{
 	public ResultCode userSignup(UserSignupDTO userSignupDTO) {
 
 	    boolean idResult = checkUserId(userSignupDTO.getUserId());
-	    	
+
 	    if(idResult) {
 	        return ResultCode.DUP_ID;
 	    }
@@ -80,59 +81,81 @@ public class UserServiceImpl implements UserService{
 	    }
 
 	    boolean emailResult = checkUserEmail(userSignupDTO.getUserEmail());
-	    
+
 	    if(emailResult) {
 	        return ResultCode.DUP_EMAIL;
 	    }
-	    
+
 	    // 비밀번호 암호화
 	    String encryptedPw = null;
 
 	    try {
 
-			encryptedPw = SHA256Encryptor.encrypt(userSignupDTO.getUserPw());
+	        encryptedPw =
+	                SHA256Encryptor.encrypt(
+	                        userSignupDTO.getUserPw());
 
 	    } catch(NoSuchAlgorithmException e) {
 
 	        e.printStackTrace();
 
-	        return ResultCode.PASSWORD_ENCRYPT_FAIL; 
+	        return ResultCode.PASSWORD_ENCRYPT_FAIL;
 	    }
 
-	    
+
 	    // Controller용 DTO → DB용 DTO 변환
+	    // 회원가입용 생성자 사용
 	    UserDTO userDTO = new UserDTO(
-	            0,                              // userNum
-	            userSignupDTO.getUserId(),        // userId
-	            userSignupDTO.getUserNick(),      // userNick
-	            userSignupDTO.getUserEmail(),     // userEmail
-	            encryptedPw,        // userPw
-	            null,                           // userRegistedDate
-	            0,                              // userPortfolioIsPublic
-	            null,                           // userPhoto
-	            null                            // userIsDeleted null이면 정상회원
+	            userSignupDTO.getUserId(),       // userId
+	            userSignupDTO.getUserNick(),     // userNick
+	            userSignupDTO.getUserEmail(),    // userEmail
+	            encryptedPw                      // userPw
 	    );
 
-	    System.out.println("DB에 전달할 회원가입 정보 : " + userDTO);
+	    System.out.println(
+	            "DB에 전달할 회원가입 정보 : "
+	            + userDTO);
 
 	    // 나중에 DAO
 	    // userDAO.saveUser(userDTO);
 
 	    return ResultCode.SUCCESS;
-		}
+	}
+
 
 	@Override
 	public ResultCode updateUserProfile(
-	        UserProfileDTO userProfileDTO,
-	        MultipartFile profilePhoto,
-	        boolean defaultPhoto,
-	        boolean passwordChange,
-	        String oldProfilePhoto) {
+	        UserProfileDTO userProfileDTO) {
 
 	    // 프로필 수정정보 확인용
 	    System.out.println(
 	            "service 프로필 수정 정보: "
 	            + userProfileDTO);
+
+
+	    // DTO에 담겨서 넘어온 프로필 수정 정보
+	    MultipartFile profilePhoto =
+	            userProfileDTO.getProfilePhoto();
+
+	    boolean defaultPhoto =
+	            userProfileDTO.isDefaultPhoto();
+
+	    boolean passwordChange =
+	            userProfileDTO.isPasswordChange();
+
+
+	    /*
+	     * 현재 프로필 정보 조회
+	     * 현재는 getUserProfile()의 임시 데이터 사용
+	     * DB 연결 후 DAO 조회 결과 사용
+	     */
+	    UserProfileDTO currentProfile =
+	            getUserProfile(
+	                    userProfileDTO.getUserNum());
+
+	    // 현재 프로필 사진
+	    String oldProfilePhoto =
+	            currentProfile.getUserPhoto();
 
 
 	    /*
@@ -143,9 +166,7 @@ public class UserServiceImpl implements UserService{
 
 	    // 비밀번호를 변경하지 않으면 null
 	    String encryptedNewPw = null;
-	  
 
-	    // 변경 후 DB에 저장할 프로필 사진명
 	    // 사진 변경이 없으면 기존 사진명 유지
 	    String newProfilePhoto =
 	            oldProfilePhoto;
@@ -185,7 +206,7 @@ public class UserServiceImpl implements UserService{
 	     * 프로필 사진 저장 경로
 	     */
 	    String uploadPath =
-	            "D:/fileStorage_Frade"
+	            FilePath.FILE_ABSOLUTE_STORE_PATH
 	            + FilePath.USER_PROFILE_PATH;
 
 	    File uploadFolder =
@@ -336,15 +357,11 @@ public class UserServiceImpl implements UserService{
 	     * DB용 UserDTO 생성
 	     */
 	    UserDTO userDTO = new UserDTO(
-	            userProfileDTO.getUserNum(),                 // userNum
-	            null,                                        // userId
-	            userProfileDTO.getUserNick(),                // userNick
-	            null,                                        // userEmail
-	            encryptedNewPw,                              // userPw
-	            null,                                        // userRegistedDate
-	            userProfileDTO.getUserPortfolioIsPublic(),   // userPortfolioIsPublic
-	            newProfilePhoto,                             // userPhoto
-	            null                                         // userIsDeleted
+	            userProfileDTO.getUserNum(),
+	            userProfileDTO.getUserNick(),
+	            encryptedNewPw,
+	            userProfileDTO.getUserPortfolioIsPublic(),
+	            newProfilePhoto
 	    );
 
 
@@ -372,38 +389,14 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public UserProfileDTO getUserProfile(int userNum) {
 
-		// 임시 DB 조회 결과
-		UserDTO userDTO = new UserDTO(
-		        userNum,                                   // userNum
-		        null,                                      // userId
-		        "개미하이",                                // userNick
-		        null,                                      // userEmail
-		        null,                                      // userPw
-		        LocalDateTime.of(2026, 9, 1, 5, 30),      // userRegistedDate
-		        0,                                         // userPortfolioIsPublic
-		        "1.png",                                   // userPhoto
-		        0                                          // userIsDeleted
-		);
-		
-		
-	    // DB용 DTO → Controller용 DTO 변환
-	    UserProfileDTO userProfileDTO =
-	            new UserProfileDTO();
-
-	    userProfileDTO.setUserNum(
-	            userDTO.getUserNum());
-
-	    userProfileDTO.setUserNick(
-	            userDTO.getUserNick());
-
-	    userProfileDTO.setUserPhoto(
-	            userDTO.getUserPhoto());
-
-	    userProfileDTO.setUserPortfolioIsPublic(
-	            userDTO.getUserPortfolioIsPublic());
-
-	    userProfileDTO.setUserRegistedDate(
-	            userDTO.getUserRegistedDate());
+	    // 임시 DB 조회 결과
+	    UserProfileDTO userProfileDTO = new UserProfileDTO(
+	            userNum,
+	            "개미하이",
+	            "1.png",
+	            0,
+	            LocalDateTime.of(2026, 9, 1, 5, 30)
+	    );
 
 	    return userProfileDTO;
 	}

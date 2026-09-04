@@ -1,15 +1,14 @@
 package com.frade.service.user;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.frade.common.ResultCode;
 import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
+import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
 
 public interface UserService {
 	
-	int userLogin(UserLoginDTO userLoginDTO);//로그인 처리가 되었냐 안되었냐 -1이면 로그인 실패 성공시 유저넘버 받음
+	UserSessionDTO userLogin(UserLoginDTO userLoginDTO);//로그인 처리가 되었냐 안되었냐 -1이면 로그인 실패 성공시 유저넘버 받음
 	
 	boolean checkUserId(String userId); //유저아이디 //중복 확인 3개다 공통입니다 중복한다는거 중복 일시 true 중복이 아니면 false를 리턴합니다.
 	
@@ -19,7 +18,7 @@ public interface UserService {
 	
 	ResultCode userSignup(UserSignupDTO userSignupDTO);//회원가입 처리 함수
 	
-	ResultCode updateUserProfile(UserProfileDTO userProfileDTO, MultipartFile profilePhoto, boolean defaultPhoto,boolean passwordChange, String oldProfilePhoto);//프로필 정보 수정
+	ResultCode updateUserProfile(UserProfileDTO userProfileDTO);//프로필 정보 수정
 	//닉네임, 비밀번호, 프로필사진, 포트폴리오 공개 여부 수정
 	
 	

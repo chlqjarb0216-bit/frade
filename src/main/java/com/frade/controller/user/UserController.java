@@ -10,13 +10,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.frade.common.ResultCode;
 import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
+import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
 import com.frade.service.user.UserService;
 
@@ -49,9 +48,9 @@ public class UserController {
 			return "user/login";
 		}
 
-		int loginUserNumber = userService.userLogin(userLoginDTO);
+		UserSessionDTO loginUser = userService.userLogin(userLoginDTO);
 
-		if (loginUserNumber == -1) {
+		if (loginUser == null) {
 
 			model.addAttribute("loginfail", "true");
 
@@ -59,7 +58,7 @@ public class UserController {
 
 		} else {
 
-			session.setAttribute("loginUser", loginUserNumber);
+			session.setAttribute("loginUser", loginUser);
 
 			return "redirect:/user/mypage";
 		}
@@ -135,12 +134,11 @@ public class UserController {
 			return "redirect:/user/login";
 		}
 
-		int loginUserNumber = (int) session.getAttribute("loginUser");
+		UserSessionDTO loginUser = (UserSessionDTO) session.getAttribute("loginUser");
+
+		int loginUserNumber = loginUser.getUserNum();
 
 		UserProfileDTO userProfileDTO = userService.getUserProfile(loginUserNumber);
-
-		// 기존 프로필 사진 세션에 저장
-		session.setAttribute("loginUserPhoto", userProfileDTO.getUserPhoto());
 
 		model.addAttribute("userProfile", userProfileDTO);
 
@@ -148,10 +146,7 @@ public class UserController {
 	}
 
 	@PostMapping("/profile")
-	public String updateUserProfile(UserProfileDTO userProfileDTO,
-			@RequestParam(value = "profilePhoto", required = false) MultipartFile profilePhoto,
-			@RequestParam(value = "defaultPhoto", defaultValue = "false") boolean defaultPhoto,
-			@RequestParam(value = "passwordChange", defaultValue = "false") boolean passwordChange, HttpSession session,
+	public String updateUserProfile(UserProfileDTO userProfileDTO, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 
 		// 로그인 확인
@@ -159,14 +154,15 @@ public class UserController {
 			return "redirect:/user/login";
 		}
 
-		int loginUserNumber = (int) session.getAttribute("loginUser");
+		UserSessionDTO loginUser = (UserSessionDTO) session.getAttribute("loginUser");
 
-		String oldProfilePhoto = (String) session.getAttribute("loginUserPhoto");
+		int loginUserNumber = loginUser.getUserNum();
+
 
 		userProfileDTO.setUserNum(loginUserNumber);
 
 		// 비밀번호 변경을 선택한 경우
-		if (passwordChange) {
+		if (userProfileDTO.isPasswordChange()) {
 
 			if (userProfileDTO.getCurrentPw() == null || userProfileDTO.getCurrentPw().isEmpty()
 					|| userProfileDTO.getNewPw() == null || userProfileDTO.getNewPw().isEmpty()
@@ -194,17 +190,34 @@ public class UserController {
 			}
 		}
 
-		ResultCode result = userService.updateUserProfile(userProfileDTO, profilePhoto, defaultPhoto, passwordChange,
-				oldProfilePhoto);
+		ResultCode result = userService.updateUserProfile(userProfileDTO);
 
 		if (result == ResultCode.SUCCESS) {
 
-			redirectAttributes.addFlashAttribute("profileSuccess", "프로필이 수정되었습니다.");
+		    // 수정된 최신 프로필 정보 조회
+		    UserProfileDTO updatedProfile =
+		            userService.getUserProfile(loginUserNumber);
 
-			return "redirect:/user/mypage";
+		    // 세션의 로그인 유저 정보도 최신 정보로 변경
+		    UserSessionDTO updatedLoginUser =
+		            new UserSessionDTO(
+		                    loginUserNumber,
+		                    updatedProfile.getUserNick(),
+		                    updatedProfile.getUserPhoto()
+		            );
+
+		    session.setAttribute("loginUser", updatedLoginUser);
+
+		    redirectAttributes.addFlashAttribute(
+		            "profileSuccess",
+		            "프로필이 수정되었습니다.");
+
+		    return "redirect:/user/mypage";
 		}
 
-		redirectAttributes.addFlashAttribute("profileFail", result.getMessage());
+		redirectAttributes.addFlashAttribute(
+		        "profileFail",
+		        result.getMessage());
 
 		return "redirect:/user/mypage";
 	}
@@ -212,18 +225,28 @@ public class UserController {
 	@PostMapping("/withdraw")
 	public String deleteUser(HttpSession session) {
 
-		int loginUserNumber = (int) session.getAttribute("loginUser");
+		 // 로그인 확인
+	    if(session.getAttribute("loginUser") == null) {
+	        return "redirect:/user/login";
+	    }
 
-		ResultCode result = userService.deleteUser(loginUserNumber);
+	    UserSessionDTO loginUser =
+	            (UserSessionDTO) session.getAttribute("loginUser");
 
-		if (result == ResultCode.SUCCESS) {
+	    int loginUserNumber =
+	            loginUser.getUserNum();
 
-			session.invalidate();
+	    ResultCode result =
+	            userService.deleteUser(loginUserNumber);
 
-			return "redirect:/user/login";
-		}
+	    if(result == ResultCode.SUCCESS) {
 
-		return "redirect:/user/mypage";
+	        session.invalidate();
+
+	        return "redirect:/user/login";
+	    }
+
+	    return "redirect:/user/mypage";
+
 	}
-
 }
