@@ -75,14 +75,9 @@ public class CommunityController {
 
 		try {
 			
-
-			int result = postService.savePost(post, files);
-
-			if (result > 0) {
-				return "redirect:/community-lists";
-			} else {
-				return "redirect:/community-lists/write?error=true";
-			}
+			postService.savePost(post, files);
+			return "redirect:/community-lists";
+			
 		} catch (Exception e) {
 			
 			log.error(e.getMessage());
@@ -215,13 +210,10 @@ public class CommunityController {
 
 		try {
 			post.setUserNum(loginUserNum);
+			postService.updatePost(post, files, deleteExistingFiles);
 			
-			int result = postService.updatePost(post, files, deleteExistingFiles);
-			if (result > 0) {
-				return "redirect:/community-lists/detail?postNum=" + post.getPostNum();
-			} else {
-				return "redirect:/community-lists/edit?postNum=" + post.getPostNum() + "&error=true";
-			}
+			return "redirect:/community-lists/detail?postNum=" + post.getPostNum();
+			
 		} catch (Exception e) {
 			log.error("게시글 수정 중 에러 발생", e);
 			
