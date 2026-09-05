@@ -7,8 +7,15 @@
 
 
 	<select id="findUserPortfolioListByUserNum" parameterType="int" resultType="PortfolioDTO">
-		select * from t_portfolio
-		where user_num = #{userNum}
+		select p.user_num,
+		       p.stock_code,
+		       s.stock_name,
+		       p.user_stock_cnt,
+		       p.user_buy_cost
+		from t_portfolio p
+		join t_stock s on s.stock_code = p.stock_code
+		where p.user_num = #{userNum}
+		order by p.stock_code
 	</select>
 
 	<select id="findUserPortfolioStockNameListByUserNum" parameterType="int" resultType="string">
