@@ -123,11 +123,12 @@ body {
 
 	<!-- 본문 영역 -->
 	<div class="container my-5" style="max-width: 1080px;">
-		<c:if test="${not empty message}">
-		    <script>
-		        alert('${msg}');
-		    </script>
-		</c:if>
+	
+	<c:if test="${not empty msg}">
+		<script>
+        	alert('${msg}');
+		</script>
+	</c:if>
 
 		
 		<div class="mb-4">
@@ -209,6 +210,7 @@ body {
 	</script>
 
 	<script>
+
 		//게시글 목록 페이지가 처음 열리면 1페이지 데이터를 불러옵니다.
 		window.onload = function(){
 			loadPosts(1)

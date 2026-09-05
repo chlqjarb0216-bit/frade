@@ -46,10 +46,8 @@ public class CommunityController {
 
 	// 게시글 작성 페이지 이동
 	@GetMapping("/write")
-	public String write( @RequestParam(value = "error", required = false) String error, Model model) {
-		if (error != null) {
-			model.addAttribute("msg", "게시글 작성 중 서버 오류가 발생했습니다.");
-		}
+	public String write() {
+
 		return "community/write";
 	}
 
@@ -57,7 +55,8 @@ public class CommunityController {
 	@PostMapping("/write")
 	public String writeAction(@Valid PostDTO post, BindingResult br,
 			@RequestParam(value = "uploadFiles", required = false) MultipartFile[] files,
-														HttpSession session) {
+														HttpSession session,
+														RedirectAttributes rttr) {
 
 		//임시 로그인 코드(테스트용)
 		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
@@ -75,16 +74,21 @@ public class CommunityController {
 		}
 
 		try {
+			
+
 			int result = postService.savePost(post, files);
+
 			if (result > 0) {
 				return "redirect:/community-lists";
 			} else {
 				return "redirect:/community-lists/write?error=true";
 			}
 		} catch (Exception e) {
-
+			
 			log.error(e.getMessage());
-			return "redirect:/community-lists/write?error=true";
+			rttr.addFlashAttribute("msg",ResultCode.POST_WRT_FAIL.getMessage());
+			
+			return "redirect:/community-lists";
 		}
 	}
 
@@ -165,7 +169,6 @@ public class CommunityController {
 	// 게시글 수정 페이지 이동 (GET)
 	@GetMapping("/edit")
 	public String edit(@RequestParam("postNum") int postNum,
-					   @RequestParam(value = "error", required = false) String error,
 					   HttpSession session,
 					   Model model) {
 
@@ -177,10 +180,6 @@ public class CommunityController {
 		PostDTO post = postService.getPost(postNum, false);
 		if (post == null || post.getUserNum() != loginUserNum) {
 			return "redirect:/community-lists/detail?postNum=" + postNum + "&error=auth";
-		}
-
-		if (error != null) {
-			model.addAttribute("msg", ResultCode.POST_MOD_FAIL.getMessage());
 		}
 
 		model.addAttribute("post", post);
@@ -216,6 +215,7 @@ public class CommunityController {
 
 		try {
 			post.setUserNum(loginUserNum);
+			
 			int result = postService.updatePost(post, files, deleteExistingFiles);
 			if (result > 0) {
 				return "redirect:/community-lists/detail?postNum=" + post.getPostNum();

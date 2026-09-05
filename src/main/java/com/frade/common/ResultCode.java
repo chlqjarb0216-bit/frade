@@ -19,7 +19,8 @@ public enum ResultCode {
 	PROFILE_FILE_SAVE_FAIL("rej_107", "프로필 사진 저장에 실패했습니다."), INVALID_PASSWORD_INPUT("rej_108", "비밀번호를 모두 입력해주세요."),
 
 	//게시판 영역
-	COM_TEXT_FAIL("rej_200", "최대 글자수는 100자입니다."), POST_MOD_FAIL("rej_201", "게시글 수정 중 오류가 발생했습니다"),
+	COM_TEXT_FAIL("rej_201", "최대 글자수는 100자입니다."), POST_MOD_FAIL("rej_202", "게시글 수정 중 오류가 발생했습니다"),
+	POST_WRT_FAIL("rej_203", "게시글 장성 중 요류가 발생했습니다"),
 
 	//트레이딩 영역
 
