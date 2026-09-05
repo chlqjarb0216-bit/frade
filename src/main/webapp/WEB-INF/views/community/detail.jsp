@@ -142,9 +142,7 @@ details summary {
 			</div>
 
 			<!-- 본문 내용 -->
-			<div class="post-content text-dark mb-4">
-				${post.postContent}
-			</div>
+			<div class="post-content text-dark mb-4"><c:out value="${post.postContent}"/></div>
 
 			<!-- 첨부파일 영역 -->
 			<c:if test="${not empty post.fileList}">
