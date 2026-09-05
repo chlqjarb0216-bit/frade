@@ -23,7 +23,7 @@ public class CommentDAOImpl implements CommentDAO {
 	}
 
 	@Override
-	public int selectCommentTotalCount(int postNum) {
+	public int getCommentTotalCount(int postNum) {
 		int result = sqlSessionTemplate.selectOne("comment_mapper.selectCommentTotalCount", postNum);
 		return result;
 	}

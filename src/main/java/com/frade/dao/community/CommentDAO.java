@@ -11,7 +11,7 @@ public interface CommentDAO {
 	public int saveComment(CommentDTO comment);
 	
 	// 특정 게시글의 전체 댓글 개수
-	public int selectCommentTotalCount(int postNum);
+	public int getCommentTotalCount(int postNum);
 	
 	// 특정 게시글의 페이징 처리된 댓글 목록
 	public List<CommentDTO> selectCommentList(Map<String, Object> params);

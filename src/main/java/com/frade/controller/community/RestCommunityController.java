@@ -55,7 +55,7 @@ public class RestCommunityController {
 			@RequestParam(defaultValue = "1") int postNum) {
 
 		try {
-            PageResultDTO<CommentDTO> result = commentService.selectCommentList(postNum, page);
+            PageResultDTO<CommentDTO> result = commentService.getCommentList(postNum, page);
 			if (result.getTotalCount() > 0) {
 				return RestApiResponse.success(result);
 			} else {

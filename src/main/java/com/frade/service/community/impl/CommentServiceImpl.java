@@ -20,7 +20,7 @@ public class CommentServiceImpl implements CommentService {
 	private CommentDAO commentDAO;
 
 	@Override
-	public PageResultDTO<CommentDTO> selectCommentList(int postNum, int page) {
+	public PageResultDTO<CommentDTO> getCommentList(int postNum, int page) {
 		int limit = 10; // 한 페이지에 보여줄 댓글 개수
 		int offset = (page - 1) * limit; // 건너뛸 데이터 개수 (DB용)
 
@@ -31,11 +31,11 @@ public class CommentServiceImpl implements CommentService {
 		params.put("limit", limit);
 
 		// DB에서 해당 게시글의 전체 댓글 수 가져오기
-		int totalComments = commentDAO.selectCommentTotalCount(postNum);
+		int totalComments = commentDAO.getCommentTotalCount(postNum);
 
 		// DB에서 페이징 처리된 실제 댓글 리스트 가져오기
 		List<CommentDTO> pagedList = new ArrayList<>();
-		if (totalComments > 0) {
+		if (totalComments > 0 && offset < totalComments) {
 			pagedList = commentDAO.selectCommentList(params);
 		}
 

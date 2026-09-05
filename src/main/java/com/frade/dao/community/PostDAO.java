@@ -14,7 +14,7 @@ public interface PostDAO {
 	public int insertPost(PostDTO post);
 	
 	// 리스트 및 페이징 (검색 조건 포함)
-	public int selectPostTotalCount(Map<String, Object> params);
+	public int getPostTotalCount(Map<String, Object> params);
 	public List<PostDTO> selectPostList(Map<String, Object> params);
     
     // 상세조회
