@@ -99,7 +99,7 @@ details summary {
 			<a href="/community-lists" class="btn btn-outline-secondary btn-sm px-3 border-0" style="border-radius: 8px;">
 				← 목록으로
 			</a>
-			<c:if test="${not empty sessionScope.loginUserNum and sessionScope.loginUserNum == post.userNum}">
+			<c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userNum == post.userNum}">
 				<div class="d-flex align-items-center gap-2">
 					<!-- 수정 버튼 (GET) -->
 					<a href="/community-lists/edit?postNum=${post.postNum}" class="btn btn-outline-secondary btn-sm px-3" style="border-radius: 8px;">수정</a>
@@ -214,12 +214,24 @@ details summary {
 			</div>
 
 			<div class="mb-4">
-				<div class="d-flex flex-column gap-2">
-					<textarea id="commentContent" class="form-control custom-textarea" rows="3" placeholder="댓글을 입력하세요 (최대 100자)"></textarea>
-					<div class="text-end">
-						<button type="button" class="btn btn-dark btn-sm px-4 fw-medium" style="border-radius: 8px;" onclick="submitComment()">작성</button>
-					</div>
-				</div>
+				<c:choose>
+					<c:when test="${not empty sessionScope.loginUser}">
+						<div class="d-flex flex-column gap-2">
+							<textarea id="commentContent" class="form-control custom-textarea" rows="3" placeholder="댓글을 입력하세요 (최대 100자)"></textarea>
+							<div class="text-end">
+								<button type="button" class="btn btn-dark btn-sm px-4 fw-medium" style="border-radius: 8px;" onclick="submitComment()">작성</button>
+							</div>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<div class="d-flex flex-column gap-2">
+							<textarea id="commentContent" class="form-control custom-textarea bg-light" rows="3" placeholder="로그인 후 댓글을 작성할 수 있습니다." readonly onclick="if(confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) location.href='/user/login';"></textarea>
+							<div class="text-end">
+								<a href="/user/login" class="btn btn-outline-dark btn-sm px-4 fw-medium" style="border-radius: 8px;">로그인</a>
+							</div>
+						</div>
+					</c:otherwise>
+				</c:choose>
 			</div>
 
 			<div id="commentList" class="d-flex flex-column">
@@ -282,11 +294,11 @@ details summary {
 				return;
 			}
 
-			const loginUserNum = ${not empty sessionScope.loginUserNum ? sessionScope.loginUserNum : 1};
+			const loginUserNum = ${not empty sessionScope.loginUser ? sessionScope.loginUser.userNum : -1};
 			
 			commentList.forEach(comment =>{
 				const dateStr = comment.commentedDateString || '';
-				const isMyComment = (comment.userNum === loginUserNum);
+				const isMyComment = (loginUserNum !== -1 && comment.userNum === loginUserNum);
 				const deleteBtn = isMyComment ? `
 					<button type="button" class="btn btn-link text-danger text-decoration-none p-0 ms-2" style="font-size: 0.78rem;" onclick="deleteComment(\${comment.commentNum})">삭제</button>
 				` : '';
@@ -341,6 +353,12 @@ details summary {
 		}
 		
 		function submitComment(){
+			if (loginUserNum === -1) {
+				if (confirm("댓글 작성은 로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?")) {
+					location.href = "/user/login";
+				}
+				return;
+			}
 			const contentInput = document.getElementById('commentContent');
 			const content = contentInput.value.trim();
 			
