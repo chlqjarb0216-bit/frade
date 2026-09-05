@@ -2,6 +2,7 @@ package com.frade.common.stock;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,10 +27,14 @@ public enum StockSector {
 	private static final Map<String, Integer> NAME_TO_NUM_CACHE_MAP = new HashMap<>();
 	// 업종번호 탐색용 해시맵
 	private static final Map<Integer, String> NUM_TO_NAME_CACHE_MAP = new HashMap<>();
+
+	//특수문자 제거용 정규식 패턴
+	private static final Pattern SPECIAL_CHARS = Pattern.compile("[^a-zA-Z0-9가-힣]");
+
 	// 클래스가 메모리에 로드될 때(서버 부팅 시) 딱 1번만 실행되는 스태틱 블록
 	static {
 		for (StockSector sector : values()) {
-			NAME_TO_NUM_CACHE_MAP.put(sector.getScName(), sector.getScNum());
+			NAME_TO_NUM_CACHE_MAP.put(cleanString(sector.getScName()), sector.getScNum());
 		}
 		for (StockSector sector : values()) {
 			NUM_TO_NAME_CACHE_MAP.put(sector.getScNum(), sector.getScName());
@@ -38,14 +43,26 @@ public enum StockSector {
 
 	// 업종명 탐색 (기본값 99임시분류)
 	public static int getSectorNumber(String upName) {
-		if (upName == null || upName.trim().isEmpty()) {
+		if (upName == null)
 			return ETC.scNum;
-		}
-		return NAME_TO_NUM_CACHE_MAP.getOrDefault(upName, ETC.scNum);
+		String cleansedName = cleanString(upName);
+		if (cleansedName.isEmpty())
+			return ETC.scNum;
+		return NAME_TO_NUM_CACHE_MAP.getOrDefault(cleansedName, ETC.scNum);
 	}
 
 	// 업종번호 탐색 (기본값 99임시분류)
 	public static String getSectorName(int scNum) {
 		return NUM_TO_NAME_CACHE_MAP.getOrDefault(scNum, ETC.scName);
+	}
+
+	// 문자열에서 특수문자를 제거하는 헬퍼 메서드
+	private static String cleanString(String input) {
+		if (input == null)
+			return "";
+		String cleansed = SPECIAL_CHARS.matcher(input).replaceAll("");
+		if ("금융".equals(cleansed))
+			return "기타금융";
+		return cleansed;
 	}
 }
