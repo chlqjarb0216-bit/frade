@@ -164,9 +164,6 @@ public class PostServiceImpl implements PostService {
 	public int updatePost(PostDTO post, MultipartFile[] files, boolean deleteExistingFiles) {
 		// 1. 기존 게시글 조회
 		PostDTO existingPost = postDAO.selectPost(post.getPostNum().intValue());
-		if (existingPost == null) {
-			return 0;
-		}
 
 		String baseDir = FilePath.FILE_ABSOLUTE_STORE_PATH + FilePath.POST_UPLOADFILE_PATH;
 		File folder = new File(baseDir);

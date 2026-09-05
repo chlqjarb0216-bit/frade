@@ -123,6 +123,11 @@ body {
 
 	<!-- 본문 영역 -->
 	<div class="container my-5" style="max-width: 1080px;">
+		<c:if test="${not empty message}">
+		    <script>
+		        alert('${msg}');
+		    </script>
+		</c:if>
 
 		
 		<div class="mb-4">

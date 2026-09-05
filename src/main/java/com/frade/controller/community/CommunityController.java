@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.frade.common.FilePath;
+import com.frade.common.ResultCode;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
 
@@ -178,7 +180,7 @@ public class CommunityController {
 		}
 
 		if (error != null) {
-			model.addAttribute("msg", "게시글 수정 중 서버 오류가 발생했습니다.");
+			model.addAttribute("msg", ResultCode.POST_MOD_FAIL.getMessage());
 		}
 
 		model.addAttribute("post", post);
@@ -190,7 +192,8 @@ public class CommunityController {
 	public String editAction(@Valid PostDTO post, BindingResult br,
 							 @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files,
 							 @RequestParam(value = "deleteExistingFiles", defaultValue = "false") boolean deleteExistingFiles,
-							 HttpSession session) {
+							 HttpSession session,
+							 RedirectAttributes rttr) {
 
 		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
 		if (loginUserNum == null) {
@@ -221,7 +224,9 @@ public class CommunityController {
 			}
 		} catch (Exception e) {
 			log.error("게시글 수정 중 에러 발생", e);
-			return "redirect:/community-lists/edit?postNum=" + post.getPostNum() + "&error=true";
+			
+			rttr.addFlashAttribute("msg",ResultCode.POST_MOD_FAIL.getMessage());
+			return "redirect:/community-lists";
 		}
 	}
 }
