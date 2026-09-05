@@ -16,9 +16,12 @@ public interface StockService {
 	//StockRankingCache에서 정렬된 주식리스트를 받아옴(페이징)
 	public List<StockPreviewDTO> getSortedStockRankingListPage(int pageIdx, int pageSize);
 
-	//KiwoomApiService에서 StockInfoRawDTO리스트를 받아와 StockInfoDTO리스트로 변환한뒤 DB에 저장
-	public List<StockInfoDTO> updateStockInfoList();
-
 	//100개 종목의 1분봉 데이터를 DB에 저장
 	public int saveMinuteStockPrice(List<StockPriceDTO> stockPriceList);
+
+	//api토큰 폐기
+	public void revokeApiToken();
+
+	//KiwoomApiService에서 StockInfoRawDTO리스트를 받아와 StockInfoDTO리스트로 변환한뒤 DB에 저장
+	public int updateStockInfoList();
 }
