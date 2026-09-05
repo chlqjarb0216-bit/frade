@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.frade.dao.community.CommentDAO;
 import com.frade.dto.community.CommentDTO;
 import com.frade.dto.community.PageResultDTO;
 import com.frade.service.community.CommentService;
@@ -15,6 +18,9 @@ import com.frade.service.community.CommentService;
 @Service
 public class CommentServiceImpl implements CommentService{
 
+	@Autowired
+	CommentDAO commentDAO;
+	
 	@Override
 	public PageResultDTO<CommentDTO> selectCommentList(int postNum, int page) {
 
@@ -60,8 +66,7 @@ public class CommentServiceImpl implements CommentService{
 
 	@Override
 	public int saveComment(CommentDTO comment) {
-		
-		int result = 1;
+		int result = commentDAO.saveComment(comment);
 		
 		return result;
 	}
