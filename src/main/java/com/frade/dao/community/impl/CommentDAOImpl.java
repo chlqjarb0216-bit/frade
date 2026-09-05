@@ -35,8 +35,8 @@ public class CommentDAOImpl implements CommentDAO {
 	}
 
 	@Override
-	public CommentDTO selectComment(int commentNum) {
-		CommentDTO result = sqlSessionTemplate.selectOne("comment_mapper.selectComment", commentNum);
+	public int selectComment(Map<String, Object> commentUserNum) {
+		int result = sqlSessionTemplate.selectOne("comment_mapper.selectComment", commentUserNum);
 		return result;
 	}
 

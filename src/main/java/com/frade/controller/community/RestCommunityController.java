@@ -105,10 +105,10 @@ public class RestCommunityController {
 
 		try {
 			// DB에서 삭제하려는 댓글 정보 먼저 조회
-			CommentDTO comment = commentService.getComment(commentNum);
+			int comment = commentService.getComment(commentNum, loginUserNum);
 
 			// 남의 댓글을 지우려고 하면 강제로 튕겨냄 (화면에서 비활성화 하지만 추가 검증)
-			if (comment == null || comment.getUserNum() != loginUserNum) {
+			if (comment == 0) {
 				return RestApiResponse.error(ResultCode.FAIL);
 			}
 

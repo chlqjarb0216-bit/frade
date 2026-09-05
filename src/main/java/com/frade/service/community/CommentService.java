@@ -17,7 +17,7 @@ public interface CommentService {
 	public int saveComment(CommentDTO comment);
 	
 	//댓글 단건 조회
-	public CommentDTO getComment(int commentNum);
+	public int getComment(int commentNum, int loginUserNum);
 	
 	//댓글 삭제
 	public int deleteComment(int commentNum);
