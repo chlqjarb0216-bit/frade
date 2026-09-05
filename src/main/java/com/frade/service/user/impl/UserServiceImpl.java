@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
+import com.frade.exception.UserSignupException;
 import com.frade.service.user.UserService;
 import com.frade.util.SHA256Encryptor;
 
@@ -45,55 +47,31 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public boolean checkUserId(String userId) {
-		
-	    // DB에서 같은 아이디를 사용하는 회원 수 조회
-	    int count = userDAO.countUserId(userId);
 
-	    // 1명 이상이면 중복
-	    return count > 0;
+		Integer userNum = userDAO.findUserNumById(userId);
+
+		return userNum != null;
 	}
 
 	@Override
 	public boolean checkUserNick(String userNick) {
-		
-	    // DB에서 같은 닉네임을 사용하는 회원 수 조회
-	    int count = userDAO.countUserNick(userNick);
 
-	    // 1명 이상이면 중복
-	    return count > 0;
+		Integer userNum = userDAO.findUserNumByNick(userNick);
+
+		return userNum != null;
 	}
-	
+
 	@Override
 	public boolean checkUserEmail(String userEmail) {
-		
-	    // DB에서 같은 이메일을 사용하는 회원 수 조회
-	    int count = userDAO.countUserEmail(userEmail);
 
-	    // 1명 이상이면 중복
-	    return count > 0;
+		Integer userNum = userDAO.findUserNumByEmail(userEmail);
+
+		return userNum != null;
 	}
 
 	@Override
 	@Transactional
 	public ResultCode userSignup(UserSignupDTO userSignupDTO) {
-
-	    boolean idResult = checkUserId(userSignupDTO.getUserId());
-
-	    if(idResult) {
-	        return ResultCode.DUP_ID;
-	    }
-
-	    boolean nickResult = checkUserNick(userSignupDTO.getUserNick());
-
-	    if(nickResult) {
-	        return ResultCode.DUP_NICK;
-	    }
-
-	    boolean emailResult = checkUserEmail(userSignupDTO.getUserEmail());
-
-	    if(emailResult) {
-	        return ResultCode.DUP_EMAIL;
-	    }
 
 	    // 비밀번호 암호화
 	    String encryptedPw = null;
@@ -106,7 +84,7 @@ public class UserServiceImpl implements UserService{
 
 	        e.printStackTrace();
 
-	        return ResultCode.PASSWORD_ENCRYPT_FAIL;
+	        throw new UserSignupException("비밀번호 암호화 실패");
 	    }
 
 	    
@@ -125,11 +103,20 @@ public class UserServiceImpl implements UserService{
 		System.out.println("DB에 전달할 회원가입 정보 : " + userDTO);
 		
 		// T_USER 테이블에 회원정보 저장
-		int userResult = userDAO.saveUser(userDTO);
+		try {
 
-		// INSERT가 정상적으로 1건 처리되지 않은 경우
-		if (userResult != 1) {
-			return ResultCode.FAIL;
+			// T_USER 회원정보 저장
+			int userResult = userDAO.saveUser(userDTO);
+
+			// INSERT가 정상적으로 1건 처리되지 않은 경우
+			if (userResult != 1) {
+				throw new UserSignupException("회원정보 저장 실패");
+			}
+
+		} catch (DataIntegrityViolationException e) {
+
+			// 아이디 / 닉네임 / 이메일 UNIQUE 제약조건 위반 등
+			throw new UserSignupException("이미 사용 중인 아이디, 닉네임 또는 이메일입니다.");
 		}
 
 		// T_CASH 테이블에 가입한 회원의 자금정보 생성
@@ -138,7 +125,7 @@ public class UserServiceImpl implements UserService{
 
 		// INSERT가 정상적으로 1건 처리되지 않은 경우
 		if (cashResult != 1) {
-			return ResultCode.FAIL;
+			throw new UserSignupException("회원 지갑 생성 실패");
 		}    
 
 	    return ResultCode.SUCCESS;

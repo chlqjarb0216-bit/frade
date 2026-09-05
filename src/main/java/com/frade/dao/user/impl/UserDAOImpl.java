@@ -19,10 +19,10 @@ public class UserDAOImpl implements UserDAO {
     // 0 : 중복 없음
     // 1 이상 : 중복 있음
     @Override
-    public int countUserId(String userId) {
+    public Integer findUserNumById(String userId) {
 
         return sqlSessionTemplate.selectOne(
-                "user_mapper.countUserId",
+                "user_mapper.findUserNumById",
                 userId
         );
     }
@@ -33,10 +33,10 @@ public class UserDAOImpl implements UserDAO {
     // 0 : 중복 없음
     // 1 이상 : 중복 있음
     @Override
-    public int countUserNick(String userNick) {
+    public Integer findUserNumByNick(String userNick) {
 
         return sqlSessionTemplate.selectOne(
-                "user_mapper.countUserNick",
+                "user_mapper.findUserNumByNick",
                 userNick
         );
     }
@@ -47,10 +47,10 @@ public class UserDAOImpl implements UserDAO {
     // 0 : 중복 없음
     // 1 이상 : 중복 있음
     @Override
-    public int countUserEmail(String userEmail) {
+    public Integer findUserNumByEmail(String userEmail) {
 
         return sqlSessionTemplate.selectOne(
-                "user_mapper.countUserEmail",
+                "user_mapper.findUserNumByEmail",
                 userEmail
         );
     }

@@ -4,14 +4,17 @@ import com.frade.dto.user.UserDTO;
 
 public interface UserDAO {
 
-    // 아이디 중복 확인
-    int countUserId(String userId);
+	// 아이디에 해당하는 user_num 조회
+	// 없으면 null
+	Integer findUserNumById(String userId);
 
-    // 닉네임 중복 확인
-    int countUserNick(String userNick);
+	// 닉네임에 해당하는 user_num 조회
+	// 없으면 null
+	Integer findUserNumByNick(String userNick);
 
-    // 이메일 중복 확인
-    int countUserEmail(String userEmail);
+	// 이메일에 해당하는 user_num 조회
+	// 없으면 null
+	Integer findUserNumByEmail(String userEmail);
 
     // 회원가입에 사용할 다음 user_num 조회
     int getNextUserNum();
