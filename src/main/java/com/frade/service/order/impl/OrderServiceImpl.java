@@ -158,7 +158,9 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 //	=============t_history==============
-	private List<HistoryDTO> findTradeHistoryByUserNum(int userNum) {
+	
+	@Override
+	public List<HistoryDTO> findTradeHistoryByUserNum(int userNum) {
 		List<HistoryDTO> history = historyDAO.findTradeHistoryByUserNum(userNum);
 		return history;
 	}

@@ -7,6 +7,7 @@
 		resultType="HistoryDTO">
 		select * from t_history
 		where user_num = #{userNum}
+		order by trade_date desc;
 	</select>
 	
 	
