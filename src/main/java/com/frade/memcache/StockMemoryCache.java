@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StockMemoryCache {
 
 	private final StockDAO stockDAO;
+	private final StockRankingCache stockRankingCache;
 
 	private Map<String, StockInfoDTO> codeCacheMap = new HashMap<>();
 	private List<StockInfoDTO> allStockList = new ArrayList<>();
@@ -96,6 +97,7 @@ public class StockMemoryCache {
 	@PostConstruct
 	private void initStockCache() {
 		refreshCache();
+		stockRankingCache.init(allStockList);
 	}
 
 	/**
