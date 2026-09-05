@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.frade.dao.stock.StockDAO;
+import com.frade.dao.stock.StockPriceDAO;
 import com.frade.dto.stock.StockInfoDTO;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.dto.stock.StockPriceDTO;
@@ -24,6 +25,8 @@ public class StockServiceImpl implements StockService {
 
 	@Autowired
 	StockDAO stockDAO;
+	@Autowired
+	StockPriceDAO stockPriceDAO;
 
 	@Autowired
 	StockMemoryCache stockMemoryCache;
@@ -56,8 +59,7 @@ public class StockServiceImpl implements StockService {
 
 	@Override
 	public int saveMinuteStockPrice(List<StockPriceDTO> stockPriceList) {
-		// TODO Auto-generated method stub
-		return 0;
+		return stockPriceDAO.insertMinuteStockPrice(stockPriceList);
 	}
 
 	@Override
