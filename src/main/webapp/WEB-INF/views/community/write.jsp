@@ -139,7 +139,7 @@ btn-outline-secondary:hover {
 					</c:if>
 					<input class="form-control custom-form-control" type="file" id="uploadFiles" name="uploadFiles" multiple>
 					<div class="text-secondary small mt-2" style="font-size: 0.8rem;">
-						* 파일은 최대 3개, 개당 10MB 이하로 첨부 가능합니다.<c:if test="${not empty post and not empty post.fileList}"> (새 파일을 첨부하면 기존 파일이 새 파일로 교체됩니다.)</c:if>
+						* 파일은 최대 3개, 개당 10MB 이하로 첨부 가능합니다.<c:if test="${not empty post and not empty post.fileList}"> (기존 파일 삭제를 체크하지 않고 첨부 시 기존 파일에 추가됩니다.)</c:if>
 					</div>
 				</div>
 				
@@ -221,9 +221,13 @@ btn-outline-secondary:hover {
 		        return;
 		    }
 			
-			// 파일 개수 제한 (최대 3개)
-			if (files.length > 3) {
-			    alert('첨부파일은 최대 3개까지만 업로드할 수 있습니다.');
+			// 파일 개수 제한 (총 최대 3개)
+			const deleteCheckbox = document.getElementById('deleteExistingFiles');
+			const isDeleteChecked = deleteCheckbox ? deleteCheckbox.checked : false;
+			const existingFileCount = isDeleteChecked ? 0 : ${not empty post and not empty post.fileList ? post.fileList.size() : 0};
+
+			if (existingFileCount + files.length > 3) {
+			    alert('첨부파일은 기존 파일 포함 최대 3개까지만 가능합니다. (현재 유지 파일: ' + existingFileCount + '개, 신규 첨부: ' + files.length + '개)');
 			    return false;
 			}
 
