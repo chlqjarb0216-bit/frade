@@ -4,24 +4,30 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class KiwoomAccessToken {
-	private String token;
-	private String token_type;
+	@JsonProperty("token")
+	String token;
+	@JsonProperty("token_type")
+	String tokenType;
 
+	@JsonProperty("expires_dt")
 	@JsonFormat(pattern = "yyyyMMddHHmmss")
-	private LocalDateTime expiresDt = LocalDateTime.now();
+	LocalDateTime expiresDt = LocalDateTime.now();
 
 	public boolean isActive() {
-		return this.token != null && this.token_type != null
-				&& !LocalDateTime.now().isAfter(expiresDt.minusMinutes(60));
+		return this.token != null && this.tokenType != null && !LocalDateTime.now().isAfter(expiresDt.minusMinutes(60));
 	}
 
 	public String toTypeToken() {
-		return this.token_type + " " + this.token;
+		return this.tokenType + " " + this.token;
 	}
 }
