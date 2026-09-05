@@ -2,7 +2,7 @@ package com.frade.service.api;
 
 import java.util.List;
 
-import com.frade.dto.api.StockInfoRawDTO;
+import com.frade.dto.stock.StockInfoDTO;
 
 public interface KiwoomApiService {
 	//싱싱한 토큰 가져오기
@@ -10,6 +10,6 @@ public interface KiwoomApiService {
 
 	public void revokeToken();
 
-	//StockRepository에서 StockInfoListResponse를 받아 처리후 StockInfoRawDTO리스트 반환. synchronized 필요.
-	public List<StockInfoRawDTO> getMarketAllStockInfo();
+	//StockRepository에서 StockInfoListResponse를 받아 처리후 StockInfoDTO리스트 반환.
+	public List<StockInfoDTO> getMarketAllStockInfo();
 }

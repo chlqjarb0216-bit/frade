@@ -2,11 +2,14 @@ package com.frade.dao.api.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.frade.dao.api.KiwoomApiRepository;
 import com.frade.dto.api.KiwoomAccessToken;
+import com.frade.dto.api.KiwoomStockInfoResponse;
 import com.frade.dto.api.KiwoomTokenRequest;
 import com.frade.dto.api.StockInfoRawDTO;
 
@@ -69,11 +73,25 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 
 		//요청주소
 		final String stockInfoURL = this.host + "/api/dostk/stkinfo";
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + this.accessToken);
-		headers.set("Accept", "application/json");
-		HttpEntity<String> entity = new HttpEntity<>(headers);
-		return null;
+		try {
+			//헤더
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("authorization", token.toTypeToken());
+			headers.set("api-id", "ka10099");
+			//바디(0: 코스피)
+			Map<String, String> body = Map.of("mrkt_tp", "0");
+
+			//요청 객체 조립
+			HttpEntity<Object> entity = new HttpEntity<Object>(body, headers);
+
+			// KiwoomStockInfoResponse.class 명세 덕분에 스프링이 Accept: application/json 을 자동으로 심어 통신합니다.
+			ResponseEntity<KiwoomStockInfoResponse> responseEntity = restTemplate.exchange(stockInfoURL,
+					HttpMethod.POST, entity, KiwoomStockInfoResponse.class);
+			return responseEntity.getBody().getList();
+		} catch (RestClientException e) {
+			log.error("ka10099 종목정보 리스트 받아오는 중 에러발생: {}", e.getMessage());
+		}
+		return new ArrayList<>();
 	}
 
 	private void refreshAccessToken() {
@@ -81,7 +99,7 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 		try {
 			KiwoomTokenRequest tokenRequest = tokenRequestProvider.getObject().toRefreshSpec();
 
-			//[POST 요청 실행]: 응답 JSON 데이터 구조를 스프링+Jackson 콤비가 JsonNode 객체로 즉시 파싱해줍니다!
+			//POST 요청 실행: 응답 JSON 데이터 구조를 스프링+Jackson 콤비가 JsonNode 객체로 즉시 파싱해줍니다!
 			KiwoomAccessToken response = restTemplate.postForObject(authURL, tokenRequest, KiwoomAccessToken.class);
 			this.accessToken = response;
 			log.info("토큰 발급 완료");
