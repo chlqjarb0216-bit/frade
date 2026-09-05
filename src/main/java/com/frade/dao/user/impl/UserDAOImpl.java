@@ -103,4 +103,26 @@ public class UserDAOImpl implements UserDAO {
 	            userId
 	    );
 	}
+	
+	@Override
+	public UserDTO findUserProfileByUserNum(int userNum) {
+
+	    // 회원번호로 마이페이지에 필요한 회원정보 조회
+	    return sqlSessionTemplate.selectOne(
+	            "user_mapper.findUserProfileByUserNum",
+	            userNum
+	    );
+	}
+
+
+	@Override
+	public int updateUserProfile(UserDTO userDTO) {
+		
+		  // T_USER 프로필 정보 수정
+	    return sqlSessionTemplate.update(
+	            "user_mapper.updateUserProfile",
+	            userDTO
+	    );
+	}
+	
 }

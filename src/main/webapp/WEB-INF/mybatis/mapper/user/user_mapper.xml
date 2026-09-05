@@ -90,11 +90,46 @@
 		AND user_is_deleted IS NULL
 
 	</select>
-    
-    
-    
 
+	<!-- 회원번호로 마이페이지 프로필 정보 조회 -->
+	<select id="findUserProfileByUserNum" parameterType="int" resultType="UserDTO">
 
+		SELECT
+		user_num,
+		user_nick,
+		user_registed_date,
+		user_portfolio_is_public,
+		user_photo
+		FROM t_user
+		WHERE user_num = #{userNum}
+		AND user_is_deleted IS NULL
+
+	</select>
+
+	<!-- 회원 프로필 수정 -->
+	<update id="updateUserProfile" parameterType="UserDTO">
+
+		UPDATE t_user
+
+		<set>
+
+			user_nick = #{userNick},
+
+			user_portfolio_is_public =
+			#{userPortfolioIsPublic},
+
+			user_photo = #{userPhoto},
+
+			<if test="userPw != null">
+				user_pw = #{userPw},
+			</if>
+
+		</set>
+
+		WHERE user_num = #{userNum}
+		AND user_is_deleted IS NULL
+
+	</update>
 	
 
 </mapper>

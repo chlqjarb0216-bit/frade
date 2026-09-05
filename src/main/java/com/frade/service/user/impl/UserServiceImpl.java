@@ -393,12 +393,15 @@ public class UserServiceImpl implements UserService{
 	    );
 
 
-	    System.out.println(
-	            "DB에 전달할 프로필 수정 정보 : "
-	            + userDTO);
+		System.out.println("DB에 전달할 프로필 수정 정보 : " + userDTO);
 
-	    // 나중에 DAO
-	    // userDAO.updateUserProfile(userDTO);
+		// T_USER 프로필 정보 수정
+		int updateResult = userDAO.updateUserProfile(userDTO);
+
+		// 1건이 정상적으로 수정되지 않은 경우
+		if (updateResult != 1) {
+			return ResultCode.FAIL;
+		}
 
 	    return ResultCode.SUCCESS;
 	}
@@ -417,14 +420,23 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public UserProfileDTO getUserProfile(int userNum) {
 
-	    // 임시 DB 조회 결과
-	    UserProfileDTO userProfileDTO = new UserProfileDTO(
-	            userNum,
-	            "개미하이",
-	            "1.png",
-	            0,
-	            LocalDateTime.of(2026, 9, 1, 5, 30)
-	    );
+		// DB에서 회원번호로 마이페이지 프로필 정보 조회
+		UserDTO userDTO = userDAO.findUserProfileByUserNum(userNum);
+
+		// 조회된 회원이 없는 경우
+		if (userDTO == null) {
+			return null;
+		}
+
+	    // DB용 UserDTO를 화면에서 사용할 UserProfileDTO로 변환
+		UserProfileDTO userProfileDTO =
+		        new UserProfileDTO(
+		                userDTO.getUserNum(),
+		                userDTO.getUserNick(),
+		                userDTO.getUserPhoto(),
+		                userDTO.getUserPortfolioIsPublic(),
+		                userDTO.getUserRegistedDate()
+		        );
 
 	    return userProfileDTO;
 	}
