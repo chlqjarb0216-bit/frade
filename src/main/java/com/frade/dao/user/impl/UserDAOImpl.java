@@ -92,4 +92,15 @@ public class UserDAOImpl implements UserDAO {
                 userNum
         );
     }
+
+
+	@Override
+	public UserDTO findUserById(String userId) {
+		
+		// 아이디로 로그인에 필요한 회원정보 조회
+	    return sqlSessionTemplate.selectOne(
+	            "user_mapper.findUserById",
+	            userId
+	    );
+	}
 }

@@ -73,6 +73,18 @@ public class UserDTO {
         this.userPhoto = userPhoto;
     }
    
+ // 로그인 조회용 생성자
+    public UserDTO(
+            int userNum,
+            String userNick,
+            String userPw,
+            String userPhoto) {
+
+        this.userNum = userNum;
+        this.userNick = userNick;
+        this.userPw = userPw;
+        this.userPhoto = userPhoto;
+    }
 
 
 }

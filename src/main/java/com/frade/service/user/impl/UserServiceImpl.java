@@ -33,16 +33,35 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public UserSessionDTO userLogin(UserLoginDTO userLoginDTO) {
 
-		// 로그인 확인용 임시 데이터
-		if ("test123".equals(userLoginDTO.getUserId()) && "test1234!!".equals(userLoginDTO.getUserPw())) {
+		// 아이디로 회원정보 조회
+		UserDTO userDTO = userDAO.findUserById(userLoginDTO.getUserId());
 
-			return new UserSessionDTO(1, // userNum
-					"개미하이", // userNick
-					"1.png" // userPhoto
-			);
+		// 해당 아이디의 회원이 없거나 탈퇴한 회원이면 로그인 실패
+		if (userDTO == null) {
+			return null;
 		}
 
-		return null;
+		try {
+
+			// 입력한 비밀번호와
+			// DB에 저장된 암호화 비밀번호 비교
+			boolean pwMatch = SHA256Encryptor.matches(userLoginDTO.getUserPw(), userDTO.getUserPw());
+
+			// 비밀번호가 일치하지 않으면 로그인 실패
+			if (!pwMatch) {
+				return null;
+			}
+
+		} catch (NoSuchAlgorithmException e) {
+
+			e.printStackTrace();
+
+			return null;
+		}
+
+		// 로그인 성공
+		// 세션에서 사용할 정보만 UserSessionDTO에 담아서 반환
+		return new UserSessionDTO(userDTO.getUserNum(), userDTO.getUserNick(), userDTO.getUserPhoto());
 	}
 
 	@Override
