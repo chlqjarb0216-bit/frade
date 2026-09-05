@@ -28,7 +28,7 @@
 	INNER JOIN t_user u 
 		ON c.user_num = u.user_num
 	WHERE c.post_num = #{postNum}
-	ORDER BY c.comment_num ASC
+	ORDER BY c.comment_num DESC
 	OFFSET #{offset} ROWS
 	FETCH NEXT #{limit} ROWS ONLY
 </select>
