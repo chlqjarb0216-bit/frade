@@ -17,7 +17,7 @@ public interface CommentDAO {
 	public List<CommentDTO> selectCommentList(Map<String, Object> params);
 	
 	// 댓글 단건 조회 (본인 확인용)
-	public int selectComment(Map<String,Object> commentUserNum);
+	public int isWriterComment(Map<String,Object> commentUserNum);
 	
 	// 댓글 삭제
 	public int deleteComment(int commentNum);

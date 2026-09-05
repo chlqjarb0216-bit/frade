@@ -68,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
 		commentUserNum.put("commentNum", commentNum);
 		commentUserNum.put("userNum", loginUserNum);
 		
-		return commentDAO.selectComment(commentUserNum);
+		return commentDAO.isWriterComment(commentUserNum);
 	}
 
 	@Override
