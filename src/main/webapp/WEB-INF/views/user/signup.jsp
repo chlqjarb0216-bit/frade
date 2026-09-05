@@ -44,17 +44,17 @@
 		<button type="submit">회원가입</button>
 
 	</form>
-	
+
+	<c:if test="${not empty validationFail}">
+		<p class="error-msg">${validationFail}</p>
+	</c:if>
+
 	<c:if test="${not empty signupFail}">
 		<p class="error-msg">${signupFail}</p>
 	</c:if>
 
 	<c:if test="${not empty emptyFail}">
 		<p class="error-msg">${emptyFail}</p>
-	</c:if>
-
-	<c:if test="${spaceFail}">
-		<p class="error-msg">공백은 사용할 수 없습니다.</p>
 	</c:if>
 
 	<c:if test="${pwFail}">
@@ -102,8 +102,19 @@
 
 		        return;
 		    }
+		    
+		 // 아이디 형식 확인
+		    if(!/^[a-zA-Z0-9]{6,16}$/.test(inputIdValue)){
+
+		        p_checkDupIdMsg.textContent =
+		            "아이디는 영문, 숫자 6~16자로 입력해주세요.";
+
+		        p_checkDupIdMsg.style.color = "red";
+
+		        return;
+		    }
 		
-		    fetch("/user/api/checkId", {
+		    fetch("/api/user/checkId", {
 
 		        method: "POST",
 
@@ -175,6 +186,7 @@
 
 	            return;
 	        }
+	    	
 	
 	        // 닉네임에 공백이 있으면 중복확인 요청 안 보냄
 	        if(/\s/.test(inputNickValue)){
@@ -184,8 +196,20 @@
 	
 	            return;
 	        }
+	        
+	        if(!/^[가-힣a-zA-Z0-9]{2,16}$/.test(inputNickValue)){
+
+	    	    p_checkDupNickMsg.textContent =
+	    	        "닉네임은 한글, 영문, 숫자 2~16자로 입력해주세요.";
+
+	    	    p_checkDupNickMsg.style.color = "red";
+
+	    	    return;
+	    	}
+	    	
+	        
 	
-	        fetch("/user/api/checkNick", {
+	        fetch("/api/user/checkNick", {
 
 	            method: "POST",
 
@@ -267,7 +291,7 @@
 		        return;
 		    }
 		
-		    fetch("/user/api/checkEmail", {
+		    fetch("/api/user/checkEmail", {
 
 		        method: "POST",
 
@@ -380,7 +404,18 @@
 	            alert("이메일 중복확인을 해주세요.");
 	            return;
 	        }
+	        
 
+	        // 비밀번호 형식 확인
+	        const pwPattern =
+	            /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9가-힣\s])[^가-힣\s]{10,20}$/;
+
+	        if(!pwPattern.test(inputPw.value)){
+	            alert("비밀번호는 10~20자이며 영문, 숫자, 특수문자를 포함해야 합니다.");
+	            return;
+	        }
+	        
+	        
 	        if(inputPw.value != inputPwCheck.value){
 	            alert("비밀번호가 일치하지 않습니다.");
 	            return;

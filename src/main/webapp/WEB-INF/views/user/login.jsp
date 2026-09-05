@@ -34,7 +34,11 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
 			    <script>
 			        alert("${signupSuccess}");
 			    </script>
+
+			<c:if test="${not empty loginValidationFail}">
+				<p class="error-msg">${loginValidationFail}</p>
 			</c:if>
+		</c:if>
             <c:if test="${loginfail == 'true'}">
                 <p class="error-msg">로그인 실패</p>
             </c:if>
