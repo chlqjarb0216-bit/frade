@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="history_mapper">
+
+	<select id="findTradeHistoryByUserNum" parameterType="int"
+		resultType="HistoryDTO">
+		select * from t_history
+		where user_num = #{userNum}
+	</select>
+	
+	
+	<!-- 오늘 조회 -->
+	<select id="findTradeHistoryTodayByUserNum" parameterType="int" 
+		resultType="HistoryDTO">
+		select *
+		from t_history
+		where user_num = #{userNum}
+		and trade_date &gt;= trunc(sysdate)
+  		and trade_date &lt; trunc(sysdate) + 1
+		order by trade_date desc
+	</select>
+
+	<!-- 일주일 조회 -->
+	<select id="findTradeHistoryRecentOneWeekByUserNum" parameterType="int" 
+		resultType="HistoryDTO">
+		select *
+		from t_history
+		where user_num = #{userNum}
+		and trade_date &gt;= trunc(sysdate) - 6
+  		and trade_date &lt; trunc(sysdate) + 1
+		order by trade_date desc
+	</select>
+	
+	<!-- 한달 조회 -->
+	<select id="findTradeHistoryRecentOneMonthByUserNum" parameterType="int" 
+		resultType="HistoryDTO">
+		select *
+		from t_history
+		where user_num = #{userNum}
+		and trade_date &gt;= add_months(trunc(sysdate), -1)
+ 		and trade_date &lt; trunc(sysdate) + 1
+		order by trade_date desc
+	</select>
+	
+
+
+	<insert id="insertTradeHistory" parameterType="HistoryDTO">
+
+		insert into t_history(user_num, stock_code, trade_price, trade_cnt)
+		values (
+		#{userNum},
+		#{stockCode},
+		#{tradePrice},
+		#{tradeCnt}
+		)
+	</insert>
+
+
+
+</mapper>

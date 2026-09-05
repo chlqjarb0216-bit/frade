@@ -23,11 +23,14 @@ public interface PostService {
 	
 	//postNum을 키값으로 테이블 조회해서 게시글 정보 가져오기
 		//1.postNum 키를 가지오 유저 이름도 가져와야함
-	public PostDTO getPost(int postNum);
+	public PostDTO getPost(int postNum, boolean isViewUp);
 	
 	//정렬된 게시글 리스트를 받아옴
-	public List<PostDTO> getPostListPagingSortedByView(int pageIdx, int pageSize);
+	public List<PostDTO> getPostListPagingSortedByView(int pageSize);
 	
+	public int deletePost(int postNum);
 	
+	//게시글 수정 (파일 교체 및 삭제 처리 포함)
+	public int updatePost(PostDTO post, MultipartFile[] files, boolean deleteExistingFiles);
 	
 }

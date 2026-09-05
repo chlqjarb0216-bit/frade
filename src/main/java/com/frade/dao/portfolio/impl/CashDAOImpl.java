@@ -18,8 +18,13 @@ public class CashDAOImpl implements CashDAO{
 
 	@Override
 	public UserCashDTO findUserCashByUserNum(int userNum) {
-		UserCashDTO userCash = sqlSessionTemplate.selectOne("order_mapper.findUserCashByUserNum", userNum);
+		UserCashDTO userCash = sqlSessionTemplate.selectOne("cash_mapper.findUserCashByUserNum", userNum);
 		return userCash;
+	}
+
+	@Override
+	public UserCashDTO findUserCashByUserNumForUpdate(int userNum) {
+		return sqlSessionTemplate.selectOne("cash_mapper.findUserCashByUserNumForUpdate", userNum);
 	}
 	
 	@Override
@@ -27,7 +32,7 @@ public class CashDAOImpl implements CashDAO{
 		Map<String, Integer> params = new HashMap<>();
 	    params.put("userNum", userNum);
 	    params.put("add", add);
-		int result = sqlSessionTemplate.update("order_mapper.updateUserCash", params);
+		int result = sqlSessionTemplate.update("cash_mapper.updateUserCash", params);
 		return result;
 	}
 
