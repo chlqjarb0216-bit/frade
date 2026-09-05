@@ -76,6 +76,25 @@
     </insert>
 
 
+	<!-- 로그인할 회원 정보 조회 -->
+	<select id="findUserById" parameterType="String"
+		resultType="UserDTO">
+
+		SELECT
+		user_num,
+		user_nick,
+		user_pw,
+		user_photo
+		FROM t_user
+		WHERE user_id = #{userId}
+		AND user_is_deleted IS NULL
+
+	</select>
+    
+    
+    
+
+
 	
 
 </mapper>

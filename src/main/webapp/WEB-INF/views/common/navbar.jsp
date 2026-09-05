@@ -41,10 +41,10 @@
 			
 				<c:choose>
             
-            <c:when test="${not empty sessionScope.loginUser}">
+            <c:when test="${not empty sessionScope.loginUser  and not empty sessionScope.loginUser.userPhoto}">
                 
                 <img id="userPhoto" 
-                     src="${pageContext.request.contextPath}/resources/images/Default_profile.png" 
+                      src="${pageContext.request.contextPath}/file-storage/user_profile/${sessionScope.loginUser.userPhoto}"
                      alt="기본 프로필">
             </c:when> 
             
@@ -56,6 +56,7 @@
             </c:otherwise>
         </c:choose>
 			</div>
+			<strong>${empty sessionScope.loginUser.userNick ? '닉네임' : sessionScope.loginUser.userNick}</strong>
 			
 		</div>
 	</div>

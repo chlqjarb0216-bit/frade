@@ -24,4 +24,9 @@ public interface UserDAO {
 
     // 회원 지갑 생성
     int saveUserCash(int userNum);
+    
+	// 아이디로 로그인에 필요한 회원정보 조회
+	UserDTO findUserById(String userId);
+    
+    
 }
