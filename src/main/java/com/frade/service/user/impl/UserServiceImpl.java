@@ -5,21 +5,30 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.frade.common.FilePath;
 import com.frade.common.ResultCode;
+import com.frade.dao.user.UserDAO;
 import com.frade.dto.user.UserDTO;
 import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
+import com.frade.exception.UserSignupException;
 import com.frade.service.user.UserService;
 import com.frade.util.SHA256Encryptor;
 
 @Service
 public class UserServiceImpl implements UserService{
+	
+	
+	@Autowired
+	UserDAO userDAO;
 
 	@Override
 	public UserSessionDTO userLogin(UserLoginDTO userLoginDTO) {
@@ -38,86 +47,85 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public boolean checkUserId(String userId) {
-		
-		if("test".equals(userId)) {
-			return true;
-		}
-		
-		return false;
+
+		Integer userNum = userDAO.findUserNumById(userId);
+
+		return userNum != null;
 	}
 
 	@Override
 	public boolean checkUserNick(String userNick) {
-		 if ("홍명보".equals(userNick)) {
-		        return true;
-		    }
 
-		    return false;
+		Integer userNum = userDAO.findUserNumByNick(userNick);
+
+		return userNum != null;
 	}
-	
+
 	@Override
 	public boolean checkUserEmail(String userEmail) {
-		
-		if("test@test.com".equals(userEmail)) {
-			return true;
-		}
-		
-		return false;
+
+		Integer userNum = userDAO.findUserNumByEmail(userEmail);
+
+		return userNum != null;
 	}
 
 	@Override
+	@Transactional
 	public ResultCode userSignup(UserSignupDTO userSignupDTO) {
-
-	    boolean idResult = checkUserId(userSignupDTO.getUserId());
-
-	    if(idResult) {
-	        return ResultCode.DUP_ID;
-	    }
-
-	    boolean nickResult = checkUserNick(userSignupDTO.getUserNick());
-
-	    if(nickResult) {
-	        return ResultCode.DUP_NICK;
-	    }
-
-	    boolean emailResult = checkUserEmail(userSignupDTO.getUserEmail());
-
-	    if(emailResult) {
-	        return ResultCode.DUP_EMAIL;
-	    }
 
 	    // 비밀번호 암호화
 	    String encryptedPw = null;
 
 	    try {
 
-	        encryptedPw =
-	                SHA256Encryptor.encrypt(
-	                        userSignupDTO.getUserPw());
+			encryptedPw = SHA256Encryptor.encrypt(userSignupDTO.getUserPw());
 
 	    } catch(NoSuchAlgorithmException e) {
 
-	        e.printStackTrace();
 
-	        return ResultCode.PASSWORD_ENCRYPT_FAIL;
+	        throw new UserSignupException("비밀번호 암호화 실패");
 	    }
 
+	    
+	    int userNum = userDAO.getNextUserNum();
 
 	    // Controller용 DTO → DB용 DTO 변환
 	    // 회원가입용 생성자 사용
 	    UserDTO userDTO = new UserDTO(
+	    		userNum,
 	            userSignupDTO.getUserId(),       // userId
 	            userSignupDTO.getUserNick(),     // userNick
 	            userSignupDTO.getUserEmail(),    // userEmail
 	            encryptedPw                      // userPw
 	    );
 
-	    System.out.println(
-	            "DB에 전달할 회원가입 정보 : "
-	            + userDTO);
+		System.out.println("DB에 전달할 회원가입 정보 : " + userDTO);
+		
+		// T_USER 테이블에 회원정보 저장
+		try {
 
-	    // 나중에 DAO
-	    // userDAO.saveUser(userDTO);
+			// T_USER 회원정보 저장
+			int userResult = userDAO.saveUser(userDTO);
+
+			// INSERT가 정상적으로 1건 처리되지 않은 경우
+			if (userResult != 1) {
+				throw new UserSignupException("회원정보 저장 실패");
+			}
+
+		} catch (DataIntegrityViolationException e) {
+
+			// 아이디 / 닉네임 / 이메일 UNIQUE 제약조건 위반 등
+			throw new UserSignupException("이미 사용 중인 아이디, 닉네임 또는 이메일입니다.");
+		}
+
+		// T_CASH 테이블에 가입한 회원의 자금정보 생성
+		// T_USER에 넣었던 것과 같은 userNum 사용
+		int cashResult = userDAO.saveUserCash(userNum);
+
+		// INSERT가 정상적으로 1건 처리되지 않은 경우
+		if (cashResult != 1) {
+			throw new UserSignupException("회원 지갑 생성 실패");
+		}    
 
 	    return ResultCode.SUCCESS;
 	}
