@@ -45,11 +45,13 @@ public class UserDTO {
     
     // 회원가입용 생성자
     public UserDTO(
+    		int userNum,
             String userId,
             String userNick,
             String userEmail,
             String userPw) {
 
+    	this.userNum = userNum;
         this.userId = userId;
         this.userNick = userNick;
         this.userEmail = userEmail;

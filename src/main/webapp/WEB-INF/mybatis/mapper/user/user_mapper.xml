@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user_mapper">
+
+	<!-- 아이디 중복 확인 -->
+	<select id="countUserId" parameterType="String" resultType="int">
+
+		SELECT COUNT(*)
+		FROM t_user
+		WHERE user_id = #{userId}
+
+	</select>
+
+
+	<!-- 닉네임 중복 확인 -->
+	<select id="countUserNick" parameterType="String" resultType="int">
+
+		SELECT COUNT(*)
+		FROM t_user
+		WHERE user_nick = #{userNick}
+
+	</select>
+
+
+	<!-- 이메일 중복 확인 -->
+	<select id="countUserEmail" parameterType="String" resultType="int">
+
+		SELECT COUNT(*)
+		FROM t_user
+		WHERE user_email = #{userEmail}
+
+	</select>
+
+
+	<!-- 회원가입에 사용할 user_num 시퀀스 조회 -->
+	<select id="getNextUserNum" resultType="int">
+
+		SELECT seq_t_user.NEXTVAL
+		FROM dual
+
+	</select>
+
+
+	<!-- 회원가입 -->
+	<insert id="saveUser" parameterType="UserDTO">
+
+		INSERT INTO t_user(
+		user_num,
+		user_id,
+		user_nick,
+		user_email,
+		user_pw
+		)
+		VALUES(
+		#{userNum},
+		#{userId},
+		#{userNick},
+		#{userEmail},
+		#{userPw}
+		)
+
+	</insert>
+
+
+	<!-- 회원가입 후 지갑 생성 -->
+	<insert id="saveUserCash" parameterType="int">
+
+		INSERT INTO t_cash(
+		user_num
+		)
+		VALUES(
+		#{userNum}
+		)
+
+    </insert>
+
+
+	
+
+</mapper>
