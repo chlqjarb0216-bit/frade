@@ -20,6 +20,7 @@ import com.frade.common.FilePath;
 import com.frade.common.ResultCode;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
+import com.frade.util.LoginManager;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,21 +34,16 @@ public class CommunityController {
 
 	// 게시글 목록 페이지 이동
 	@GetMapping("")
-	public String lists(HttpSession session) {
-		
-		// [TEST] 강제 로그인 처리: 세션에 로그인 정보가 없다면 1번 유저로 세팅
-				if(session.getAttribute("loginUserNum") == null) {
-					session.setAttribute("loginUserNum", 1); // 확인하신 실제 테스트 유저 번호 입력
-					System.out.println("테스트 로그인 완료! 유저 번호: 1");
-				}
-		
+	public String lists() {
 		return "community/lists";
 	}
 
 	// 게시글 작성 페이지 이동
 	@GetMapping("/write")
-	public String write() {
-
+	public String write(HttpSession session) {
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
+		}
 		return "community/write";
 	}
 
@@ -58,16 +54,12 @@ public class CommunityController {
 														HttpSession session,
 														RedirectAttributes rttr) {
 
-		//임시 로그인 코드(테스트용)
-		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-		
-		// 만약 세션이 날아갔거나 비정상 접근이면 튕겨냄
-		if(loginUserNum == null) {
-			return "redirect:/community-lists"; // 실제로는 로그인 페이지로 리다이렉트
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
 		}
-		
-		post.setUserNum(loginUserNum); // 세션에서 꺼낸 번호를 DTO에 주입
-		//임시 로그인 코드(테스트용)
+
+		int loginUserNum = LoginManager.getLoginUserNum(session);
+		post.setUserNum(loginUserNum);
 		
 		if (br.hasErrors()) {
 			return "redirect:/community-lists/write?error=true";
@@ -131,12 +123,10 @@ public class CommunityController {
 	@PostMapping("/delete")
 	public String deleteAction(@RequestParam("postNum") int postNum, HttpSession session) {
 	    
-	    // 현재 로그인한 사람의 세션 번호 가져오기
-	    Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-	    
-	    if (loginUserNum == null) {
-	        return "redirect:/community-lists"; // 로그인이 안 되어있으면 튕겨냄
+	    if (!LoginManager.isLogin(session)) {
+	        return "redirect:/user/login";
 	    }
+	    int loginUserNum = LoginManager.getLoginUserNum(session);
 
 	    try {
 	        // DB에서 삭제하려는 게시글 정보 먼저 조회
@@ -167,10 +157,10 @@ public class CommunityController {
 					   HttpSession session,
 					   Model model) {
 
-		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-		if (loginUserNum == null) {
-			return "redirect:/community-lists";
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
 		}
+		int loginUserNum = LoginManager.getLoginUserNum(session);
 
 		PostDTO post = postService.getPost(postNum, false);
 		if (post == null || post.getUserNum() != loginUserNum) {
@@ -189,10 +179,10 @@ public class CommunityController {
 							 HttpSession session,
 							 RedirectAttributes rttr) {
 
-		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-		if (loginUserNum == null) {
-			return "redirect:/community-lists";
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
 		}
+		int loginUserNum = LoginManager.getLoginUserNum(session);
 
 		if (post.getPostNum() == null) {
 			return "redirect:/community-lists";

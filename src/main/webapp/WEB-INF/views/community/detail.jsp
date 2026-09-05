@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html>
@@ -98,7 +99,7 @@ details summary {
 			<a href="/community-lists" class="btn btn-outline-secondary btn-sm px-3 border-0" style="border-radius: 8px;">
 				← 목록으로
 			</a>
-			<c:if test="${not empty sessionScope.loginUserNum and sessionScope.loginUserNum == post.userNum}">
+			<c:if test="${not empty sessionScope.loginUser and sessionScope.loginUser.userNum == post.userNum}">
 				<div class="d-flex align-items-center gap-2">
 					<!-- 수정 버튼 (GET) -->
 					<a href="/community-lists/edit?postNum=${post.postNum}" class="btn btn-outline-secondary btn-sm px-3" style="border-radius: 8px;">수정</a>
@@ -142,18 +143,51 @@ details summary {
 			</div>
 
 			<!-- 본문 내용 -->
-			<div class="post-content text-dark mb-4">
-				${post.postContent}
-			</div>
+			<div class="post-content text-dark mb-4"><c:out value="${post.postContent}"/></div>
 
 			<!-- 첨부파일 영역 -->
 			<c:if test="${not empty post.fileList}">
 				<details class="bg-light p-3 rounded-3 mb-4 border">
-					<summary class="fw-semibold text-secondary small">📎 첨부파일 보기 (${post.fileList.size()})</summary>
+					<summary class="fw-semibold text-secondary small" style="cursor: pointer;">📎 첨부파일 보기 (${post.fileList.size()})</summary>
 					<div class="mt-3 pt-2 border-top">
 						<div class="d-flex flex-column gap-3">
 							<c:forEach var="fileName" items="${post.fileList}">
-								<img src="/file-storage/post_uploadfile/${fileName}" class="img-fluid rounded border" style="max-width: 100%; height: auto;" alt="첨부 이미지"/>
+								<c:set var="lowerName" value="${fn:toLowerCase(fileName)}" />
+								<c:choose>
+									<%-- 1. 이미지 파일인 경우: 미리보기 이미지 및 다운로드 링크 --%>
+									<c:when test="${fn:endsWith(lowerName, '.jpg') or fn:endsWith(lowerName, '.jpeg') or fn:endsWith(lowerName, '.png') or fn:endsWith(lowerName, '.gif') or fn:endsWith(lowerName, '.webp') or fn:endsWith(lowerName, '.bmp') or fn:endsWith(lowerName, '.svg')}">
+										<div class="d-flex flex-column align-items-start">
+											<a href="/file-storage/post_uploadfile/${fileName}" target="_blank" title="새 탭에서 원본 보기">
+												<img src="/file-storage/post_uploadfile/${fileName}" class="img-fluid rounded border shadow-sm" style="max-width: 100%; max-height: 500px; object-fit: contain;" alt="${fileName}"/>
+											</a>
+											<a href="/file-storage/post_uploadfile/${fileName}" download="${fileName}" class="text-decoration-none text-secondary small mt-1">
+												⬇️ ${fileName} 다운로드
+											</a>
+										</div>
+									</c:when>
+
+									<%-- 2. 이미지가 아닌 일반 파일인 경우--%>
+									<c:otherwise>
+										<div class="d-flex align-items-center justify-content-between p-3 bg-white border rounded shadow-sm">
+											<div class="d-flex align-items-center gap-2 text-truncate me-3">
+												<div class="text-truncate">
+													<div class="fw-semibold text-dark text-truncate">${fileName}</div>
+													<small class="text-muted">일반 첨부파일</small>
+												</div>
+											</div>
+											<div class="d-flex gap-2 flex-shrink-0">
+												<c:if test="${fn:endsWith(lowerName, '.pdf')}">
+													<a href="/file-storage/post_uploadfile/${fileName}" target="_blank" class="btn btn-outline-secondary btn-sm">
+														미리보기
+													</a>
+												</c:if>
+												<a href="/file-storage/post_uploadfile/${fileName}" download="${fileName}" class="btn btn-outline-primary btn-sm">
+													⬇️ 다운로드
+												</a>
+											</div>
+										</div>
+									</c:otherwise>
+								</c:choose>
 							</c:forEach>
 						</div>
 					</div>
@@ -180,12 +214,24 @@ details summary {
 			</div>
 
 			<div class="mb-4">
-				<div class="d-flex flex-column gap-2">
-					<textarea id="commentContent" class="form-control custom-textarea" rows="3" placeholder="댓글을 입력하세요 (최대 100자)"></textarea>
-					<div class="text-end">
-						<button type="button" class="btn btn-dark btn-sm px-4 fw-medium" style="border-radius: 8px;" onclick="submitComment()">작성</button>
-					</div>
-				</div>
+				<c:choose>
+					<c:when test="${not empty sessionScope.loginUser}">
+						<div class="d-flex flex-column gap-2">
+							<textarea id="commentContent" class="form-control custom-textarea" rows="3" placeholder="댓글을 입력하세요 (최대 100자)"></textarea>
+							<div class="text-end">
+								<button type="button" class="btn btn-dark btn-sm px-4 fw-medium" style="border-radius: 8px;" onclick="submitComment()">작성</button>
+							</div>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<div class="d-flex flex-column gap-2">
+							<textarea id="commentContent" class="form-control custom-textarea bg-light" rows="3" placeholder="로그인 후 댓글을 작성할 수 있습니다." readonly onclick="if(confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) location.href='/user/login';"></textarea>
+							<div class="text-end">
+								<a href="/user/login" class="btn btn-outline-dark btn-sm px-4 fw-medium" style="border-radius: 8px;">로그인</a>
+							</div>
+						</div>
+					</c:otherwise>
+				</c:choose>
 			</div>
 
 			<div id="commentList" class="d-flex flex-column">
@@ -247,13 +293,23 @@ details summary {
 				commentTable.innerHTML = '<div class="text-center py-4 text-secondary small">등록된 댓글이 없습니다.</div>';
 				return;
 			}
+
+			const loginUserNum = ${not empty sessionScope.loginUser ? sessionScope.loginUser.userNum : -1};
 			
 			commentList.forEach(comment =>{
 				const dateStr = comment.commentedDateString || '';
+				const isMyComment = (loginUserNum !== -1 && comment.userNum === loginUserNum);
+				const deleteBtn = isMyComment ? `
+					<button type="button" class="btn btn-link text-danger text-decoration-none p-0 ms-2" style="font-size: 0.78rem;" onclick="deleteComment(\${comment.commentNum})">삭제</button>
+				` : '';
+
 				html += `
 					<div class="py-3 border-bottom">
 						<div class="d-flex align-items-center justify-content-between mb-1">
-							<span class="fw-semibold text-dark small">\${comment.userName}</span>
+							<div class="d-flex align-items-center">
+								<span class="fw-semibold text-dark small">\${comment.userName}</span>
+								\${deleteBtn}
+							</div>
 							<span class="text-secondary small" style="font-size: 0.8rem;">\${dateStr}</span>
 						</div>
 						<p class="mb-0 text-dark small" style="white-space: pre-wrap; line-height: 1.5;">\${comment.commentContent}</p>
@@ -297,6 +353,12 @@ details summary {
 		}
 		
 		function submitComment(){
+			if (loginUserNum === -1) {
+				if (confirm("댓글 작성은 로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?")) {
+					location.href = "/user/login";
+				}
+				return;
+			}
 			const contentInput = document.getElementById('commentContent');
 			const content = contentInput.value.trim();
 			
@@ -333,6 +395,33 @@ details summary {
 				} else{
 					alert(writeInfo.message);
 				}
+			});
+		}
+
+		// 댓글 삭제 비동기 요청 함수
+		function deleteComment(commentNum){
+			if(!confirm('정말 삭제하시겠습니까?')){
+				return;
+			}
+
+			fetch(`/api/community-lists/comment-delete`,{
+				method: 'POST',
+				headers:{
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: `commentNum=\${commentNum}`
+			})
+			.then(response => response.json())
+			.then(res =>{
+				if(res.code === "suc_001"){
+					loadComments(1);
+				} else{
+					alert(res.message || "댓글 삭제에 실패했습니다.");
+				}
+			})
+			.catch(err =>{
+				console.error("댓글 삭제 에러", err);
+				alert("댓글 삭제 중 오류가 발생했습니다.");
 			});
 		}
 	</script>

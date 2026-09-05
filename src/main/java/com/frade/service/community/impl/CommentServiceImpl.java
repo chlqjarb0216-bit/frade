@@ -62,4 +62,18 @@ public class CommentServiceImpl implements CommentService {
 		return result;
 	}
 
+	@Override
+	public int getComment(int commentNum, int loginUserNum) {
+		Map<String, Object> commentUserNum = new HashMap<>();
+		commentUserNum.put("commentNum", commentNum);
+		commentUserNum.put("userNum", loginUserNum);
+		
+		return commentDAO.isWriterComment(commentUserNum);
+	}
+
+	@Override
+	public int deleteComment(int commentNum) {
+		return commentDAO.deleteComment(commentNum);
+	}
+
 }
