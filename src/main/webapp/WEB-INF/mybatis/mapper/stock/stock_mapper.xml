@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="stock_mapper">
+
+	<select id="findAllStockInfo" resultType="StockInfoDTO">
+		SELECT *
+		FROM t_stock
+	</select>
+
+	<!-- 커서 결과를 수신할 resultMap을 먼저 선언 -->
+	<resultMap id="matchedCodesMap" type="java.lang.String">
+		<result column="STOCK_CODE" javaType="java.lang.String" />
+	</resultMap>
+	<!-- 태그를 <update>로 변경하고, parameterType은 java.util.Map으로 바꿉니다. -->
+	<update id="updateAllStockAndReturnMatchedCodes" parameterType="java.util.Map"
+		statementType="CALLABLE">
+		DECLARE
+		v_xml_data CLOB;
+		BEGIN
+		v_xml_data := #{xmlData};
+
+		/* 1. 실제 MERGE INTO 업데이트 수행 */
+		MERGE INTO t_stock TARGET
+		USING (
+		SELECT stock_code, stock_name, sector_num, stock_status,
+		prev_day_close_price
+		FROM XMLTABLE('/rows/row' PASSING XMLTYPE(v_xml_data)
+		COLUMNS
+		stock_code VARCHAR2(6) PATH 'stockCode',
+		stock_name VARCHAR2(60) PATH 'stockName',
+		sector_num NUMBER(2) PATH 'sectorNum',
+		stock_status NUMBER(1) PATH 'stockStatus',
+		prev_day_close_price NUMBER(9) PATH 'prevDayClosePrice'
+		)
+		) SOURCE
+		ON (TARGET.STOCK_CODE = SOURCE.stock_code)
+		WHEN MATCHED THEN
+		UPDATE SET
+		TARGET.STOCK_NAME = SOURCE.stock_name,
+		TARGET.SECTOR_NUM = SOURCE.sector_num,
+		TARGET.STOCK_STATUS = SOURCE.stock_status,
+		TARGET.PREV_DAY_CLOSE_PRICE = SOURCE.prev_day_close_price;
+
+		/* 2. [핵심] 자바가 던진 paramMap 상자의 resultList 자리에 100종목 코드를 강제로 채워 넣음(역류)
+		*/
+		OPEN #{resultList, mode=OUT, jdbcType=CURSOR,
+		javaType=java.sql.ResultSet, resultMap=matchedCodesMap} FOR
+		SELECT TARGET.STOCK_CODE
+		FROM t_stock TARGET
+		WHERE TARGET.STOCK_CODE IN (
+		SELECT stock_code
+		FROM XMLTABLE('/rows/row' PASSING XMLTYPE(v_xml_data)
+		COLUMNS stock_code VARCHAR2(6) PATH 'stockCode'
+		)
+		);
+
+		END;
+	</update>
+
+</mapper>
