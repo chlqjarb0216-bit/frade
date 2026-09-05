@@ -63,8 +63,12 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public CommentDTO getComment(int commentNum) {
-		return commentDAO.selectComment(commentNum);
+	public int getComment(int commentNum, int loginUserNum) {
+		Map<String, Object> commentUserNum = new HashMap<>();
+		commentUserNum.put("commentNum", commentNum);
+		commentUserNum.put("userNum", loginUserNum);
+		
+		return commentDAO.selectComment(commentUserNum);
 	}
 
 	@Override

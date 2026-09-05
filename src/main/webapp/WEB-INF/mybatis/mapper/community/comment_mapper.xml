@@ -34,15 +34,11 @@
 </select>
 
 <!-- 댓글 단건 조회 (본인 확인용) -->
-<select id="selectComment" parameterType="int" resultType="CommentDTO">
+<select id="selectComment" parameterType="map" resultType="int">
 	SELECT 
-		comment_num,
-		post_num,
-		user_num,
-		comment_content,
-		comment_date AS post_commented_date
+		COUNT(*)
 	FROM t_comment
-	WHERE comment_num = #{commentNum}
+	WHERE comment_num = #{commentNum} AND user_num = #{userNum}
 </select>
 
 <!-- 댓글 삭제 -->
