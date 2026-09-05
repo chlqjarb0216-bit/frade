@@ -145,9 +145,7 @@ public class UserController {
 			return "redirect:/user/login";
 		}
 
-		UserSessionDTO loginUser = LoginManager.getLoginUser(session);
-
-		int loginUserNumber = loginUser.getUserNum();
+		int loginUserNumber = LoginManager.getLoginUserNum(session);
 
 		UserProfileDTO userProfileDTO = userService.getUserProfile(loginUserNumber);
 
@@ -165,9 +163,7 @@ public class UserController {
 		    return "redirect:/user/login";
 		}
 
-		UserSessionDTO loginUser = LoginManager.getLoginUser(session);
-
-		int loginUserNumber = loginUser.getUserNum();
+		int loginUserNumber = LoginManager.getLoginUserNum(session);
 
 
 		userProfileDTO.setUserNum(loginUserNumber);
@@ -238,9 +234,7 @@ public class UserController {
 				return "redirect:/user/login";
 			}
 
-			UserSessionDTO loginUser = LoginManager.getLoginUser(session);
-
-			int loginUserNumber = loginUser.getUserNum();
+			int loginUserNumber = LoginManager.getLoginUserNum(session);
 
 			ResultCode result = userService.deleteUser(loginUserNumber);
 
@@ -248,7 +242,7 @@ public class UserController {
 
 	    	LoginManager.logout(session);
 
-	        return "redirect:/user/login";
+	        return "redirect:/";
 	    }
 
 	    return "redirect:/user/mypage";

@@ -60,4 +60,20 @@ public class LoginManager {
 
         logout(request.getSession());
     }
+    
+ // 로그인 유저 번호 가져오기
+    public static int getLoginUserNum(HttpSession session) {
+
+        UserSessionDTO loginUser = getLoginUser(session);
+
+        return loginUser.getUserNum();
+    }
+
+    public static int getLoginUserNum(HttpServletRequest request) {
+
+        return getLoginUserNum(request.getSession());
+    }
+   
+    
+    
 }
