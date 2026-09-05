@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,8 +43,8 @@ public class StockDataScheduler {
 
 			// 💡 큐에 신호가 툭 떨어져서 리스트를 낚아챈 바로 그 10초 주기 안에서, 
 			// 지연 없이 징검다리 서비스 레이어를 호출해 DB에 벌크로 즉시 적재(Upsert)합니다!
-			stockService.saveMinuteStockPrice(completedList);
-
+			int result = stockService.saveMinuteStockPrice(completedList);
+			log.info("{} 분단위 DB저장 완료 {}건", completedList.get(0).getDateTime(), result);
 		} catch (Exception e) {
 			log.error("분단위 버퍼 저장 에러\n 원인: {}", e.getMessage(), e);
 		}
@@ -89,7 +88,7 @@ public class StockDataScheduler {
 				return previewDTO;
 			}).filter(Objects::nonNull)
 					.sorted((o1, o2) -> Double.compare(o2.getDailyPriceChangeRate(), o1.getDailyPriceChangeRate())) // dailyChangeRate(당일 등락률) 기준 내림차순 정렬
-					.collect(Collectors.toList());
+					.toList();
 
 			// 종목 순위 갱신
 			stockRankingCache.updateSortedCache(previewList, tempMap);
