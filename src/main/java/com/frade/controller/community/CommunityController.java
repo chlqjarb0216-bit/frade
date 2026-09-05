@@ -159,4 +159,69 @@ public class CommunityController {
 	        return "redirect:/community-lists";
 	    }
 	}
+
+	// 게시글 수정 페이지 이동 (GET)
+	@GetMapping("/edit")
+	public String edit(@RequestParam("postNum") int postNum,
+					   @RequestParam(value = "error", required = false) String error,
+					   HttpSession session,
+					   Model model) {
+
+		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
+		if (loginUserNum == null) {
+			return "redirect:/community-lists";
+		}
+
+		PostDTO post = postService.getPost(postNum, false);
+		if (post == null || post.getUserNum() != loginUserNum) {
+			return "redirect:/community-lists/detail?postNum=" + postNum + "&error=auth";
+		}
+
+		if (error != null) {
+			model.addAttribute("msg", "게시글 수정 중 서버 오류가 발생했습니다.");
+		}
+
+		model.addAttribute("post", post);
+		return "community/write";
+	}
+
+	// 게시글 수정 처리 (POST)
+	@PostMapping("/edit")
+	public String editAction(@Valid PostDTO post, BindingResult br,
+							 @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files,
+							 @RequestParam(value = "deleteExistingFiles", defaultValue = "false") boolean deleteExistingFiles,
+							 HttpSession session) {
+
+		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
+		if (loginUserNum == null) {
+			return "redirect:/community-lists";
+		}
+
+		if (post.getPostNum() == null) {
+			return "redirect:/community-lists";
+		}
+
+		// 본인 게시글 검증
+		PostDTO existingPost = postService.getPost(post.getPostNum().intValue(), false);
+		if (existingPost == null || existingPost.getUserNum() != loginUserNum) {
+			return "redirect:/community-lists/detail?postNum=" + post.getPostNum() + "&error=auth";
+		}
+
+		if (br.hasErrors()) {
+			return "redirect:/community-lists/edit?postNum=" + post.getPostNum() + "&error=true";
+		}
+
+		try {
+			post.setUserNum(loginUserNum);
+			int result = postService.updatePost(post, files, deleteExistingFiles);
+			if (result > 0) {
+				return "redirect:/community-lists/detail?postNum=" + post.getPostNum();
+			} else {
+				return "redirect:/community-lists/edit?postNum=" + post.getPostNum() + "&error=true";
+			}
+		} catch (Exception e) {
+			log.error("게시글 수정 중 에러 발생", e);
+			return "redirect:/community-lists/edit?postNum=" + post.getPostNum() + "&error=true";
+		}
+	}
 }

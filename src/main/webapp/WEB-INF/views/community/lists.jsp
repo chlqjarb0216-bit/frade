@@ -253,7 +253,7 @@ body {
 	        let html = '';
 	        
 	        postList.forEach(post => {
-	            let category = post.postCategoryNum == 0 ? "질문" : (post.postCategoryNum == 1 ? "정보" : "자유");
+	            let category = post.postCategoryNum == 1 ? "자유" : (post.postCategoryNum == 2 ? "정보" : "질문");
 	            html += `
 	                <tr>
 	                    <td class="text-secondary small">\${post.postNum}</td>

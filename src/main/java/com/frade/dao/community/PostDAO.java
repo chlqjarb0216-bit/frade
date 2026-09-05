@@ -26,4 +26,7 @@ public interface PostDAO {
 	
 	//게시글 삭제
 	public int deletePost(int postNum);
+	
+	//게시글 수정
+	public int updatePost(PostDTO post);
 }

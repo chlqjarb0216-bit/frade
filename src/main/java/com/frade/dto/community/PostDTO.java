@@ -22,7 +22,7 @@ public class PostDTO {
 	private Long postNum;             // p_num : 게시글 번호 (PK)
     private int userNum;             // u_num : 회원 번호 (작성자 FK)
     private String userName;		   // u_num 을 통해 유저 이름을 저장
-    private int postCategoryNum;  // p_category_num : 카테고리 번호(0:질문 1:정보 2:자유)
+    private int postCategoryNum;  // p_category_num : 카테고리 번호 (1:자유, 2:정보, 3:질문)
 //    private Integer sectorNum;         // sc_num : 종목/세부 카테고리 번호(반도체, 의료 등 코드번호)
     @NotBlank(message = "제목을 입력해주세요.")
     @Size(max = 30, message = "제목을 최대 30자 이내로 작성해주세요.")

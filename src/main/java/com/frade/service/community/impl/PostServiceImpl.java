@@ -160,4 +160,87 @@ public class PostServiceImpl implements PostService {
 		return result;
 	}
 
+	@Override
+	public int updatePost(PostDTO post, MultipartFile[] files, boolean deleteExistingFiles) {
+		// 1. 기존 게시글 조회
+		PostDTO existingPost = postDAO.selectPost(post.getPostNum().intValue());
+		if (existingPost == null) {
+			return 0;
+		}
+
+		String baseDir = FilePath.FILE_ABSOLUTE_STORE_PATH + FilePath.POST_UPLOADFILE_PATH;
+
+		// 2. 새 파일 첨부 여부 확인
+		boolean hasNewFiles = false;
+		if (files != null && files.length > 0) {
+			for (MultipartFile file : files) {
+				if (!file.isEmpty()) {
+					hasNewFiles = true;
+					break;
+				}
+			}
+		}
+
+		// 3. 파일 처리
+		if (hasNewFiles) {
+			// 3-1. 기존 파일이 있었다면 디스크에서 삭제
+			if (existingPost.getPostFiles() != null && !existingPost.getPostFiles().isEmpty()) {
+				for (String fileName : existingPost.getFileList()) {
+					File targetFile = new File(baseDir, fileName);
+					if (targetFile.exists()) {
+						targetFile.delete();
+						log.info("기존 첨부파일 삭제 완료: " + fileName);
+					}
+				}
+			}
+
+			// 3-2. 폴더가 없으면 생성
+			File folder = new File(baseDir);
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+
+			// 3-3. 새 파일 디스크 저장 및 파일명 조립
+			StringJoiner sj = new StringJoiner(",");
+			for (int i = 0; i < files.length; i++) {
+				MultipartFile file = files[i];
+				if (!file.isEmpty()) {
+					String originalName = file.getOriginalFilename();
+					String ext = originalName.substring(originalName.lastIndexOf("."));
+					String savedFileName = post.getPostNum() + "_" + (i + 1) + ext;
+					sj.add(savedFileName);
+
+					File saveFile = new File(baseDir, savedFileName);
+					try {
+						file.transferTo(saveFile);
+					} catch (IllegalStateException | IOException e) {
+						e.printStackTrace();
+						log.warn(e.getMessage());
+					}
+				}
+			}
+			post.setPostFiles(sj.toString());
+
+		} else if (deleteExistingFiles) {
+			// 4. 새 파일은 없고 기존 파일 삭제를 요청한 경우
+			if (existingPost.getPostFiles() != null && !existingPost.getPostFiles().isEmpty()) {
+				for (String fileName : existingPost.getFileList()) {
+					File targetFile = new File(baseDir, fileName);
+					if (targetFile.exists()) {
+						targetFile.delete();
+						log.info("기존 첨부파일 삭제 완료: " + fileName);
+					}
+				}
+			}
+			post.setPostFiles(null);
+
+		} else {
+			// 5. 새 파일도 없고 삭제 요청도 없는 경우 -> 기존 파일 그대로 유지
+			post.setPostFiles(existingPost.getPostFiles());
+		}
+
+		// 6. DB UPDATE 실행
+		return postDAO.updatePost(post);
+	}
+
 }

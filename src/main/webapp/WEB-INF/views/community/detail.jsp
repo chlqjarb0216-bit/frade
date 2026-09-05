@@ -151,10 +151,6 @@ details summary {
 				</div>
 			</details>
 
-			<div class="post-content text-dark mb-4">
-				${post.postContent}
-			</div>
-
 		</div>
 
 		<div class="custom-card p-4 shadow-sm mb-4">
