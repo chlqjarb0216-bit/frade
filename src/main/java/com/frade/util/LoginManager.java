@@ -61,11 +61,18 @@ public class LoginManager {
         logout(request.getSession());
     }
     
- // 로그인 유저 번호 가져오기
+    /**
+ 	 * 로그인 유저 번호 가져오기 :로그인이 안되어있으면 -1을 반환한다
+     **/
     public static int getLoginUserNum(HttpSession session) {
 
         UserSessionDTO loginUser = getLoginUser(session);
-
+        
+        if(loginUser == null) {	
+        	return -1;
+        }
+        
+        
         return loginUser.getUserNum();
     }
 
