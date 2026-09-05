@@ -18,6 +18,7 @@ import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
 import com.frade.service.user.UserService;
+import com.frade.util.LoginManager;
 
 @Controller
 @RequestMapping("/user")
@@ -58,11 +59,21 @@ public class UserController {
 
 		} else {
 
-			session.setAttribute("loginUser", loginUser);
+			LoginManager.setSessionLoginUser(session, loginUser);
 
 			return "redirect:/user/mypage";
 		}
 	}
+	
+	// 로그아웃
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+
+	    LoginManager.logout(session);
+
+	    return "redirect:/";
+	}
+	
 
 	// -----------------------------------------------------------------------------------
 
@@ -130,11 +141,11 @@ public class UserController {
 	public String myPage(HttpSession session, Model model) {
 
 		// 로그인 여부 확인
-		if (session.getAttribute("loginUser") == null) {
+		if (!LoginManager.isLogin(session)) {
 			return "redirect:/user/login";
 		}
 
-		UserSessionDTO loginUser = (UserSessionDTO) session.getAttribute("loginUser");
+		UserSessionDTO loginUser = LoginManager.getLoginUser(session);
 
 		int loginUserNumber = loginUser.getUserNum();
 
@@ -150,11 +161,11 @@ public class UserController {
 			RedirectAttributes redirectAttributes) {
 
 		// 로그인 확인
-		if (session.getAttribute("loginUser") == null) {
-			return "redirect:/user/login";
+		if (!LoginManager.isLogin(session)) {
+		    return "redirect:/user/login";
 		}
 
-		UserSessionDTO loginUser = (UserSessionDTO) session.getAttribute("loginUser");
+		UserSessionDTO loginUser = LoginManager.getLoginUser(session);
 
 		int loginUserNumber = loginUser.getUserNum();
 
@@ -203,7 +214,7 @@ public class UserController {
 		                    userProfileDTO.getUserPhoto()
 		            );
 
-		    session.setAttribute("loginUser", updatedLoginUser);
+			LoginManager.setSessionLoginUser(session, updatedLoginUser);
 
 		    redirectAttributes.addFlashAttribute(
 		            "profileSuccess",
@@ -223,22 +234,19 @@ public class UserController {
 	public String deleteUser(HttpSession session) {
 
 		 // 로그인 확인
-	    if(session.getAttribute("loginUser") == null) {
-	        return "redirect:/user/login";
-	    }
+			if (!LoginManager.isLogin(session)) {
+				return "redirect:/user/login";
+			}
 
-	    UserSessionDTO loginUser =
-	            (UserSessionDTO) session.getAttribute("loginUser");
+			UserSessionDTO loginUser = LoginManager.getLoginUser(session);
 
-	    int loginUserNumber =
-	            loginUser.getUserNum();
+			int loginUserNumber = loginUser.getUserNum();
 
-	    ResultCode result =
-	            userService.deleteUser(loginUserNumber);
+			ResultCode result = userService.deleteUser(loginUserNumber);
 
 	    if(result == ResultCode.SUCCESS) {
 
-	        session.invalidate();
+	    	LoginManager.logout(session);
 
 	        return "redirect:/user/login";
 	    }
