@@ -75,6 +75,15 @@ details summary {
 	user-select: none;
 }
 
+.category-badge {
+	font-size: 0.78rem;
+	font-weight: 500;
+	padding: 4px 8px;
+	border-radius: 6px;
+	background-color: #f1f3f5;
+	color: #495057;
+}
+
 </style>
 </head>
 
@@ -84,15 +93,40 @@ details summary {
 
 	<div class="container my-5" style="max-width: 1080px;">
 		
-		<div class="mb-4">
+		<!-- 상단 버튼 네비게이션 (목록으로 / 수정 / 삭제) -->
+		<div class="d-flex align-items-center justify-content-between mb-4">
 			<a href="/community-lists" class="btn btn-outline-secondary btn-sm px-3 border-0" style="border-radius: 8px;">
 				← 목록으로
 			</a>
+			<c:if test="${not empty sessionScope.loginUserNum and sessionScope.loginUserNum == post.userNum}">
+				<div class="d-flex align-items-center gap-2">
+					<!-- 수정 버튼 (GET) -->
+					<a href="/community-lists/edit?postNum=${post.postNum}" class="btn btn-outline-secondary btn-sm px-3" style="border-radius: 8px;">수정</a>
+
+					<!-- 삭제 버튼 (POST) -->
+					<form action="/community-lists/delete" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');" class="d-inline m-0">
+						<input type="hidden" name="postNum" value="${post.postNum}">
+						<button type="submit" class="btn btn-outline-danger btn-sm px-3" style="border-radius: 8px;">삭제</button>
+					</form>
+				</div>
+			</c:if>
 		</div>
 
+		<!-- 게시글 상세 카드 -->
 		<div class="custom-card p-4 p-md-5 mb-4 shadow-sm">
 			
+			<!-- 게시글 헤더 영역 -->
 			<div class="border-bottom pb-3 mb-4">
+				<div class="mb-2">
+					<span class="category-badge">
+						<c:choose>
+							<c:when test="${post.postCategoryNum == 1}">자유</c:when>
+							<c:when test="${post.postCategoryNum == 2}">정보</c:when>
+							<c:when test="${post.postCategoryNum == 3}">질문</c:when>
+							<c:otherwise>커뮤니티</c:otherwise>
+						</c:choose>
+					</span>
+				</div>
 				<h3 class="fw-bold text-dark mb-3">${post.postTitle}</h3>
 				<div class="d-flex flex-wrap align-items-center justify-content-between text-secondary small gap-2">
 					<div class="d-flex align-items-center gap-2">
@@ -107,49 +141,33 @@ details summary {
 				</div>
 			</div>
 
-			<p>${post.postTitle}</p>
-			<c:if
-				test="${not empty sessionScope.loginUserNum and sessionScope.loginUserNum == post.userNum}">
+			<!-- 본문 내용 -->
+			<div class="post-content text-dark mb-4">
+				${post.postContent}
+			</div>
 
-				<!-- 수정 버튼 (GET) -->
-				<a href="/community-lists/edit?postNum=${post.postNum}">수정</a>
-
-				<!-- 삭제 버튼 (POST) -->
-				<form action="/community-lists/delete" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-					<input type="hidden" name="postNum" value="${post.postNum}">
-					<button type="submit">삭제</button>
-				</form>
-
-			</c:if>
-			<p>${post.userName}</p>
-			<p>${post.postedDateString}</p>
-			<p>${post.postViewCnt}</p>
-			<p>${post.postLikeCnt}</p>
-			<p>${post.postContent}</p>
-
-			
-				
-				
-			<!-- <details> 태그로 감싸면 기본적으로 접혀있는 상태가 됩니다. -->
-			<details class="bg-light p-3 rounded-3 mb-4 border">
-
-				<!-- <summary> 태그 안의 내용이 클릭할 수 있는 버튼(제목) 역할이 됩니다. -->
-				<summary class="fw-semibold text-secondary small">첨부파일 보기</summary>
-
-				<!-- 버튼을 클릭해 펼쳐졌을 때 보여질 내용 -->
-				<div class="mt-3 pt-2 border-top">
-					<c:if test="${not empty post.fileList}">
+			<!-- 첨부파일 영역 -->
+			<c:if test="${not empty post.fileList}">
+				<details class="bg-light p-3 rounded-3 mb-4 border">
+					<summary class="fw-semibold text-secondary small">📎 첨부파일 보기 (${post.fileList.size()})</summary>
+					<div class="mt-3 pt-2 border-top">
 						<div class="d-flex flex-column gap-3">
 							<c:forEach var="fileName" items="${post.fileList}">
-								<img src="/file-storage/post_uploadfile/${fileName}" class="img-fluid rounded border" style="max-width: 100%; height: auto;"/>
+								<img src="/file-storage/post_uploadfile/${fileName}" class="img-fluid rounded border" style="max-width: 100%; height: auto;" alt="첨부 이미지"/>
 							</c:forEach>
 						</div>
-					</c:if>
-					<c:if test="${empty post.fileList}">
-						<p class="text-secondary small mb-0">첨부된 파일이 없습니다.</p>
-					</c:if>
-				</div>
-			</details>
+					</div>
+				</details>
+			</c:if>
+
+			<!-- 추천(좋아요) 버튼 영역 -->
+			<div class="d-flex justify-content-center pt-4 border-top">
+				<button type="button" class="btn btn-outline-dark btn-sm px-4 py-2 d-inline-flex align-items-center gap-2" style="border-radius: 24px;" id="btnPostLike">
+					<span>👍</span>
+					<span class="fw-medium">추천</span>
+					<span class="badge bg-dark text-white rounded-pill ms-1" id="postLikeCount">${post.postLikeCnt}</span>
+				</button>
+			</div>
 
 		</div>
 

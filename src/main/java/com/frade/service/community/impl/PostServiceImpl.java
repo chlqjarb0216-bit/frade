@@ -93,11 +93,11 @@ public class PostServiceImpl implements PostService {
 		params.put("limit", limit);
 
 		// DB에서 실제 전체 게시글 수 가져오기 (검색 조건 반영)
-		int totalPosts = postDAO.selectPostTotalCount(params);
+		int totalPosts = postDAO.getPostTotalCount(params);
 
 		//  DB에서 페이징 처리된 실제 게시글 리스트 가져오기
 		List<PostDTO> pagedList = new ArrayList<>();
-		if (totalPosts > 0) {
+		if (totalPosts > 0 && offset < totalPosts) {
 			pagedList = postDAO.selectPostList(params);
 		}
 

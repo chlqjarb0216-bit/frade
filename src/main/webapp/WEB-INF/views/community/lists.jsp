@@ -259,6 +259,11 @@ body {
 			const postTableBody = document.getElementById('postTableBody');
 	        let html = '';
 	        
+	        if(!postList || postList.length === 0){
+	            postTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-5 text-secondary small">등록된 게시글이 없습니다.</td></tr>';
+	            return;
+	        }
+	        
 	        postList.forEach(post => {
 	            let category = post.postCategoryNum == 1 ? "자유" : (post.postCategoryNum == 2 ? "정보" : "질문");
 	            html += `
