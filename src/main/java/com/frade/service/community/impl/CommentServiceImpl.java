@@ -16,23 +16,13 @@ import com.frade.service.community.CommentService;
 public class CommentServiceImpl implements CommentService{
 
 	@Override
-	public PageResultDTO<CommentDTO> getCommentList(int postNum, int page) {
+	public PageResultDTO<CommentDTO> selectCommentList(int postNum, int page) {
 
 		//********테스트용 데이터(서버개발자는 참고해도 되고 지워도 됨)**********
 		
-				// 1. 임시로 전체 25개의 가짜 데이터 생성
-			    List<CommentDTO> allComments = new ArrayList<>();
-			    for (int i = 25; i >= 1; i--) {
-			    	String content = "테스트 댓글 " + i;
-			        String writer = "작성자" + (i % 5); // 작성자0 ~ 작성자4
-			        
-			        CommentDTO comment = new CommentDTO();
-			        comment.setUserName(writer);
-			        comment.setCommentContent(content);
-			        comment.setPostCommentedDate(LocalDateTime.now());
+				
+			    List<CommentDTO> allComments = null;
 
-			        allComments.add(comment);
-			    }
 
 			    // 2. 페이징 계산
 			    int limit = 10; // 한 페이지에 보여줄 글 개수

@@ -11,7 +11,7 @@ public interface CommentService {
 
 	
 	//댓글 리스트 데이터 요청
-	public PageResultDTO<CommentDTO> getCommentList(int postNum, int page);
+	public PageResultDTO<CommentDTO> selectCommentList(int postNum, int page);
 	
 	//댓글 데이터 db에 저장요청 및 응답
 	public int saveComment(CommentDTO comment);
