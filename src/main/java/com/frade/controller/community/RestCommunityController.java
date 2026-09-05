@@ -19,6 +19,7 @@ import com.frade.dto.community.PostDTO;
 import com.frade.dto.rest.RestApiResponse;
 import com.frade.service.community.CommentService;
 import com.frade.service.community.PostService;
+import com.frade.util.LoginManager;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,14 +75,15 @@ public class RestCommunityController {
 	@PostMapping("/comment-write")
 	public RestApiResponse<?> saveComment(@Valid @RequestBody CommentDTO comment, BindingResult br, HttpSession session) {
 
+		if (!LoginManager.isLogin(session)) {
+			return RestApiResponse.error(ResultCode.FAIL);
+		}
+
 		if (br.hasErrors()) {
 			return RestApiResponse.error(ResultCode.COM_TEXT_FAIL);
 		}
 
-		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-		if (loginUserNum == null) {
-			loginUserNum = 1; // 로그인 임시 처리
-		}
+		int loginUserNum = LoginManager.getLoginUserNum(session);
 		comment.setUserNum(loginUserNum);
 
 		int result = commentService.saveComment(comment);
@@ -96,12 +98,11 @@ public class RestCommunityController {
 	@PostMapping("/comment-delete")
 	public RestApiResponse<?> deleteComment(@RequestParam("commentNum") int commentNum, HttpSession session) {
 
-		// 현재 로그인한 사람의 세션 번호 가져오기
-		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-
-		if (loginUserNum == null) {
-			loginUserNum = 1; // [TEST] 강제 로그인 번호 세팅
+		if (!LoginManager.isLogin(session)) {
+			return RestApiResponse.error(ResultCode.FAIL);
 		}
+
+		int loginUserNum = LoginManager.getLoginUserNum(session);
 
 		try {
 			// DB에서 삭제하려는 댓글 정보 먼저 조회
