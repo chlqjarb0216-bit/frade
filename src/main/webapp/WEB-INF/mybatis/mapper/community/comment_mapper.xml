@@ -16,7 +16,7 @@
 </select>
 
 <!-- 특정 게시글의 페이징 처리된 댓글 목록 조회 -->
-<select id="isWriterCommentList" parameterType="map" resultType="CommentDTO">
+<select id="selectCommentList" parameterType="map" resultType="CommentDTO">
 	SELECT 
 		c.comment_num,
 		c.post_num,
@@ -34,7 +34,7 @@
 </select>
 
 <!-- 댓글 단건 조회 (본인 확인용) -->
-<select id="selectComment" parameterType="map" resultType="int">
+<select id="isWriterComment" parameterType="map" resultType="int">
 	SELECT 
 		1
 	FROM t_comment
