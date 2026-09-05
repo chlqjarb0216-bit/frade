@@ -220,15 +220,13 @@ CREATE TABLE t_stock_price (
   price_high NUMBER(9) NOT NULL, --java int 최대자리 대응
   price_low NUMBER(9) NOT NULL, --java int 최대자리 대응
   price_close NUMBER(9) NOT NULL, --java int 최대자리 대응
-  volume_buy NUMBER(18) DEFAULT 0 NOT NULL, --java long 대응
-  volume_sell NUMBER(18) DEFAULT 0 NOT NULL, --java long 대응
+  volume NUMBER(18) DEFAULT 0 NOT NULL, --java long 대응
   CONSTRAINT pk_t_stock_price PRIMARY KEY (stock_code, date_time),
   CONSTRAINT ck_t_stock_price_open CHECK (price_open>0),
   CONSTRAINT ck_t_stock_price_high CHECK (price_high>0),
   CONSTRAINT ck_t_stock_price_low CHECK (price_low>0),
   CONSTRAINT ck_t_stock_price_close CHECK (price_close>0),
-  CONSTRAINT ck_t_stock_volume_buy CHECK (volume_buy>=0),
-  CONSTRAINT ck_t_stock_volume_sell CHECK (volume_sell>=0)
+  CONSTRAINT ck_t_stock_volume CHECK (volume>=0)
 );
 
 

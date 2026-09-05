@@ -28,6 +28,7 @@ public class ApiScheduler {
 	}
 
 	@Scheduled(cron = "0 50 8 * * MON-FRI")
+	//	@PostConstruct
 	public void startWebsocket() {
 		log.info("웹소켓 시동");
 		kiwoomWebSocketClient.boot();
