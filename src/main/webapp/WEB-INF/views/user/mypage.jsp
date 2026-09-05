@@ -464,22 +464,22 @@
         <div class="totalAsset-box">
             <div style="height: 100px;">
                 <p>총 자산</p>
-                <h2>33,772,500 원</h2>
-                <p>+1,331,500원 <span>+4.93%</span></p>
+                <h2>${assetsInfo.totalAsset}원</h2>
+                <p>${assetsInfo.totalRevenue}원<span>${assetsInfo.revenuePercent}%</span></p>
             </div>
 
             <div class="assetInfo-box-top">
                 <div>
                     <p>초기 투자금</p>
-                    <p>27,021,000원</p>
+                    <p>10000000원</p>
                 </div>
                 <div>
                     <p>주식 평가금</p>
-                    <p>27,021,000원</p>
+                    <p>${assetsInfo.totalValuation}원</p>
                 </div>
                 <div>
                     <p>예수금</p>
-                    <p>27,021,000원</p>
+                    <p>${assetsInfo.cash}원</p>
                 </div>
 
             </div>
@@ -487,11 +487,11 @@
             <div class="assetInfo-box-bottom">
                 <div>
                     <p>보유 종목수</p>
-                    <p>27,021,000원</p>
+                    <p>${assetsInfo.stockCnt}원</p>
                 </div>
                 <div>
                     <p>총 매수 횟수</p>
-                    <p>27,021,000원</p>
+                    <p>${assetsInfo.tradeCnt}원</p>
                 </div>
             </div>
         </div>

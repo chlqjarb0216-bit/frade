@@ -50,7 +50,9 @@ public class PortfolioServiceImpl implements PortfolioService {
 		assetsInfo.setStockCnt(portfolioList.size());
 		assetsInfo.setTradeCnt(historyList.size());
 		assetsInfo.setTotalRevenue(assetsInfo.getTotalAsset() - 10000000);
-		assetsInfo.setRevenuePercent((double) assetsInfo.getTotalRevenue() / 10000000 * 100);
+		
+		double revenuePercent = (double) assetsInfo.getTotalRevenue() / 10000000 * 100;
+		assetsInfo.setRevenuePercent(Math.round(revenuePercent * 100) / 100.0);
 
 		return assetsInfo;
 	}
