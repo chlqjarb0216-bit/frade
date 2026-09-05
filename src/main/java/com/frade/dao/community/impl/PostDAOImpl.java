@@ -69,6 +69,12 @@ public class PostDAOImpl implements PostDAO{
 		int result = sqlSessionTemplate.delete("post_mapper.deletePost", postNum);
 		return result;
 	}
+
+	@Override
+	public int updatePost(PostDTO post) {
+		int result = sqlSessionTemplate.update("post_mapper.updatePost", post);
+		return result;
+	}
 	
 	
 }

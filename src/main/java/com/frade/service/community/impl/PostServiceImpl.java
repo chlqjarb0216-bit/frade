@@ -160,4 +160,117 @@ public class PostServiceImpl implements PostService {
 		return result;
 	}
 
+	@Override
+	public int updatePost(PostDTO post, MultipartFile[] files, boolean deleteExistingFiles) {
+		// 1. 기존 게시글 조회
+		PostDTO existingPost = postDAO.selectPost(post.getPostNum().intValue());
+
+		String baseDir = FilePath.FILE_ABSOLUTE_STORE_PATH + FilePath.POST_UPLOADFILE_PATH;
+		File folder = new File(baseDir);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+
+		// 2. 새 파일 첨부 여부 확인
+		boolean hasNewFiles = false;
+		if (files != null && files.length > 0) {
+			for (MultipartFile file : files) {
+				if (!file.isEmpty()) {
+					hasNewFiles = true;
+					break;
+				}
+			}
+		}
+
+		// 3. 파일 처리
+		// 3-1. "기존 첨부파일 삭제" 체크박스가 선택된 경우 -> 기존 파일 삭제
+		if (deleteExistingFiles) {
+			if (existingPost.getPostFiles() != null && !existingPost.getPostFiles().isEmpty()) {
+				for (String fileName : existingPost.getFileList()) {
+					File targetFile = new File(baseDir, fileName);
+					if (targetFile.exists()) {
+						targetFile.delete();
+						log.info("기존 첨부파일 삭제 완료: " + fileName);
+					}
+				}
+			}
+
+			// 기존 파일 삭제 후 새 파일이 업로드된 경우 -> 새 파일만 저장
+			if (hasNewFiles) {
+				StringJoiner sj = new StringJoiner(",");
+				int fileIndex = 1;
+				for (MultipartFile file : files) {
+					if (!file.isEmpty()) {
+						String originalName = file.getOriginalFilename();
+						String ext = originalName.substring(originalName.lastIndexOf("."));
+						String savedFileName = post.getPostNum() + "_" + fileIndex + ext;
+						sj.add(savedFileName);
+
+						File saveFile = new File(baseDir, savedFileName);
+						try {
+							file.transferTo(saveFile);
+						} catch (IllegalStateException | IOException e) {
+							e.printStackTrace();
+							log.warn(e.getMessage());
+						}
+						fileIndex++;
+					}
+				}
+				post.setPostFiles(sj.toString());
+			} else {
+				// 새 파일도 없으면 파일 없음(null)
+				post.setPostFiles(null);
+			}
+
+		} else {
+			// 3-2. 기존 파일 삭제를 체크하지 않은 경우 -> 기존 파일 보존!
+			List<String> preservedFiles = new ArrayList<>();
+			if (existingPost.getPostFiles() != null && !existingPost.getPostFiles().isEmpty()) {
+				preservedFiles.addAll(existingPost.getFileList());
+			}
+
+			if (hasNewFiles) {
+				// 기존 파일들을 StringJoiner에 먼저 담음
+				StringJoiner sj = new StringJoiner(",");
+				for (String prevFile : preservedFiles) {
+					sj.add(prevFile);
+				}
+
+				// 기존 파일 목록 뒤에 새 파일 추가 (파일명 중복 방지)
+				int fileIndex = preservedFiles.size() + 1;
+				for (MultipartFile file : files) {
+					if (!file.isEmpty()) {
+						String originalName = file.getOriginalFilename();
+						String ext = originalName.substring(originalName.lastIndexOf("."));
+
+						String savedFileName = post.getPostNum() + "_" + fileIndex + ext;
+						File saveFile = new File(baseDir, savedFileName);
+						while (saveFile.exists()) {
+							fileIndex++;
+							savedFileName = post.getPostNum() + "_" + fileIndex + ext;
+							saveFile = new File(baseDir, savedFileName);
+						}
+
+						sj.add(savedFileName);
+
+						try {
+							file.transferTo(saveFile);
+						} catch (IllegalStateException | IOException e) {
+							e.printStackTrace();
+							log.warn(e.getMessage());
+						}
+						fileIndex++;
+					}
+				}
+				post.setPostFiles(sj.toString());
+			} else {
+				// 새 파일도 없으면 기존 파일 목록 그대로 유지
+				post.setPostFiles(existingPost.getPostFiles());
+			}
+		}
+
+		// 4. DB UPDATE 실행
+		return postDAO.updatePost(post);
+	}
+
 }

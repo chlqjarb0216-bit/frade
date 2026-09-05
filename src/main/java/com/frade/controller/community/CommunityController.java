@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.frade.common.FilePath;
+import com.frade.common.ResultCode;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
 
@@ -44,10 +46,8 @@ public class CommunityController {
 
 	// 게시글 작성 페이지 이동
 	@GetMapping("/write")
-	public String write( @RequestParam(value = "error", required = false) String error, Model model) {
-		if (error != null) {
-			model.addAttribute("msg", "게시글 작성 중 서버 오류가 발생했습니다.");
-		}
+	public String write() {
+
 		return "community/write";
 	}
 
@@ -55,7 +55,8 @@ public class CommunityController {
 	@PostMapping("/write")
 	public String writeAction(@Valid PostDTO post, BindingResult br,
 			@RequestParam(value = "uploadFiles", required = false) MultipartFile[] files,
-														HttpSession session) {
+														HttpSession session,
+														RedirectAttributes rttr) {
 
 		//임시 로그인 코드(테스트용)
 		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
@@ -73,16 +74,16 @@ public class CommunityController {
 		}
 
 		try {
-			int result = postService.savePost(post, files);
-			if (result > 0) {
-				return "redirect:/community-lists";
-			} else {
-				return "redirect:/community-lists/write?error=true";
-			}
+			
+			postService.savePost(post, files);
+			return "redirect:/community-lists";
+			
 		} catch (Exception e) {
-
+			
 			log.error(e.getMessage());
-			return "redirect:/community-lists/write?error=true";
+			rttr.addFlashAttribute("msg",ResultCode.POST_WRT_FAIL.getMessage());
+			
+			return "redirect:/community-lists";
 		}
 	}
 
@@ -158,5 +159,66 @@ public class CommunityController {
 	        log.error("게시글 삭제 중 에러 발생", e);
 	        return "redirect:/community-lists";
 	    }
+	}
+
+	// 게시글 수정 페이지 이동 (GET)
+	@GetMapping("/edit")
+	public String edit(@RequestParam("postNum") int postNum,
+					   HttpSession session,
+					   Model model) {
+
+		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
+		if (loginUserNum == null) {
+			return "redirect:/community-lists";
+		}
+
+		PostDTO post = postService.getPost(postNum, false);
+		if (post == null || post.getUserNum() != loginUserNum) {
+			return "redirect:/community-lists/detail?postNum=" + postNum + "&error=auth";
+		}
+
+		model.addAttribute("post", post);
+		return "community/write";
+	}
+
+	// 게시글 수정 처리 (POST)
+	@PostMapping("/edit")
+	public String editAction(@Valid PostDTO post, BindingResult br,
+							 @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files,
+							 @RequestParam(value = "deleteExistingFiles", defaultValue = "false") boolean deleteExistingFiles,
+							 HttpSession session,
+							 RedirectAttributes rttr) {
+
+		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
+		if (loginUserNum == null) {
+			return "redirect:/community-lists";
+		}
+
+		if (post.getPostNum() == null) {
+			return "redirect:/community-lists";
+		}
+
+		// 본인 게시글 검증
+		PostDTO existingPost = postService.getPost(post.getPostNum().intValue(), false);
+		if (existingPost == null || existingPost.getUserNum() != loginUserNum) {
+			return "redirect:/community-lists/detail?postNum=" + post.getPostNum() + "&error=auth";
+		}
+
+		if (br.hasErrors()) {
+			return "redirect:/community-lists/edit?postNum=" + post.getPostNum() + "&error=true";
+		}
+
+		try {
+			post.setUserNum(loginUserNum);
+			postService.updatePost(post, files, deleteExistingFiles);
+			
+			return "redirect:/community-lists/detail?postNum=" + post.getPostNum();
+			
+		} catch (Exception e) {
+			log.error("게시글 수정 중 에러 발생", e);
+			
+			rttr.addFlashAttribute("msg",ResultCode.POST_MOD_FAIL.getMessage());
+			return "redirect:/community-lists";
+		}
 	}
 }

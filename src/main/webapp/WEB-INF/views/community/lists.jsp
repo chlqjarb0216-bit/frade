@@ -123,6 +123,12 @@ body {
 
 	<!-- 본문 영역 -->
 	<div class="container my-5" style="max-width: 1080px;">
+	
+	<c:if test="${not empty msg}">
+		<script>
+        	alert('${msg}');
+		</script>
+	</c:if>
 
 		
 		<div class="mb-4">
@@ -204,6 +210,7 @@ body {
 	</script>
 
 	<script>
+
 		//게시글 목록 페이지가 처음 열리면 1페이지 데이터를 불러옵니다.
 		window.onload = function(){
 			loadPosts(1)
@@ -253,7 +260,7 @@ body {
 	        let html = '';
 	        
 	        postList.forEach(post => {
-	            let category = post.postCategoryNum == 0 ? "질문" : (post.postCategoryNum == 1 ? "정보" : "자유");
+	            let category = post.postCategoryNum == 1 ? "자유" : (post.postCategoryNum == 2 ? "정보" : "질문");
 	            html += `
 	                <tr>
 	                    <td class="text-secondary small">\${post.postNum}</td>
@@ -261,7 +268,7 @@ body {
 	                    <td class="text-start ps-4">
 	                        <a class="post-title-link" href="/community-lists/detail?postNum=\${post.postNum}">\${post.postTitle}</a>
 	                    </td>
-	                    <td class="text-secondary small">\${post.userNum}</td>
+	                    <td class="text-secondary small">\${post.userName}</td>
 	                    <td class="text-secondary small">\${post.postViewCnt}</td>
 	                    <td class="text-secondary small">\${post.postedDateString}</td>
 	                </tr>

@@ -20,7 +20,8 @@ public enum ResultCode {
 	SAME_PASSWORD("rej_109","현재 비밀번호와 새 비밀번호가 같습니다."),PASSWORD_ENCRYPT_FAIL("rej_110", "비밀번호 처리 중 오류가 발생했습니다."),
 
 	//게시판 영역
-	COM_TEXT_FAIL("rej_200", "최대 글자수는 100자입니다."),
+	COM_TEXT_FAIL("rej_201", "최대 글자수는 100자입니다."), POST_MOD_FAIL("rej_202", "게시글 수정 중 오류가 발생했습니다"),
+	POST_WRT_FAIL("rej_203", "게시글 장성 중 요류가 발생했습니다"),
 
 	//트레이딩 영역
 
