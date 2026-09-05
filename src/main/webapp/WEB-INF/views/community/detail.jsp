@@ -245,13 +245,23 @@ details summary {
 				commentTable.innerHTML = '<div class="text-center py-4 text-secondary small">등록된 댓글이 없습니다.</div>';
 				return;
 			}
+
+			const loginUserNum = ${not empty sessionScope.loginUserNum ? sessionScope.loginUserNum : 1};
 			
 			commentList.forEach(comment =>{
 				const dateStr = comment.commentedDateString || '';
+				const isMyComment = (comment.userNum === loginUserNum);
+				const deleteBtn = isMyComment ? `
+					<button type="button" class="btn btn-link text-danger text-decoration-none p-0 ms-2" style="font-size: 0.78rem;" onclick="deleteComment(\${comment.commentNum})">삭제</button>
+				` : '';
+
 				html += `
 					<div class="py-3 border-bottom">
 						<div class="d-flex align-items-center justify-content-between mb-1">
-							<span class="fw-semibold text-dark small">\${comment.userName}</span>
+							<div class="d-flex align-items-center">
+								<span class="fw-semibold text-dark small">\${comment.userName}</span>
+								\${deleteBtn}
+							</div>
 							<span class="text-secondary small" style="font-size: 0.8rem;">\${dateStr}</span>
 						</div>
 						<p class="mb-0 text-dark small" style="white-space: pre-wrap; line-height: 1.5;">\${comment.commentContent}</p>
@@ -331,6 +341,33 @@ details summary {
 				} else{
 					alert(writeInfo.message);
 				}
+			});
+		}
+
+		// 댓글 삭제 비동기 요청 함수
+		function deleteComment(commentNum){
+			if(!confirm('정말 삭제하시겠습니까?')){
+				return;
+			}
+
+			fetch(`/api/community-lists/comment-delete`,{
+				method: 'POST',
+				headers:{
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: `commentNum=\${commentNum}`
+			})
+			.then(response => response.json())
+			.then(res =>{
+				if(res.code === "suc_001"){
+					loadComments(1);
+				} else{
+					alert(res.message || "댓글 삭제에 실패했습니다.");
+				}
+			})
+			.catch(err =>{
+				console.error("댓글 삭제 에러", err);
+				alert("댓글 삭제 중 오류가 발생했습니다.");
 			});
 		}
 	</script>

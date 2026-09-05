@@ -62,4 +62,14 @@ public class CommentServiceImpl implements CommentService {
 		return result;
 	}
 
+	@Override
+	public CommentDTO getComment(int commentNum) {
+		return commentDAO.selectComment(commentNum);
+	}
+
+	@Override
+	public int deleteComment(int commentNum) {
+		return commentDAO.deleteComment(commentNum);
+	}
+
 }

@@ -33,4 +33,22 @@
 	FETCH NEXT #{limit} ROWS ONLY
 </select>
 
+<!-- 댓글 단건 조회 (본인 확인용) -->
+<select id="selectComment" parameterType="int" resultType="CommentDTO">
+	SELECT 
+		comment_num,
+		post_num,
+		user_num,
+		comment_content,
+		comment_date AS post_commented_date
+	FROM t_comment
+	WHERE comment_num = #{commentNum}
+</select>
+
+<!-- 댓글 삭제 -->
+<delete id="deleteComment" parameterType="int">
+	DELETE FROM t_comment
+	WHERE comment_num = #{commentNum}
+</delete>
+
 </mapper>
