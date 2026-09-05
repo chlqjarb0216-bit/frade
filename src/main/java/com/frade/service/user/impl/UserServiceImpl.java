@@ -82,7 +82,6 @@ public class UserServiceImpl implements UserService{
 
 	    } catch(NoSuchAlgorithmException e) {
 
-	        e.printStackTrace();
 
 	        throw new UserSignupException("비밀번호 암호화 실패");
 	    }
