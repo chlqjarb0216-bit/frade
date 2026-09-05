@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html>
@@ -147,11 +148,46 @@ details summary {
 			<!-- 첨부파일 영역 -->
 			<c:if test="${not empty post.fileList}">
 				<details class="bg-light p-3 rounded-3 mb-4 border">
-					<summary class="fw-semibold text-secondary small">📎 첨부파일 보기 (${post.fileList.size()})</summary>
+					<summary class="fw-semibold text-secondary small" style="cursor: pointer;">📎 첨부파일 보기 (${post.fileList.size()})</summary>
 					<div class="mt-3 pt-2 border-top">
 						<div class="d-flex flex-column gap-3">
 							<c:forEach var="fileName" items="${post.fileList}">
-								<img src="/file-storage/post_uploadfile/${fileName}" class="img-fluid rounded border" style="max-width: 100%; height: auto;" alt="첨부 이미지"/>
+								<c:set var="lowerName" value="${fn:toLowerCase(fileName)}" />
+								<c:choose>
+									<%-- 1. 이미지 파일인 경우: 미리보기 이미지 및 다운로드 링크 --%>
+									<c:when test="${fn:endsWith(lowerName, '.jpg') or fn:endsWith(lowerName, '.jpeg') or fn:endsWith(lowerName, '.png') or fn:endsWith(lowerName, '.gif') or fn:endsWith(lowerName, '.webp') or fn:endsWith(lowerName, '.bmp') or fn:endsWith(lowerName, '.svg')}">
+										<div class="d-flex flex-column align-items-start">
+											<a href="/file-storage/post_uploadfile/${fileName}" target="_blank" title="새 탭에서 원본 보기">
+												<img src="/file-storage/post_uploadfile/${fileName}" class="img-fluid rounded border shadow-sm" style="max-width: 100%; max-height: 500px; object-fit: contain;" alt="${fileName}"/>
+											</a>
+											<a href="/file-storage/post_uploadfile/${fileName}" download="${fileName}" class="text-decoration-none text-secondary small mt-1">
+												⬇️ ${fileName} 다운로드
+											</a>
+										</div>
+									</c:when>
+
+									<%-- 2. 이미지가 아닌 일반 파일인 경우--%>
+									<c:otherwise>
+										<div class="d-flex align-items-center justify-content-between p-3 bg-white border rounded shadow-sm">
+											<div class="d-flex align-items-center gap-2 text-truncate me-3">
+												<div class="text-truncate">
+													<div class="fw-semibold text-dark text-truncate">${fileName}</div>
+													<small class="text-muted">일반 첨부파일</small>
+												</div>
+											</div>
+											<div class="d-flex gap-2 flex-shrink-0">
+												<c:if test="${fn:endsWith(lowerName, '.pdf')}">
+													<a href="/file-storage/post_uploadfile/${fileName}" target="_blank" class="btn btn-outline-secondary btn-sm">
+														미리보기
+													</a>
+												</c:if>
+												<a href="/file-storage/post_uploadfile/${fileName}" download="${fileName}" class="btn btn-outline-primary btn-sm">
+													⬇️ 다운로드
+												</a>
+											</div>
+										</div>
+									</c:otherwise>
+								</c:choose>
 							</c:forEach>
 						</div>
 					</div>
