@@ -98,11 +98,6 @@ public class OrderController {
 		} else {
 			System.out.println("거래 실패");
 		}
-		
-		
-		//===========assetInfo 확인용 코드, 추후 마이페이지로 이관 예정============
-		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo();
-		System.out.println(assetsInfo);
 
 		return "redirect:/stock/" + orderInfo.getStockCode();
 	}

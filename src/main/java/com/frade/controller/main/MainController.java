@@ -36,7 +36,7 @@ public class MainController {
 		// 2. 커뮤니티 인기글 상위 5개 테스트 데이터 조회
 		
 		
-		List<PostDTO> topPosts = postService.getPostListPagingSortedByView(0,5);
+		List<PostDTO> topPosts = postService.getPostListPagingSortedByView(5);
 
 		model.addAttribute("topStocks", topStocks);
 		model.addAttribute("topPosts", topPosts);

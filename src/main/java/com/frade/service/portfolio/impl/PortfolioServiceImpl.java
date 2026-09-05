@@ -29,16 +29,16 @@ public class PortfolioServiceImpl implements PortfolioService {
 	HistoryDAO historyDAO;
 
 	@Override
-	public AssetsInfoDTO getAssetsInfo() {
+	public AssetsInfoDTO getAssetsInfo(int userNum) {
 
-		List<PortfolioDTO> portfolioList = findUserPortfolioListByUserNum(1);
-		UserCashDTO userCash = cashDAO.findUserCashByUserNum(1);
+		List<PortfolioDTO> portfolioList = findUserPortfolioListByUserNum(userNum);
+		UserCashDTO userCash = cashDAO.findUserCashByUserNum(userNum);
 
 		//NullPointerException
 		if (userCash == null)
 			return null;
 
-		List<HistoryDTO> historyList = historyDAO.findTradeHistoryByUserNum(1);
+		List<HistoryDTO> historyList = historyDAO.findTradeHistoryByUserNum(userNum);
 
 		AssetsInfoDTO assetsInfo = new AssetsInfoDTO();
 		long valuation = totalValuationCaculator(portfolioList);
