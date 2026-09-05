@@ -62,7 +62,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 		log.info("서버와 연결되었습니다.");
 
 		//토큰 확인
-		String accessToken = kiwoomApiService.getOrRefreshAccessToken();
+		String accessToken = kiwoomApiService.getOrRefreshAccessTokenString();
 
 		// 로그인 메시지 전송
 		ObjectNode loginMessage = objectMapper.createObjectNode();
@@ -127,7 +127,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 
 	//DB에 등록된 종목을 웹소켓에 요청
 	private void registStockCodes() {
-		List<String> cacheCodeList = stockMemoryCache.getCodeList();
+		List<String> cacheCodeList = stockMemoryCache.getStockCodeList();
 		int stockCnt = cacheCodeList.size();
 		log.info("DB에서 {}개 종목코드 로드.", stockCnt);
 
