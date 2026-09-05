@@ -28,8 +28,13 @@ public class ApiScheduler {
 	}
 
 	@Scheduled(cron = "0 50 8 * * MON-FRI")
-	//	@PostConstruct
 	public void startWebsocket() {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		log.info("웹소켓 시동");
 		kiwoomWebSocketClient.boot();
 	}

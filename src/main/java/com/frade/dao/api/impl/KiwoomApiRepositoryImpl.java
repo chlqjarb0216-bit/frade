@@ -35,8 +35,8 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 	//토큰
 	private KiwoomAccessToken accessToken;
 	//도메인 주소
-	private final String host = "https://mockapi.kiwoom.com"; // 모의투자
-	//private final String host = "https://api.kiwoom.com"; // 실전투자
+	//	private final String host = "https://mockapi.kiwoom.com"; // 모의투자
+	private final String host = "https://api.kiwoom.com"; // 실전투자
 
 	public KiwoomAccessToken getOrRefreshAccessToken() {
 		if (this.accessToken == null || !this.accessToken.isActive()) {

@@ -37,7 +37,8 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 
 	private final StockMemoryCache stockMemoryCache;
 
-	private static final String SOCKET_URL = "wss://mockapi.kiwoom.com:10000/api/dostk/websocket"; // 접속 URL 
+	private static final String SOCKET_URL = "wss://api.kiwoom.com:10000/api/dostk/websocket"; // 접속 URL 
+	//	private static final String SOCKET_URL = "wss://mockapi.kiwoom.com:10000/api/dostk/websocket"; // 접속 URL(모의) 
 
 	// 단 하나의 스레드만 사용하는 스케줄러 생성 (스레드 누수 방지)
 	private final ScheduledExecutorService reconnectScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
@@ -104,8 +105,11 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 				sendMessage(response); // 그대로 응답
 			} else if ("REG".equals(trnm)) {
 				int returnCode = response.get("return_code").asInt();
-				if (returnCode != 0)
+				if (returnCode != 0) {
 					log.warn("등록이 정상적으로 완료되지 않았습니다. {}", response.get("return_msg").asText());
+				} else {
+					log.info("등록되었습니다. {}", response.get("return_msg").asText());
+				}
 			} else if ("REAL".equals(trnm)) {
 				ArrayNode dataArray = (ArrayNode) response.get("data");
 				for (JsonNode node : dataArray) {
@@ -138,7 +142,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 			try {
 				String jsonMessage = objectMapper.writeValueAsString(message);
 				this.send(jsonMessage);
-				log.info("Message sent: {}", jsonMessage);
+				//				log.info("Message sent: {}", jsonMessage);
 			} catch (Exception e) {
 				log.warn(e.getMessage());
 			}
@@ -158,7 +162,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 		for (int i = 0; i < stockCnt; i += CHUNK_SIZE) {
 			// 0.1초 대기 
 			try {
-				Thread.sleep(100);
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 				log.error("분할 전송 대기 중 인터럽트 예외 발생. 전송을 중단합니다.");
