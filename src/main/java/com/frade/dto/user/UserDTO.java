@@ -4,9 +4,11 @@ import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Getter
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
 	
@@ -73,18 +75,6 @@ public class UserDTO {
         this.userPhoto = userPhoto;
     }
    
- // 로그인 조회용 생성자
-    public UserDTO(
-            int userNum,
-            String userNick,
-            String userPw,
-            String userPhoto) {
-
-        this.userNum = userNum;
-        this.userNick = userNick;
-        this.userPw = userPw;
-        this.userPhoto = userPhoto;
-    }
 
 
 }
