@@ -28,46 +28,6 @@ public class StockMemoryCache {
 	private List<StockInfoDTO> allStockList = new ArrayList<>();
 
 	/**
-	 * 서버가 켜질때 딱 1번 실행 
-	 * DB에 등록된 100종목을 자바 메모리에 탑재
-	 */
-	@PostConstruct
-	public void initStockCache() {
-		refreshCache();
-	}
-
-	/**
-	 * 캐시를 최신 상태로 새로고침하는 메서드
-	 * 서버 시동 시점에 호출
-	 */
-	public void refreshCache() {
-		log.info("DB로부터 100종목 데이터를 로드하여 캐시 생성");
-
-		// DB에서 데이터 로드
-		List<StockInfoDTO> dbStocks = stockDAO.selectAllStock();
-
-		if (dbStocks == null || dbStocks.isEmpty()) {
-			log.warn("DB에 종목 데이터가 없습니다. 캐시 로드를 스킵합니다.");
-			return;
-		}
-
-		// 2. 기존 캐시 메모리 초기화
-		Map<String, StockInfoDTO> newMap = new HashMap<>();
-		List<StockInfoDTO> newList = new ArrayList<>();
-
-		// 3. 초고속 조회를 위한 메모리 적재
-		for (StockInfoDTO stock : dbStocks) {
-			newMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
-			newList.add(stock); // 이름/자동완성 검색용 리스트 채우기
-		}
-
-		this.codeCacheMap = newMap;
-		this.allStockList = newList;
-
-		log.info("주식 정보 {}개 캐시 메모리 탑재 완료.", codeCacheMap.size());
-	}
-
-	/**
 	 * 캐시를 최신 상태로 새로고침하는 메서드
 	 * 아침 8시 40분 장전 마스터 배치가 완전히 끝난 직후에 호출
 	 */
@@ -79,16 +39,19 @@ public class StockMemoryCache {
 			return;
 		}
 
-		// 2. 기존 캐시 메모리 초기화
-		// 장중에 호출할 시 이부분을 새 객체를 만들어서 갈아끼워야함
-		codeCacheMap.clear();
-		allStockList.clear();
+		// 새 메모리 객체 생성
+		Map<String, StockInfoDTO> newMap = new HashMap<>();
+		List<StockInfoDTO> newList = new ArrayList<>();
 
-		// 3. 초고속 조회를 위한 메모리 적재
+		// 초고속 조회를 위한 메모리 적재
 		for (StockInfoDTO stock : stockList) {
 			codeCacheMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
 			allStockList.add(stock); // 이름/자동완성 검색용 리스트 채우기
 		}
+
+		// 메모리 객체 갈아끼우기
+		this.codeCacheMap = newMap;
+		this.allStockList = newList;
 
 		log.info("주식 정보 {}개 캐시 메모리 탑재 완료.", codeCacheMap.size());
 	}
@@ -118,11 +81,52 @@ public class StockMemoryCache {
 	}
 
 	//맵에서 key들만 뽑아다 리스트로 반환
-	public List<String> getCodeList() {
+	public List<String> getStockCodeList() {
 		return new ArrayList<String>(codeCacheMap.keySet());
 	}
 
 	public List<StockInfoDTO> getAllStockList() {
 		return new ArrayList<>(this.allStockList);
+	}
+
+	/**
+	 * 서버가 켜질때 딱 1번 실행 
+	 * DB에 등록된 100종목을 자바 메모리에 탑재
+	 */
+	@PostConstruct
+	private void initStockCache() {
+		refreshCache();
+	}
+
+	/**
+	 * 캐시를 최신 상태로 새로고침하는 메서드
+	 * 서버 시동 시점에 호출
+	 */
+	private void refreshCache() {
+		log.info("DB로부터 100종목 데이터를 로드하여 캐시 생성");
+
+		// DB에서 데이터 로드
+		List<StockInfoDTO> dbStocks = stockDAO.selectAllStock();
+
+		if (dbStocks == null || dbStocks.isEmpty()) {
+			log.warn("DB에 종목 데이터가 없습니다. 캐시 로드를 스킵합니다.");
+			return;
+		}
+
+		// 새 메모리 객체 생성
+		Map<String, StockInfoDTO> newMap = new HashMap<>();
+		List<StockInfoDTO> newList = new ArrayList<>();
+
+		// 초고속 조회를 위한 메모리 적재
+		for (StockInfoDTO stock : dbStocks) {
+			newMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
+			newList.add(stock); // 이름/자동완성 검색용 리스트 채우기
+		}
+
+		// 메로리 객체 갈아끼우기
+		this.codeCacheMap = newMap;
+		this.allStockList = newList;
+
+		log.info("주식 정보 {}개 캐시 메모리 탑재 완료.", codeCacheMap.size());
 	}
 }
