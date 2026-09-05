@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.frade.dao.portfolio.PortfolioDAO;
 import com.frade.dto.order.HistoryDTO;
+import com.frade.dto.order.HistoryForMypageDTO;
 import com.frade.dto.user.AssetsInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
@@ -37,5 +38,7 @@ public interface PortfolioService {
 
 	//Asset 정보
 	AssetsInfoDTO getAssetsInfo(int userNum);
+	
+	public List<HistoryForMypageDTO> findTradeHistoryForMypageByUserNum(int userNum);
 	
 }

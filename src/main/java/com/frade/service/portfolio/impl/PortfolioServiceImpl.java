@@ -11,6 +11,7 @@ import com.frade.dao.portfolio.CashDAO;
 import com.frade.dao.portfolio.HistoryDAO;
 import com.frade.dao.portfolio.PortfolioDAO;
 import com.frade.dto.order.HistoryDTO;
+import com.frade.dto.order.HistoryForMypageDTO;
 import com.frade.dto.user.AssetsInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
@@ -120,6 +121,13 @@ public class PortfolioServiceImpl implements PortfolioService {
 		int result = portfolioDAO.updateOrInsertUserPortfolio(portfolio);
 		return result;
 
+	}
+	
+	@Override
+	public List<HistoryForMypageDTO> findTradeHistoryForMypageByUserNum(int userNum){
+		List<HistoryForMypageDTO> historyList = historyDAO.findTradeHistoryForMypageByUserNum(userNum);
+		
+		return historyList;
 	}
 
 }

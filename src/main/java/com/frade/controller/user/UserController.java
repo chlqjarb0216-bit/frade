@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frade.common.ResultCode;
 import com.frade.dto.order.HistoryDTO;
+import com.frade.dto.order.HistoryForMypageDTO;
 import com.frade.dto.rest.RestApiResponse;
 import com.frade.dto.user.AssetsInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
@@ -200,7 +203,7 @@ public class UserController {
 	
 	//마이페이지
 	@GetMapping("/mypage")
-	public String myPage(HttpSession session, Model model) {
+	public String myPage(HttpSession session, Model model) throws JsonProcessingException {
 		
 		 // 로그인 여부 확인
 	    if(session.getAttribute("loginUser") == null) {
@@ -237,8 +240,8 @@ public class UserController {
 			long avgStockBuyCost = Math.round((double) portfolio.getUserBuyCost() / stockCnt); //평균단가
 			long valuationAmount = currentPrice * stockCnt; //평가 가치
 			long pnl = valuationAmount - portfolio.getUserBuyCost(); //평가 손익
-			double profitPercent = (double) pnl / portfolio.getUserBuyCost() * 100; //수익률
-			double weightPercent = (double) valuationAmount / totalValuationAmount * 100;
+			double profitPercent = Math.round((double) pnl / portfolio.getUserBuyCost() * 100) * 100 / 100.0; //수익률
+			double weightPercent = Math.round((double) valuationAmount / totalValuationAmount * 100) * 100 / 100.0;
 
 			PortfolioInfoDTO portfolioInfo = new PortfolioInfoDTO();
 			portfolioInfo.setStockCode(portfolio.getStockCode());
@@ -271,12 +274,26 @@ public class UserController {
 		model.addAttribute("holdingStockCount", portfolioInfoList.size()); //보유 종목 수
 		
 		//거래기록 전달
-		List<HistoryDTO> historyList= orderService.findTradeHistoryByUserNum(loginUserNumber);
+		List<HistoryForMypageDTO> historyList= portfolioService.findTradeHistoryForMypageByUserNum(loginUserNumber);
 		model.addAttribute("historyList", historyList);
 		
 		
 		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo(loginUserNumber);
 		model.addAttribute("assetsInfo", assetsInfo);
+		
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+
+	    model.addAttribute(
+	        "stockNameList",
+	        objectMapper.writeValueAsString(stockNameList)
+	    );
+
+	    model.addAttribute(
+	        "stockPriceList",
+	        objectMapper.writeValueAsString(stockPriceList)
+	    );
+
 		
 		return "user/mypage";
 	}

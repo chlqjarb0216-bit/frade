@@ -6,593 +6,560 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>샘플 JSP 페이지 양식</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>샘플 JSP 페이지 양식</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <style>
-        body {
-            padding: 20px;
-        }
+<style>
+body {
+	padding: 20px;
+}
 
-        .mypageHeader {
-            display: flex;
-        }
+.mypageHeader {
+	display: flex;
+}
 
-        .profile-box {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            width: 450px;
-            padding: 25px;
-            border: 1px solid #ccc;
-        }
+.profile-box {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	width: 450px;
+	padding: 25px;
+	border: 1px solid #ccc;
+}
 
-        .profile-photo img {
-            border-radius: 50%;
-        }
+.profile-photo img {
+	border-radius: 50%;
+}
 
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+.profile-info {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
 
+/* 프로필 수정 모달 */
+.profile-modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+}
 
+.profile-modal-content {
+	width: 500px;
+	max-height: 80vh;
+	overflow-y: auto;
+	margin: 50px auto;
+	padding: 20px;
+	background-color: white;
+	border: 1px solid #ccc;
+}
 
-        /* 프로필 수정 모달 */
-        .profile-modal {
-            display: none;
+.profile-modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
 
-            position: fixed;
-            top: 0;
-            left: 0;
+.profile-photo-edit {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
+}
 
-            width: 100%;
-            height: 100%;
+.profile-photo-preview img {
+	border-radius: 50%;
+}
 
-            background-color: rgba(0, 0, 0, 0.4);
-        }
+.profile-photo-buttons p {
+	margin: 5px 0;
+}
 
-        .profile-modal-content {
-            width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
+/* 닉네임 수정 */
+.profile-nick-edit {
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
+}
 
-            margin: 50px auto;
-            padding: 20px;
+.profile-nick-edit p {
+	margin: 5px 0;
+}
 
-            background-color: white;
-            border: 1px solid #ccc;
-        }
+/* 비밀번호 변경 */
+.profile-pw-edit {
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
+}
 
-        .profile-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+#btnPwToggle {
+	width: 100%;
+	text-align: left;
+}
 
+/* 포트폴리오 */
+.profile-public-edit {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
+}
 
-        .profile-photo-edit {
-            display: flex;
-            align-items: center;
-            gap: 20px;
+.profile-public-edit p {
+	margin: 5px 0;
+}
 
-            padding: 20px 0;
-            border-bottom: 1px solid #ccc;
-        }
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 50px;
+	height: 26px;
+}
 
-        .profile-photo-preview img {
-            border-radius: 50%;
-        }
+.switch input {
+	display: none;
+}
 
-        .profile-photo-buttons p {
-            margin: 5px 0;
-        }
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: gray;
+	border-radius: 26px;
+}
 
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 20px;
+	width: 20px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	border-radius: 50%;
+	transition: 0.2s;
+}
 
+.switch input:checked+.slider {
+	background-color: black;
+}
 
-        /* 닉네임 수정 */
-        .profile-nick-edit {
-            padding: 20px 0;
-            border-bottom: 1px solid #ccc;
-        }
+.switch input:checked+.slider:before {
+	transform: translateX(24px);
+}
 
-        .profile-nick-edit p {
-            margin: 5px 0;
-        }
+.profile-delete {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 0;
+	border-bottom: 1px solid black;
+}
 
-        /* 비밀번호 변경 */
-        .profile-pw-edit {
-            padding: 20px 0;
-            border-bottom: 1px solid #ccc;
-        }
+.profile-delete p {
+	margin: 5px 0;
+}
 
-        #btnPwToggle {
-            width: 100%;
-            text-align: left;
-        }
+#btnUserDelete {
+	color: red;
+}
 
+.profile-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding-top: 20px;
+}
 
-        /* 포트폴리오 */
-        .profile-public-edit {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #ccc;
-        }
+.totalAsset-box {
+	border: 1px solid lightgray;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 75vh;
+	height: 169px;
+	padding: 20px;
+	margin-left: 20px;
+}
 
-        .profile-public-edit p {
-            margin: 5px 0;
-        }
+.assetInfo-box-top {
+	display: flex;
+	flex-direction: row;
+	width: 70%;
+	justify-content: space-around;
+	height: 100px;
+}
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
+.assetInfo-box-top div {
+	height: 100px;
+	margin-left: 50px;
+}
 
-        .switch input {
-            display: none;
-        }
+.assetInfo-box-bottom {
+	width: 300px;
+	display: flex;
+	justify-content: space-around;
+	margin-left: 190px;
+}
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: gray;
-            border-radius: 26px;
-        }
+.mypageMiddle {
+	display: flex;
+	margin-top: 50px;
+}
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: 0.2s;
-        }
+.portfolio-circle {
+	width: 300px;
+	height: 300px;
+	border: 1px solid lightgray;
+}
 
-        .switch input:checked+.slider {
-            background-color: black;
-        }
+.portfolio-Structure-box {
+	margin-left: 20px;
+	border: 1px solid lightgray;
+	width: 300px;
+	padding: 10px;
+}
 
-        .switch input:checked+.slider:before {
-            transform: translateX(24px);
-        }
+.history-box {
+    margin-left: 20px;
+    width: 600px;
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid lightgray;
+    padding: 10px;
+    box-sizing: border-box;
+}
 
-        .profile-delete {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid black;
-        }
+.history-box > table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-        .profile-delete p {
-            margin: 5px 0;
-        }
+.stock-table {
+	width: 100%;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
 
-        #btnUserDelete {
-            color: red;
-        }
+.stock-table th, .stock-table td {
+	padding: 12px 0;
+	text-align: center;
+}
 
-        .profile-modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding-top: 20px;
-        }
+.stock-table th:first-child, .stock-table td:first-child {
+	text-align: left;
+}
 
-        .totalAsset-box {
-            border: 1px solid lightgray;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            width: 75vh;
-            height: 169px;
-            padding: 20px;
-            margin-left: 20px;
-        }
-
-        .assetInfo-box-top {
-            display: flex;
-            flex-direction: row;
-            width: 70%;
-            justify-content: space-around;
-            height: 100px;
-        }
-
-        .assetInfo-box-top div {
-            height: 100px;
-            margin-left: 50px;
-        }
-
-        .assetInfo-box-bottom {
-            width: 300px;
-            display: flex;
-            justify-content: space-around;
-            margin-left: 190px;
-        }
-
-        .mypageMiddle {
-            display: flex;
-            margin-top: 50px;
-        }
-
-        .portfolio-circle {
-
-            width: 300px;
-            height: 300px;
-            border: 1px solid lightgray;
-        }
-
-        .portfolio-Structure-box {
-            margin-left: 20px;
-            border: 1px solid lightgray;
-            width: 300px;
-            padding: 10px;
-        }
-
-        .portfolio-Structure {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .history-box {
-            margin-left: 20px;
-            width: 600px;
-            border: 1px solid lightgray;
-            padding: 10px;
-        }
-
-        .history-list {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .stock-table {
-            width: 100%;
-            table-layout: fixed;
-            border-collapse: collapse;
-        }
-
-        .stock-table th,
-        .stock-table td {
-            padding: 12px 0;
-            text-align: center;
-
-        }
-
-        .stock-table th:first-child,
-        .stock-table td:first-child {
-            text-align: left;
-        }
-
-        /* 마지막 열만 오른쪽 정렬 */
-        .stock-table th:last-child,
-        .stock-table td:last-child {
-            text-align: right;
-        }
-    </style>
+/* 마지막 열만 오른쪽 정렬 */
+.stock-table th:last-child, .stock-table td:last-child {
+	text-align: right;
+}
+</style>
 
 </head>
 
 <body>
-    <div class="mypageHeader">
-        <div class="profile-box">
+	<div class="mypageHeader">
+		<div class="profile-box">
 
-            <div class="profile-photo">
-                <c:choose>
-                    <c:when test="${empty userProfile.userPhoto}">
-                        <img src="/resources/images/logo.png" alt="프로필 사진" width="70" height="70">
-                    </c:when>
+			<div class="profile-photo">
+				<c:choose>
+					<c:when test="${empty userProfile.userPhoto}">
+						<img src="/resources/images/logo.png" alt="프로필 사진" width="70"
+							height="70">
+					</c:when>
 
-                    <c:otherwise>
-                        <img src="/fileStorage/user_profile/${userProfile.userPhoto}" alt="프로필 사진" width="70"
-                            height="70">
-                    </c:otherwise>
-                </c:choose>
-            </div>
+					<c:otherwise>
+						<img src="/fileStorage/user_profile/${userProfile.userPhoto}"
+							alt="프로필 사진" width="70" height="70">
+					</c:otherwise>
+				</c:choose>
+			</div>
 
-            <div class="profile-info">
+			<div class="profile-info">
 
-                <div>
-                    <strong>${userProfile.userNick}</strong>
-                </div>
-
-
-                <div>가입일 : ${userProfile.userRegistedDateText}</div>
-
-                <button type="button" id="btnProfileEdit">프로필 수정</button>
-
-            </div>
-
-        </div>
+				<div>
+					<strong>${userProfile.userNick}</strong>
+				</div>
 
 
-        <!-- 프로필 수정 모달 -->
-        <div id="profileModal" class="profile-modal">
+				<div>가입일 : ${userProfile.userRegistedDateText}</div>
 
-            <div class="profile-modal-content">
+				<button type="button" id="btnProfileEdit">프로필 수정</button>
 
-                <div class="profile-modal-header">
-                    <h2>프로필 수정</h2>
+			</div>
 
-                </div>
+		</div>
 
 
-                <form id="profileForm" enctype="multipart/form-data">
+		<!-- 프로필 수정 모달 -->
+		<div id="profileModal" class="profile-modal">
 
-                    <div class="profile-modal-body">
+			<div class="profile-modal-content">
 
-                        <!-- 프로필 사진 수정 -->
-                        <div class="profile-photo-edit">
+				<div class="profile-modal-header">
+					<h2>프로필 수정</h2>
 
-                            <div class="profile-photo-preview">
-                                <img src="/resources/images/logo.png" alt="프로필 사진" id="profilePreview" width="80"
-                                    height="80">
-                            </div>
-
-                            <div class="profile-photo-buttons">
-                                <p>
-                                    <strong>프로필 사진</strong>
-                                </p>
-
-                                <p>JPG, PNG JPEG의 사진만 선택이 가능합니다.</p>
-
-                                <input type="file" id="profilePhotoInput" name="profilePhoto" accept=".png,.jpg,.jpeg"
-                                    style="display: none;">
-                                <input type="hidden" id="defaultPhoto" name="defaultPhoto" value="false">
-
-                                <button type="button" id="btnPhotoChange">사진 변경</button>
-                                <button type="button" id="btnDefaultPhoto">기본 이미지</button>
-                            </div>
-
-                        </div>
+				</div>
 
 
-                        <!-- 닉네임 변경 -->
-                        <div class="profile-nick-edit">
+				<form id="profileForm" enctype="multipart/form-data">
 
-                            <p>
-                                <strong>닉네임</strong>
-                            </p>
+					<div class="profile-modal-body">
 
-                            <input type="text" name="userNick" id="inputProfileNick" value="${userProfile.userNick}">
+						<!-- 프로필 사진 수정 -->
+						<div class="profile-photo-edit">
 
-                            <button type="button" id="btnProfileNickCheck">중복확인</button>
+							<div class="profile-photo-preview">
+								<img src="/resources/images/logo.png" alt="프로필 사진"
+									id="profilePreview" width="80" height="80">
+							</div>
 
-                            <p id="profileNickCheckMsg"></p>
+							<div class="profile-photo-buttons">
+								<p>
+									<strong>프로필 사진</strong>
+								</p>
 
-                        </div>
+								<p>JPG, PNG JPEG의 사진만 선택이 가능합니다.</p>
 
+								<input type="file" id="profilePhotoInput" name="profilePhoto"
+									accept=".png,.jpg,.jpeg" style="display: none;"> <input
+									type="hidden" id="defaultPhoto" name="defaultPhoto"
+									value="false">
 
-                        <!-- 비밀번호 변경 -->
-                        <div class="profile-pw-edit">
-                            <input type="hidden" id="passwordChange" name="passwordChange" value="false">
+								<button type="button" id="btnPhotoChange">사진 변경</button>
+								<button type="button" id="btnDefaultPhoto">기본 이미지</button>
+							</div>
 
-                            <button type="button" id="btnPwToggle">
-                                비밀번호 변경 ▼
-                            </button>
-
-                            <div id="pwChangeArea" style="display: none;">
-
-                                <p><strong>현재 비밀번호</strong></p>
-                                <input type="password" name="currentPw" id="currentPw">
-
-                                <p><strong>새 비밀번호</strong></p>
-                                <input type="password" name="newPw" id="newPw">
-
-                                <p><strong>새 비밀번호 확인</strong></p>
-                                <input type="password" name="newPwCheck" id="newPwCheck">
-
-                            </div>
-
-                        </div>
+						</div>
 
 
-                        <!-- 포트폴리오 공개 여부 -->
-                        <div class="profile-public-edit">
+						<!-- 닉네임 변경 -->
+						<div class="profile-nick-edit">
 
-                            <div>
-                                <strong>포트폴리오 공개</strong>
-                                <p>다른 사용자에게 내 포트폴리오를 공개합니다.</p>
-                            </div>
+							<p>
+								<strong>닉네임</strong>
+							</p>
 
-                            <label class="switch">
+							<input type="text" name="userNick" id="inputProfileNick"
+								value="${userProfile.userNick}">
 
-                                <input type="checkbox" id="portfolioPublic" name="userPortfolioIsPublic" value="1" <c:if
+							<button type="button" id="btnProfileNickCheck">중복확인</button>
+
+							<p id="profileNickCheckMsg"></p>
+
+						</div>
+
+
+						<!-- 비밀번호 변경 -->
+						<div class="profile-pw-edit">
+							<input type="hidden" id="passwordChange" name="passwordChange"
+								value="false">
+
+							<button type="button" id="btnPwToggle">비밀번호 변경 ▼</button>
+
+							<div id="pwChangeArea" style="display: none;">
+
+								<p>
+									<strong>현재 비밀번호</strong>
+								</p>
+								<input type="password" name="currentPw" id="currentPw">
+
+								<p>
+									<strong>새 비밀번호</strong>
+								</p>
+								<input type="password" name="newPw" id="newPw">
+
+								<p>
+									<strong>새 비밀번호 확인</strong>
+								</p>
+								<input type="password" name="newPwCheck" id="newPwCheck">
+
+							</div>
+
+						</div>
+
+
+						<!-- 포트폴리오 공개 여부 -->
+						<div class="profile-public-edit">
+
+							<div>
+								<strong>포트폴리오 공개</strong>
+								<p>다른 사용자에게 내 포트폴리오를 공개합니다.</p>
+							</div>
+
+							<label class="switch"> <input type="checkbox"
+								id="portfolioPublic" name="userPortfolioIsPublic" value="1"
+								<c:if
                                     test="${userProfile.userPortfolioIsPublic == 1}">checked</c:if>>
 
 
-                                <span class="slider"></span>
+								<span class="slider"></span>
 
-                            </label>
+							</label>
 
-                        </div>
-
-
-                        <!-- 회원 탈퇴 -->
-                        <div class="profile-delete">
-
-                            <div>
-                                <strong>회원 탈퇴</strong>
-                                <p>탈퇴 시 계정 정보를 복구할 수 없습니다.</p>
-                            </div>
+						</div>
 
 
-                            <button type="button" id="btnUserDelete">탈퇴하기</button>
+						<!-- 회원 탈퇴 -->
+						<div class="profile-delete">
+
+							<div>
+								<strong>회원 탈퇴</strong>
+								<p>탈퇴 시 계정 정보를 복구할 수 없습니다.</p>
+							</div>
 
 
-                        </div>
+							<button type="button" id="btnUserDelete">탈퇴하기</button>
 
 
-                        <!-- 모달 하단 버튼 -->
-                        <div class="profile-modal-footer">
-
-                            <button type="button" id="btnProfileCancel">
-                                취소
-                            </button>
-
-                            <button type="submit" id="btnProfileSave">
-                                변경사항 저장
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </form>
-                <!-- form 끝 -->
-                <form action="/user/withdraw" method="post" id="userDeleteForm"></form>
-
-            </div>
-
-        </div>
-
-        <div class="totalAsset-box">
-            <div style="height: 100px;">
-                <p>총 자산</p>
-                <h2>${assetsInfo.totalAsset}원</h2>
-                <p>${assetsInfo.totalRevenue}원<span>${assetsInfo.revenuePercent}%</span></p>
-            </div>
-
-            <div class="assetInfo-box-top">
-                <div>
-                    <p>초기 투자금</p>
-                    <p>10000000원</p>
-                </div>
-                <div>
-                    <p>주식 평가금</p>
-                    <p>${assetsInfo.totalValuation}원</p>
-                </div>
-                <div>
-                    <p>예수금</p>
-                    <p>${assetsInfo.cash}원</p>
-                </div>
-
-            </div>
-
-            <div class="assetInfo-box-bottom">
-                <div>
-                    <p>보유 종목수</p>
-                    <p>${assetsInfo.stockCnt}원</p>
-                </div>
-                <div>
-                    <p>총 매수 횟수</p>
-                    <p>${assetsInfo.tradeCnt}원</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="mypageMiddle">
-
-        <div class="portfolio-circle">
-            <canvas id="portfolioChart"></canvas>
-        </div>
-
-        <div class="portfolio-Structure-box">
-            <p>포트폴리오 구성</p>
-            <div class="portfolio-Structure">
-                <div>
-                    <p>삼성전자</p>
-                    <p>SK하이닉스</p>
-                    <p>NAVER</p>
-                    <p>현금</p>
-                </div>
-
-                <div>
-                    <p>50%</p>
-                    <p>30%</p>
-                    <p>10%</p>
-                    <p>10%</p>
-                </div>
-
-                <div>
-                    <p>5,000,000원</p>
-                    <p>3,000,000원</p>
-                    <p>1,000,000원</p>
-                    <p>1,000,000원</p>
-                </div>
-            </div>
-        </div>
-
-        <table class="history-box">
-        <th>거래기록</th>
-        <tbody>
-            <tr>
-                <td>삼성전자</td>
-                <td>210000원</td>
-                <td>1주</td>
-                <td>2026.09.05</td>
-            </tr>
-        </tbody>
-    </table>
-    </div>
-
-    
+						</div>
 
 
-    <table class="stock-table">
-        <thead>
-            <tr>
-                <th>종목명</th>
-                <th>보유 수량</th>
-                <th>매수 평단가</th>
-                <th>현재가</th>
-                <th>평가 금액</th>
-                <th>평가 손익</th>
-                <th>수익률</th>
-                <th>비율</th>
-            </tr>
-        </thead>
+						<!-- 모달 하단 버튼 -->
+						<div class="profile-modal-footer">
+
+							<button type="button" id="btnProfileCancel">취소</button>
+
+							<button type="submit" id="btnProfileSave">변경사항 저장</button>
+
+						</div>
+
+					</div>
+
+				</form>
+				<!-- form 끝 -->
+				<form action="/user/withdraw" method="post" id="userDeleteForm"></form>
+
+			</div>
+
+		</div>
+
+		<div class="totalAsset-box">
+			<div style="height: 100px;">
+				<p>총 자산</p>
+				<h2>${assetsInfo.totalAsset}원</h2>
+				<p>${assetsInfo.totalRevenue}원<span>${assetsInfo.revenuePercent}%</span>
+				</p>
+			</div>
+
+			<div class="assetInfo-box-top">
+				<div>
+					<p>초기 투자금</p>
+					<p>10000000원</p>
+				</div>
+				<div>
+					<p>주식 평가금</p>
+					<p>${assetsInfo.totalValuation}원</p>
+				</div>
+				<div>
+					<p>예수금</p>
+					<p>${assetsInfo.cash}원</p>
+				</div>
+
+			</div>
+
+			<div class="assetInfo-box-bottom">
+				<div>
+					<p>보유 종목수</p>
+					<p>${assetsInfo.stockCnt}원</p>
+				</div>
+				<div>
+					<p>총 매수 횟수</p>
+					<p>${assetsInfo.tradeCnt}원</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="mypageMiddle">
+
+		<div class="portfolio-circle">
+			<canvas id="portfolioChart"></canvas>
+		</div>
 
 
-        <tbody></tbody>
-            <tr>
-                <td>삼성전자</td>
-                <td>50주</td>
-                <td>241,000</td>
-                <td>242,000</td>
-                <td>13,550,000</td>
-                <td>+1,500,000</td>
-                <td>+12.45%</td>
-                <td>47.8%</td>
-            </tr>
-            <tr>
-                <td>SK하이닉스</td>
-                <td>50주</td>
-                <td>241,000</td>
-                <td>242,000</td>
-                <td>13,550,000</td>
-                <td>+1,500,000</td>
-                <td>+12.45%</td>
-                <td>47.8%</td>
-            </tr>
-            <tr>
-                <td>NAVER</td>
-                <td>50주</td>
-                <td>241,000</td>
-                <td>242,000</td>
-                <td>13,550,000</td>
-                <td>+1,500,000</td>
-                <td>+12.45%</td>
-                <td>47.8%</td>
-            </tr>
-        </tbody>
-    </table>
+
+
+		<table class="portfolio-Structure-box">
+			<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
+				<tr>
+					<td>${portfolioInfo.stockName}</td>
+					<td>${portfolioInfo.stockCnt}주</td>
+					<td>${portfolioInfo.valuationAmount}원</td>
+				</tr>
+			</c:forEach>
+		</table>
+
+
+
+		<div class="history-box">
+			<table>
+				<thead>
+					<tr>
+						<th colspan="4">거래기록</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="history" items="${historyList}">
+						<tr>
+							<td>${history.stockName}</td>
+							<td>${history.tradePrice}원</td>
+							<td>${history.tradeCnt}주</td>
+							<td>${history.tradeDate}</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+
+
+
+	<p style="margin-top: 20px">보유 종목</p>
+	<table class="stock-table">
+		<thead>
+			<tr>
+				<th>종목명</th>
+				<th>보유 수량</th>
+				<th>매수 평단가</th>
+				<th>현재가</th>
+				<th>평가 금액</th>
+				<th>평가 손익</th>
+				<th>수익률</th>
+				<th>비율</th>
+			</tr>
+		</thead>
+
+
+		<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
+			<tr>
+				<td>${portfolioInfo.stockName}</td>
+				<td>${portfolioInfo.stockCnt}주</td>
+				<td>${portfolioInfo.avgStockBuyCost}원</td>
+				<td>${portfolioInfo.stockNowPrice}원</td>
+				<td>${portfolioInfo.valuationAmount}원</td>
+				<td>${portfolioInfo.pnl}원</td>
+				<td>${portfolioInfo.profitPercent}%</td>
+				<td>${portfolioInfo.weightPercent}%</td>
+			</tr>
+		</c:forEach>
+
+
+		</tbody>
+	</table>
 
 
 
@@ -602,7 +569,7 @@
 
 
 
-    </div>
+	</div>
 
 
 
@@ -610,7 +577,7 @@
 
 
 
-    <script>
+	<script>
 
         const btnProfileEdit = document.getElementById("btnProfileEdit");
         const profileModal = document.getElementById("profileModal");
@@ -968,20 +935,10 @@
 
 
         const data = {
-            labels: [
-                "삼성전자",
-                "SK하이닉스",
-                "NAVER",
-                "현금"
-            ],
+            labels: ${stockNameList},
             datasets: [{
                 label: "평가금액",
-                data: [
-                    5000000,
-                    3000000,
-                    1000000,
-                    1000000
-                ],
+                data: ${stockPriceList},
                 backgroundColor: [
                     "#4e73df",
                     "#1cc88a",

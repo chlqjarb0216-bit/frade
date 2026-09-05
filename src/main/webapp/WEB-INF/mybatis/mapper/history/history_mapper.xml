@@ -7,7 +7,22 @@
 		resultType="HistoryDTO">
 		select * from t_history
 		where user_num = #{userNum}
-		order by trade_date desc
+		order by
+		trade_date desc
+	</select>
+
+	<select id="findTradeHistoryForMypageByUserNum"
+		parameterType="int" resultType="HistoryForMypageDTO">
+		select
+		s.stock_name,
+		h.trade_price,
+		h.trade_cnt,
+		h.trade_date
+		from
+		t_history h
+		join t_stock s on s.stock_code = h.stock_code
+		where h.user_num = #{userNum}
+		order by h.trade_date desc
 	</select>
 
 
@@ -31,7 +46,8 @@
 		where user_num =
 		#{userNum}
 		and trade_date &gt;= trunc(sysdate) - 6
-		and trade_date &lt; trunc(sysdate) + 1
+		and trade_date &lt;
+		trunc(sysdate) + 1
 		order by trade_date desc
 	</select>
 
@@ -43,7 +59,8 @@
 		where user_num =
 		#{userNum}
 		and trade_date &gt;= add_months(trunc(sysdate), -1)
-		and trade_date &lt; trunc(sysdate) + 1
+		and
+		trade_date &lt; trunc(sysdate) + 1
 		order by trade_date desc
 	</select>
 

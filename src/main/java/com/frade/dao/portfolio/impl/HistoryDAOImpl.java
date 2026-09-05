@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.frade.dao.portfolio.HistoryDAO;
 import com.frade.dto.order.HistoryDTO;
+import com.frade.dto.order.HistoryForMypageDTO;
 
 @Repository
 public class HistoryDAOImpl implements HistoryDAO {
@@ -49,6 +50,14 @@ public class HistoryDAOImpl implements HistoryDAO {
 	public int insertTradeHistory(HistoryDTO history) {
 		int result = sqlSessionTemplate.insert("history_mapper.insertTradeHistory", history);
 		return result;
+	}
+
+
+	@Override
+	public List<HistoryForMypageDTO> findTradeHistoryForMypageByUserNum(int userNum) {
+		List<HistoryForMypageDTO> history = sqlSessionTemplate.selectList
+				("history_mapper.findTradeHistoryForMypageByUserNum", userNum);
+		return history;
 	}
 
 }
