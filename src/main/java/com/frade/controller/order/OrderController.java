@@ -104,7 +104,7 @@ public class OrderController {
 		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo();
 		System.out.println(assetsInfo);
 
-		return "redirect:/stock/trade";
+		return "redirect:/stock/" + orderInfo.getStockCode();
 	}
 
 }

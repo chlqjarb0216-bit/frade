@@ -56,6 +56,11 @@
 	background-color: lightblue;
 	cursor: not-allowed;
 }
+
+.stock-trade-layout { display: flex; align-items: flex-start; gap: 24px; }
+.stock-trade-main { flex: 1; min-width: 0; }
+.stock-order-panel { flex: 0 0 430px; }
+.stock-trade-main .chart-box { max-width: none; }
 </style>
 </head>
 
@@ -72,6 +77,8 @@
 			<ul id="previewList" style="display: none;"></ul>
 			<button>검색</button>
 		</form>
+		<div class="stock-trade-layout">
+		<div class="stock-trade-main">
 		<div class="stock">
 			<div style="display: flex; justify-content: space-between">
 				<p>
@@ -103,6 +110,11 @@
 				<!-- 차트가 그려질 영역 -->
 				<div id="stock-chart"></div>
 			</div>
+		</div>
+		</div>
+		<aside class="stock-order-panel">
+			<jsp:include page="/stock/trade"></jsp:include>
+		</aside>
 		</div>
 	</div>
 
