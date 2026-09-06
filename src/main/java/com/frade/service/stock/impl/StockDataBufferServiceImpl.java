@@ -231,13 +231,10 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 
 				// 💡 C. 글로벌 맵 실시간 다이렉트 적재 연산 (초고속 차트 연동용 '종목코드_분시간' 결합키 사용)
 				String compositeKey = stockCode + "_" + currentMinuteStr;
-				StockPriceComputableDTO dto = globalBufferMap.compute(compositeKey, (k, d) -> {
-					if (d == null)
-						return new StockPriceComputableDTO(stockCode,
-								LocalDateTime.parse(currentMinuteStr, MINUTE_FORMATTER), currentPrice, rawVolume);
-					d.updateRealtimeData(currentPrice, rawVolume);
-					return d;
-				});
+				StockPriceComputableDTO dto = globalBufferMap.computeIfAbsent(compositeKey,
+						k -> new StockPriceComputableDTO(stockCode,
+								LocalDateTime.parse(currentMinuteStr, MINUTE_FORMATTER), currentPrice, rawVolume));
+				dto.updateRealtimeData(currentPrice, rawVolume);
 
 				// 💡 D. 이벤트 발행
 				eventPublisher.publishEvent(new RealtimeStockEvent(dto.toFinalDTO()));
