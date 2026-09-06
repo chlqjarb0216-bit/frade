@@ -33,7 +33,7 @@ public class ApiScheduler {
 	@Scheduled(cron = "0 50 8 * * MON-FRI")
 	public void startWebsocket() {
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -67,6 +67,11 @@ public class ApiScheduler {
 			// STEP 1: 메모리 캐시 초기화 (DB 조회 등 무거운 작업)
 			log.info("[시퀀스 1/2] 메모리 캐시 로드 시작...");
 			stockService.initMemoryCache();
+
+			// 🌟 [추가 STEP]: 오라클 DB에서 오늘 오전 분 봉 이력을 가져와 캐시판 데우기 (Warm-up)
+			log.info("[시퀀스 2/3] 오라클 DB 기반 2일 치 장중 시세 웜업 시작...");
+			String[] last2Days = MarketUtil.getLast2MarketDayString();
+			stockService.warmUpStockPriceMemoryCache(last2Days[0], last2Days[1]);
 
 			//장 시간 이면
 			if (MarketUtil.isMarketOpenTime()) {
