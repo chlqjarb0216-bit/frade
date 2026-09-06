@@ -1,6 +1,5 @@
 package com.frade.scheduler;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import com.frade.memcache.StockMemoryCache;
 import com.frade.memcache.StockRankingCache;
 import com.frade.service.stock.StockDataBufferService;
 import com.frade.service.stock.StockService;
+import com.frade.util.MarketUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +54,7 @@ public class StockDataScheduler {
 	@Scheduled(fixedDelay = 1000)
 	public void refreshRealtimeRanking() {
 		//장이 닫혀있으면 종료
-		if (!isMarketOpenTime()) {
+		if (!MarketUtil.isMarketOpenTime()) {
 			return;
 		}
 
@@ -96,22 +96,5 @@ public class StockDataScheduler {
 		} catch (Exception e) {
 			log.warn("종목 순위 갱신중 에러\n {}", e.getMessage());
 		}
-	}
-
-	//평일(월~금)이면서 시각이 09:00:00 ~ 15:30:00 사이인지 판정
-	private boolean isMarketOpenTime() {
-		LocalDateTime now = LocalDateTime.now();
-		java.time.DayOfWeek day = now.getDayOfWeek();
-
-		//토요일이거나 일요일이면 장이 닫혔으므로 탈락
-		if (day == java.time.DayOfWeek.SATURDAY || day == java.time.DayOfWeek.SUNDAY) {
-			return false;
-		}
-
-		//시간과 분을 이어붙여 직관적인 크기 비교
-		int hhmm = now.getHour() * 100 + now.getMinute();
-
-		// 09시 00분부터 15시 30분 사이일 때만 True 반환!
-		return hhmm >= 900 && hhmm <= 1530;
 	}
 }
