@@ -166,8 +166,18 @@ public class UserController {
 		if(userProfileDTO == null) {
 			return "redirect:/user/login";
 		}
+		
+		model.addAttribute("userProfile",userProfileDTO);
 
-		model.addAttribute("userProfile", userProfileDTO);
+		MyPagePortfolioDTO myPagePortfolio = portfolioService.getMyPagePortfolio(loginUserNumber);
+
+		model.addAttribute("portfolioInfoList", myPagePortfolio.getPortfolioInfoList());
+		model.addAttribute("historyList", myPagePortfolio.getHistoryList());
+		model.addAttribute("assetsInfo", myPagePortfolio.getAssetsInfo());
+		model.addAttribute("stockNameList",
+				objectMapper.writeValueAsString(myPagePortfolio.getStockNameList()));
+		model.addAttribute("stockPriceList",
+				objectMapper.writeValueAsString(myPagePortfolio.getStockPriceList()));
 
 		return "user/mypage";
 	}
@@ -188,108 +198,8 @@ public class UserController {
 	}
 	
 	
-	//------------------------------------------------------------
+	//------------------------------------------------------------	
 	
-	//마이페이지
-	@GetMapping("/mypage")
-	public String myPage(HttpSession session, Model model) throws JsonProcessingException {
-		
-		 // 로그인 여부 확인
-	    if(session.getAttribute("loginUser") == null) {
-	        return "redirect:/user/login";
-	    }
-		int loginUserNumber = (int)session.getAttribute("loginUser");
-		
-		UserProfileDTO userProfileDTO = userService.getUserProfile(loginUserNumber);
-		
-		model.addAttribute("userProfile",userProfileDTO);
-
-		MyPagePortfolioDTO myPagePortfolio = portfolioService.getMyPagePortfolio(loginUserNumber);
-
-		model.addAttribute("portfolioInfoList", myPagePortfolio.getPortfolioInfoList());
-		model.addAttribute("historyList", myPagePortfolio.getHistoryList());
-		model.addAttribute("assetsInfo", myPagePortfolio.getAssetsInfo());
-		model.addAttribute("stockNameList",
-				objectMapper.writeValueAsString(myPagePortfolio.getStockNameList()));
-		model.addAttribute("stockPriceList",
-				objectMapper.writeValueAsString(myPagePortfolio.getStockPriceList()));
-
-		
-		return "user/mypage";
-	}
-	
-	
-	@PostMapping("/api/profile")
-	@ResponseBody
-	public RestApiResponse<Void> updateUserProfile(UserProfileDTO userProfileDTO,
-					@RequestParam(value="profilePhoto", required=false) MultipartFile profilePhoto,
-					@RequestParam(value="defaultPhoto", defaultValue="false") boolean defaultPhoto,
-					@RequestParam(value="passwordChange", defaultValue="false") boolean passwordChange,
-					HttpSession session){
-		
-		// 로그인한 회원 번호
-		int loginUserNumber = (int)session.getAttribute("loginUser");
-		
-		// 새션의 회원 번호를 DTO에 저장
-		userProfileDTO.setUserNum(loginUserNumber);
-
-		// 비밀번호 변경을 선택한 경우
-		if (userProfileDTO.isPasswordChange()) {
-
-			if (userProfileDTO.getCurrentPw() == null || userProfileDTO.getCurrentPw().isEmpty()
-					|| userProfileDTO.getNewPw() == null || userProfileDTO.getNewPw().isEmpty()
-					|| userProfileDTO.getNewPwCheck() == null || userProfileDTO.getNewPwCheck().isEmpty()) {
-
-				redirectAttributes.addFlashAttribute("profileFail", ResultCode.INVALID_PASSWORD_INPUT.getMessage());
-
-				return "redirect:/user/mypage";
-			}
-
-			// DTO에서 새 비밀번호 / 확인 비밀번호 비교
-			if (!userProfileDTO.isNewPwMatch()) {
-
-				redirectAttributes.addFlashAttribute("profileFail", ResultCode.PW_NOT_MATCH.getMessage());
-
-				return "redirect:/user/mypage";
-			}
-
-			// DTO에서 현재 비밀번호 / 새 비밀번호 비교
-			if (!userProfileDTO.isDifferentPw()) {
-
-				redirectAttributes.addFlashAttribute("profileFail", ResultCode.SAME_PASSWORD.getMessage());
-
-				return "redirect:/user/mypage";
-			}
-		}
-
-		ResultCode result = userService.updateUserProfile(userProfileDTO);
-
-		if (result == ResultCode.SUCCESS) {
-
-
-		    // 세션의 로그인 유저 정보도 최신 정보로 변경
-		    UserSessionDTO updatedLoginUser =
-		            new UserSessionDTO(
-		                    loginUserNumber,
-		                    userProfileDTO.getUserNick(),
-		                    userProfileDTO.getUserPhoto()
-		            );
-
-			LoginManager.setSessionLoginUser(session, updatedLoginUser);
-
-		    redirectAttributes.addFlashAttribute(
-		            "profileSuccess",
-		            "프로필이 수정되었습니다.");
-
-		    return "redirect:/user/mypage";
-		}
-
-		redirectAttributes.addFlashAttribute(
-		        "profileFail",
-		        result.getMessage());
-
-		return "redirect:/user/mypage";
-	}
 
 	@PostMapping("/withdraw")
 	public String deleteUser(HttpSession session) {
