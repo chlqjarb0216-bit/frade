@@ -328,10 +328,8 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
     margin: 0;
 }
 </style>
-</head>
 
-
-<body>
+	<form action="${pageContext.request.contextPath}/stock/trade" method="post" class="order-form">
 
     <form action="" method="post" class="order-form">
 

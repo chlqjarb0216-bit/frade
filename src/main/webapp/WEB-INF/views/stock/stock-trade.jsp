@@ -68,6 +68,11 @@ form button {
     color: #191f28;
     margin-bottom: 16px;
 }
+
+.stock-trade-layout { display: flex; align-items: flex-start; gap: 24px; }
+.stock-trade-main { flex: 1; min-width: 0; }
+.stock-order-panel { flex: 0 0 430px; }
+.stock-trade-main .chart-box { max-width: none; }
 </style>
 </head>
 
@@ -108,11 +113,17 @@ form button {
             </div>
         </div>
         <div class="chart-body">
-            <div class="chart-box">
-                <h2>📈 가상 거래 차트 (BTC/USDT 시뮬레이터 예시)</h2>
-                <div id="stock-chart"></div>
-            </div>
-        </div>
+			<div class="chart-box">
+				<h2>📈 가상 거래 차트 (BTC/USDT 시뮬레이터 예시)</h2>
+				<!-- 차트가 그려질 영역 -->
+				<div id="stock-chart"></div>
+			</div>
+		</div>
+		</div>
+		<aside class="stock-order-panel">
+			<jsp:include page="./order.jsp"></jsp:include>
+		</aside>
+		</div>
     </div>
 
     <script

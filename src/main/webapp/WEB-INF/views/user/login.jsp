@@ -15,10 +15,9 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
             * {
                 box-sizing: border-box;
                 margin: 0;
-                height: 0;
             }
 
-            .body {
+            body {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
                 background-color: #ffffff;
                 color: #333;
@@ -28,7 +27,10 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
                 width: 100%;
                 max-width: 360px;
                 margin: 80px auto 120px;
-                padding: 0 20px;
+                padding: 36px 32px;
+			    background-color: #ffffff;
+			    border-radius: 12px;
+			    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
             }
 
             .login-title {
@@ -58,7 +60,7 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
                 transition: border-color 0.2s ease;
             }
 
-            .imput-box:focus {
+            .input-box:focus {
                 border-color: #111;
             }
 
@@ -108,6 +110,47 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
             .signup-btn:hover {
                 background-color: #f0f7ff;
             }
+            
+            
+            .main-logo-link {
+			    display: flex;
+			    flex-direction: column;
+			    align-items: center;
+			    margin-top: 24px;
+			    text-decoration: none;
+			}
+			
+			.main-logo {
+			    width: 210px;
+			    height: auto;
+			    opacity: 0.85;
+			    transition: 0.2s;
+			}
+			
+			.main-logo-text {
+			    margin-top: 6px;
+			    font-size: 12px;
+			    color: #999;
+			    transition: 0.2s;
+			}
+			
+			.main-logo-link:hover .main-logo {
+			    opacity: 1;
+			    transform: scale(1.05);
+			}
+			
+			.main-logo-link:hover .main-logo-text {
+			    color: #3182f6;
+			}
+			
+			
+			.login-desc {
+			    text-align: center;
+			    font-size: 13px;
+			    color: #777;
+			    margin-top: -24px;
+			    margin-bottom: 24px;
+			}
 
 
         </style>
@@ -118,7 +161,8 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
 
         <div class="login-container">
             <h1 class="login-title">로그인</h1>
-            <form action="" method="post" class="login-form-box">
+		<p class="login-desc">Frade에서 모의투자를 시작해보세요.</p>
+		<form action="" method="post" class="login-form-box">
                 
                 <input type="text" name="userId" class="input-box" placeholder="아이디를 입력해 주세요."/>
 
@@ -130,14 +174,21 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
                 </c:if>
 
                 <c:if test="${loginfail == 'true'}">
-                    <p class="error-msg">아이디 또는 비밀번호거 일치하지 않습니다.</p>
+                    <p class="error-msg">아이디 또는 비밀번호가 일치하지 않습니다.</p>
                 </c:if>
 
 
                 <button type="submit" class="login-btn">로그인</button>
-                <a href="/user/signup" class="signup-btn">회원가입</a>
-                
-            </form>
+                <a href="/user/signup" class="signup-btn">회원가입</a> 
+               
+                <a href="${pageContext.request.contextPath}/main"
+				class="main-logo-link">
+				 <img src="${pageContext.request.contextPath}/resources/images/logo.png" alt="Frade 로고" class="main-logo">
+				 <span class="main-logo-text"> 메인페이지로 이동 </span>
+
+			</a>
+
+		</form>
         </div>
         <c:if test="${not empty signupSuccess}">
                     <script>

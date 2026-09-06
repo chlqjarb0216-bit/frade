@@ -12,12 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frade.common.ResultCode;
+import com.frade.dto.user.MyPagePortfolioDTO;
 import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
 import com.frade.exception.UserSignupException;
+import com.frade.service.portfolio.PortfolioService;
 import com.frade.service.user.UserService;
 import com.frade.util.LoginManager;
 
@@ -28,6 +32,12 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
+	@Autowired
+	PortfolioService portfolioService;
+
+	@Autowired
+	ObjectMapper objectMapper;
+
 	// 로그인 화면
 	@GetMapping("/login")
 	public String login() {
@@ -37,10 +47,9 @@ public class UserController {
 
 	// 로그인 처리
 	@PostMapping("/login")
-	public String login(@Valid UserLoginDTO userLoginDTO, BindingResult bindingResult,
-			HttpSession session, Model model) {
-		
-		
+	public String login(@Valid UserLoginDTO userLoginDTO, BindingResult bindingResult, HttpSession session,
+			Model model) {
+
 		if (bindingResult.hasErrors()) {
 
 			String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
@@ -65,16 +74,15 @@ public class UserController {
 			return "redirect:/user/mypage";
 		}
 	}
-	
+
 	// 로그아웃
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {
 
-	    LoginManager.logout(session);
+		LoginManager.logout(session);
 
-	    return "redirect:/";
+		return "redirect:/";
 	}
-	
 
 	// -----------------------------------------------------------------------------------
 
@@ -86,8 +94,8 @@ public class UserController {
 	}
 
 	@PostMapping("/signup")
-	public String signup(@Valid UserSignupDTO userSignupDTO,BindingResult bindingResult ,String userPwCheck, Model model,
-			RedirectAttributes redirectAttributes) {
+	public String signup(@Valid UserSignupDTO userSignupDTO, BindingResult bindingResult, String userPwCheck,
+			Model model, RedirectAttributes redirectAttributes) {
 
 		// 입력했던 정보 다시 보여주기(아이디, 닉네임, 이메일)
 		model.addAttribute("usd", userSignupDTO);
@@ -129,7 +137,6 @@ public class UserController {
 			return "user/signup";
 		}
 
-
 		// 로그인 페이지에서 가입완료시 보여줄 내용
 		redirectAttributes.addFlashAttribute("signupSuccess", "회원가입이 완료되었습니다.");
 
@@ -140,7 +147,7 @@ public class UserController {
 
 	// 마이페이지
 	@GetMapping("/mypage")
-	public String myPage(HttpSession session, Model model) {
+	public String myPage(HttpSession session, Model model) throws JsonProcessingException {
 
 		// 로그인 여부 확인
 		if (!LoginManager.isLogin(session)) {
@@ -151,7 +158,19 @@ public class UserController {
 
 		UserProfileDTO userProfileDTO = userService.getUserProfile(loginUserNumber);
 
+		if (userProfileDTO == null) {
+			return "redirect:/user/login";
+		}
+
 		model.addAttribute("userProfile", userProfileDTO);
+
+		MyPagePortfolioDTO myPagePortfolio = portfolioService.getMyPagePortfolio(loginUserNumber);
+
+		model.addAttribute("portfolioInfoList", myPagePortfolio.getPortfolioInfoList());
+		model.addAttribute("historyList", myPagePortfolio.getHistoryList());
+		model.addAttribute("assetsInfo", myPagePortfolio.getAssetsInfo());
+		model.addAttribute("stockNameList", objectMapper.writeValueAsString(myPagePortfolio.getStockNameList()));
+		model.addAttribute("stockPriceList", objectMapper.writeValueAsString(myPagePortfolio.getStockPriceList()));
 
 		return "user/mypage";
 	}
@@ -162,11 +181,10 @@ public class UserController {
 
 		// 로그인 확인
 		if (!LoginManager.isLogin(session)) {
-		    return "redirect:/user/login";
+			return "redirect:/user/login";
 		}
 
 		int loginUserNumber = LoginManager.getLoginUserNum(session);
-
 
 		userProfileDTO.setUserNum(loginUserNumber);
 
@@ -203,51 +221,44 @@ public class UserController {
 
 		if (result == ResultCode.SUCCESS) {
 
-
-		    // 세션의 로그인 유저 정보도 최신 정보로 변경
-		    UserSessionDTO updatedLoginUser =
-		            new UserSessionDTO(
-		                    loginUserNumber,
-		                    userProfileDTO.getUserNick(),
-		                    userProfileDTO.getUserPhoto()
-		            );
+			// 세션의 로그인 유저 정보도 최신 정보로 변경
+			UserSessionDTO updatedLoginUser = new UserSessionDTO(loginUserNumber, userProfileDTO.getUserNick(),
+					userProfileDTO.getUserPhoto());
 
 			LoginManager.setSessionLoginUser(session, updatedLoginUser);
 
-		    redirectAttributes.addFlashAttribute(
-		            "profileSuccess",
-		            "프로필이 수정되었습니다.");
+			redirectAttributes.addFlashAttribute("profileSuccess", "프로필이 수정되었습니다.");
 
-		    return "redirect:/user/mypage";
+			return "redirect:/user/mypage";
 		}
 
-		redirectAttributes.addFlashAttribute(
-		        "profileFail",
-		        result.getMessage());
+		redirectAttributes.addFlashAttribute("profileFail", result.getMessage());
 
 		return "redirect:/user/mypage";
 	}
 
+	//------------------------------------------------------------	
+
 	@PostMapping("/withdraw")
 	public String deleteUser(HttpSession session) {
 
-		 // 로그인 확인
-			if (!LoginManager.isLogin(session)) {
-				return "redirect:/user/login";
-			}
+		// 로그인 확인
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
+		}
 
-			int loginUserNumber = LoginManager.getLoginUserNum(session);
+		int loginUserNumber = LoginManager.getLoginUserNum(session);
 
-			ResultCode result = userService.deleteUser(loginUserNumber);
+		ResultCode result = userService.deleteUser(loginUserNumber);
 
-	    if(result == ResultCode.SUCCESS) {
+		if (result == ResultCode.SUCCESS) {
 
-	    	LoginManager.logout(session);
+			LoginManager.logout(session);
 
-	        return "redirect:/";
-	    }
+			return "redirect:/";
+		}
 
-	    return "redirect:/user/mypage";
+		return "redirect:/user/mypage";
 
 	}
 }

@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="stock_mapper">
+<mapper namespace="stockprice_mapper">
 
 	<insert id="insertMinuteStockPrice" parameterType="java.util.List"> INSERT
 		ALL <foreach collection="list" item="item"> INTO t_stock_price (
 		stock_code, date_time, price_open, price_high, price_low, price_close,
-		volume ) VALUES ( #{item.stockCode}, #{item.dateTime}, <!-- 💡 오라클 DATE
-			또는 TIMESTAMP 컬럼과 자바 LocalDateTime 완벽 호환 -->
+		volume ) VALUES ( #{item.stockCode}, #{item.dateTime}, <!-- 💡 오라클 DATE 컬럼과 자바 LocalDateTime 완벽 호환 -->
 		#{item.priceOpen}, #{item.priceHigh}, #{item.priceLow},
 		#{item.priceClose}, #{item.volume} ) </foreach> SELECT * FROM DUAL </insert>
+		
+	<select id="selectMinuteStockPriceListByStockCodeAndDayString" parameterType="java.util.Map" resultType="StockPriceDTO">
+    SELECT 
+        stock_code,
+        date_time,
+        price_open,
+        price_high,
+        price_low,
+        price_close,
+        volume
+    FROM 
+        t_stock_price
+    WHERE 
+        stock_code = #{stockCode}
+        <!-- 💡 시작점: 오늘 아침 00시 00분 00초부터 -->
+        AND date_time &gt;= TO_DATE(#{dayString}, 'YYYYMMDD')
+        
+        <!-- 💡 끝점 [개선]: 오늘 날짜에 +1일을 한 뒤, 다음 날 00시 00분 00초 '미만(&lt;)'으로 차단막 생성 -->
+        AND date_time &lt; TO_DATE(#{dayString}, 'YYYYMMDD') + 1
+    ORDER BY 
+        date_time ASC
+	</select>
 
 </mapper>
