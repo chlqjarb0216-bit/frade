@@ -240,8 +240,8 @@ public class UserController {
 			long avgStockBuyCost = portfolio.getUserBuyCost() / stockCnt;
 			long valuationAmount = currentPrice * stockCnt; //평가 가치
 			long pnl = valuationAmount - portfolio.getUserBuyCost(); //평가 손익
-			double profitPercent = Math.round((double) pnl / portfolio.getUserBuyCost() * 100) * 100 / 100.0; //수익률
-			double weightPercent = Math.round((double) valuationAmount / totalValuationAmount * 100) * 100 / 100.0;
+			double profitPercent = Math.round((double) pnl / portfolio.getUserBuyCost() * 10000) / 100.0; //수익률
+			double weightPercent = Math.round((double) valuationAmount / totalValuationAmount * 10000) / 100.0; //가중치
 
 			PortfolioInfoDTO portfolioInfo = new PortfolioInfoDTO();
 			portfolioInfo.setStockCode(portfolio.getStockCode());
