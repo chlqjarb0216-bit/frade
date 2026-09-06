@@ -70,6 +70,7 @@ body {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.4);
+   z-index: 9999;
 }
 
 .profile-modal-content {
@@ -440,7 +441,7 @@ body {
 
 									<%-- 프로필 사진이 없는 경우 기본 이미지 --%>
 									<c:otherwise>
-										<img src="/resources/images/logo.png" alt="프로필 사진"
+										<img src="/resources/images/Default_profile.png" alt="프로필 사진"
 											id="profilePreview" width="80" height="80">
 									</c:otherwise>
 
@@ -821,7 +822,7 @@ body {
             profilePhotoInput.value = "";
 
             // 기본 이미지 미리보기
-            profilePreview.src = "/resources/images/logo.png";
+            profilePreview.src = "/resources/images/Default_profile.png";
 
             // 기본 이미지로 변경한다는 값
             defaultPhoto.value = "true";
