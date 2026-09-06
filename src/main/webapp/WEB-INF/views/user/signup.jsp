@@ -42,14 +42,29 @@
 
     .btn-back-home {
         position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 24px;
-        color: #333;
-        text-decoration: none;
-        padding: 4px 8px;
+	    left: 0;
+	    top: 50%;
+	    transform: translateY(-50%);
+	
+	    display: flex;
+	    align-items: center;
+	    gap: 4px;
+	
+	    font-size: 20px;
+	    color: #777;
+	    text-decoration: none;
+	
+	    padding: 4px 8px;
+	    transition: 0.2s;
     }
+    
+    .btn-back-home span {
+    	font-size: 13px;
+	}
+	
+	.btn-back-home:hover {
+    	color: #3182f6;
+	}
 
     .signup-title {
         font-size: 26px;
@@ -153,9 +168,11 @@
 
     <div class="signup-container">
         <div class="signup-header">
-            <a href="/main" class="btn-back-home">←</a>
-            <h1 class="signup-title">회원가입</h1>
-        </div>
+           <a href="${pageContext.request.contextPath}/main" class="btn-back-home"> ← <span>메인</span> </a>
+		
+		    <h1 class="signup-title">회원가입</h1>
+		
+		</div>
 
         <form action="" method="post" id="signupForm">
 
@@ -407,7 +424,7 @@
         
             });
             
-            
+        
             // =========================
             // 이메일 중복 확인
             // =========================
