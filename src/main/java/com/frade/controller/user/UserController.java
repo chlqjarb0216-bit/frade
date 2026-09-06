@@ -46,6 +46,9 @@ public class UserController {
 	@Autowired
 	OrderService orderService;
 
+	@Autowired
+	ObjectMapper objectMapper;
+
 	// 로그인 화면
 	@GetMapping("/login")
 	public String login() {
@@ -282,8 +285,6 @@ public class UserController {
 		model.addAttribute("assetsInfo", assetsInfo);
 		
 		
-		ObjectMapper objectMapper = new ObjectMapper();
-
 	    model.addAttribute(
 	        "stockNameList",
 	        objectMapper.writeValueAsString(stockNameList)
