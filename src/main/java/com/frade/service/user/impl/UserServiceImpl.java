@@ -176,13 +176,10 @@ public class UserServiceImpl implements UserService{
 	     * 현재는 getUserProfile()의 임시 데이터 사용
 	     * DB 연결 후 DAO 조회 결과 사용
 	     */
-	    UserProfileDTO currentProfile =
-	            getUserProfile(
-	                    userProfileDTO.getUserNum());
+		UserProfileDTO currentProfile = getUserProfile(userProfileDTO.getUserNum());
 
-	    // 현재 프로필 사진
-	    String oldProfilePhoto =
-	            currentProfile.getUserPhoto();
+		// 현재 프로필 사진
+		String oldProfilePhoto = currentProfile.getUserPhoto();
 
 
 	    /*
@@ -428,38 +425,8 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public UserProfileDTO getUserProfile(int userNum) {
 
-		// DB에서 회원번호로 마이페이지 프로필 정보 조회
-		UserDTO userDTO = userDAO.findUserProfileByUserNum(userNum);
-
-		// 조회된 회원이 없는 경우
-		if (userDTO == null) {
-			return null;
-		}
-
-	    // DB용 UserDTO를 화면에서 사용할 UserProfileDTO로 변환
-		UserProfileDTO userProfileDTO =
-		        new UserProfileDTO(
-		                userDTO.getUserNum(),
-		                userDTO.getUserNick(),
-		                userDTO.getUserPhoto(),
-		                userDTO.getUserPortfolioIsPublic(),
-		                userDTO.getUserRegistedDate()
-		        );
-
-	    return userProfileDTO;
+	    return userDAO.findUserProfileByUserNum(userNum);
 	}
 
-	
-	
-	
-
-	
-	
-
-	
-	
-
-	
-	
 
 }

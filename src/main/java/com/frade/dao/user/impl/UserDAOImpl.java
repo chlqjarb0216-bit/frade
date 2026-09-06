@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import com.frade.dao.user.UserDAO;
 import com.frade.dto.user.UserDTO;
+import com.frade.dto.user.UserProfileDTO;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
@@ -82,9 +83,8 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	@Override
-	public UserDTO findUserProfileByUserNum(int userNum) {
+	public UserProfileDTO findUserProfileByUserNum(int userNum) {
 
-		// 회원번호로 마이페이지에 필요한 회원정보 조회
 		return sqlSessionTemplate.selectOne("user_mapper.findUserProfileByUserNum", userNum);
 	}
 

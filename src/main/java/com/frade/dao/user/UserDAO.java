@@ -1,6 +1,7 @@
 package com.frade.dao.user;
 
 import com.frade.dto.user.UserDTO;
+import com.frade.dto.user.UserProfileDTO;
 
 public interface UserDAO {
 
@@ -29,7 +30,7 @@ public interface UserDAO {
 	UserDTO findUserById(String userId);
 	
 	// 회원번호로 마이페이지 프로필 정보 조회
-	UserDTO findUserProfileByUserNum(int userNum);
+	UserProfileDTO findUserProfileByUserNum(int userNum);
 	
 	// 회원 프로필 수정
 	int updateUserProfile(UserDTO userDTO);
