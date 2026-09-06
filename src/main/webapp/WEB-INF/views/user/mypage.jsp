@@ -7,11 +7,30 @@
 
 <head>
 <meta charset="UTF-8">
-
-<!-- 스마트폰 등의 환경에서 원래 크기로 보이도록 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>샘플 JSP 페이지 양식</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+	margin: 0;
+	padding: 0;
+}
+
+.mypage-content {
+	width: 100%;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.mypageHeader {
+	display: flex;
+	align-items: stretch;
+	gap: 20px;
+	width: 100%;
+}
+
 <!-- 부트스트랩 CSS -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
@@ -26,7 +45,8 @@
 	display: flex;
 	align-items: center;
 	gap: 20px;
-	width: 450px;
+	flex: 0 1 32%;
+	width: auto;
 	padding: 25px;
 	border: 1px solid #ccc;
 }
@@ -41,209 +61,361 @@
 	gap: 10px;
 }
 
-
-
 /* 프로필 수정 모달 */
 .profile-modal {
-    display: none;
-
-    position: fixed;
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 100%;
-
-    background-color: rgba(0, 0, 0, 0.4);
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
 }
 
 .profile-modal-content {
-    width: 500px;
-    max-height: 80vh;
-    overflow-y: auto;
-
-    margin: 50px auto;
-    padding: 20px;
-
-    background-color: white;
-    border: 1px solid #ccc;
+	width: 500px;
+	max-height: 80vh;
+	overflow-y: auto;
+	margin: 50px auto;
+	padding: 20px;
+	background-color: white;
+	border: 1px solid #ccc;
 }
 
 .profile-modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
-
 .profile-photo-edit {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-
-    padding: 20px 0;
-    border-bottom: 1px solid #ccc;
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
 }
 
 .profile-photo-preview img {
-    border-radius: 50%;
+	border-radius: 50%;
 }
 
 .profile-photo-buttons p {
-    margin: 5px 0;
+	margin: 5px 0;
 }
-
-
 
 /* 닉네임 수정 */
 .profile-nick-edit {
-    padding: 20px 0;
-    border-bottom: 1px solid #ccc;
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
 }
 
 .profile-nick-edit p {
-    margin: 5px 0;
+	margin: 5px 0;
 }
 
 /* 비밀번호 변경 */
 .profile-pw-edit {
-    padding: 20px 0;
-    border-bottom: 1px solid #ccc;
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
 }
 
 #btnPwToggle {
-    width: 100%;
-    text-align: left;
+	width: 100%;
+	text-align: left;
 }
-
 
 /* 포트폴리오 */
 .profile-public-edit {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-    border-bottom: 1px solid #ccc;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 0;
+	border-bottom: 1px solid #ccc;
 }
 
 .profile-public-edit p {
-    margin: 5px 0;
+	margin: 5px 0;
 }
 
 .switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
+	position: relative;
+	display: inline-block;
+	width: 50px;
+	height: 26px;
 }
 
 .switch input {
-    display: none;
+	display: none;
 }
 
 .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: gray;
-    border-radius: 26px;
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: gray;
+	border-radius: 26px;
 }
 
 .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    border-radius: 50%;
-    transition: 0.2s;
+	position: absolute;
+	content: "";
+	height: 20px;
+	width: 20px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	border-radius: 50%;
+	transition: 0.2s;
 }
 
-.switch input:checked + .slider {
-    background-color: black;
+.switch input:checked+.slider {
+	background-color: black;
 }
 
-.switch input:checked + .slider:before {
-    transform: translateX(24px);
+.switch input:checked+.slider:before {
+	transform: translateX(24px);
 }
 
 .profile-delete {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-    border-bottom: 1px solid black;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 0;
+	border-bottom: 1px solid black;
 }
 
 .profile-delete p {
-    margin: 5px 0;
+	margin: 5px 0;
 }
 
 #btnUserDelete {
-    color: red;
+	color: red;
 }
 
 .profile-modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    padding-top: 20px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding-top: 20px;
 }
 
+.totalAsset-box {
+	border: 1px solid lightgray;
+	display: grid;
+	grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr);
+	grid-template-rows: repeat(2, minmax(0, 1fr));
+	column-gap: 32px;
+	align-items: center;
+	flex: 1 1 68%;
+	width: auto;
+	height: 169px;
+	padding: 20px;
+	margin-left: 0;
+}
 
+.totalAsset-summary {
+	grid-column: 1;
+	grid-row: 1/3;
+	align-self: center;
+}
+
+.assetInfo-box-top {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-column: 2;
+	grid-row: 1;
+	width: 100%;
+	height: auto;
+	align-items: center;
+}
+
+.assetInfo-box-top div {
+	height: auto;
+	margin-left: 0;
+}
+
+.assetInfo-box-bottom {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-column: 2;
+	grid-row: 2;
+	width: 100%;
+	margin-left: 0;
+	align-items: center;
+}
+
+.mypageMiddle {
+	display: flex;
+	gap: 20px;
+	width: 100%;
+	margin-top: 50px;
+}
+
+.portfolio-circle {
+	flex: 1 1 0;
+	min-width: 0;
+	height: 300px;
+	border: 1px solid lightgray;
+	box-sizing: border-box;
+}
+
+.portfolio-Structure-box {
+	flex: 1 1 0;
+	min-width: 0;
+	border: 1px solid lightgray;
+	width: auto;
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+.history-box {
+	flex: 2 1 0;
+	min-width: 0;
+	width: auto;
+	height: 300px;
+	overflow-y: auto;
+	border: 1px solid lightgray;
+	padding: 10px;
+	box-sizing: border-box;
+}
+
+.history-box>table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.stock-table {
+	width: 100%;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+
+.stock-table th, .stock-table td {
+	padding: 12px 0;
+	text-align: center;
+}
+
+.stock-table th:first-child, .stock-table td:first-child {
+	text-align: left;
+}
+
+.holding-stock-name {
+	display: block;
+	font-weight: 600;
+}
+
+.holding-stock-code {
+	display: block;
+	margin-top: 3px;
+	color: #9ca3af;
+	font-size: 12px;
+}
+
+/* 마지막 열만 오른쪽 정렬 */
+.stock-table th:last-child, .stock-table td:last-child {
+	text-align: right;
+}
+
+@media ( max-width : 900px) {
+	.mypageHeader {
+		flex-direction: column;
+	}
+	.profile-box, .totalAsset-box {
+		width: 100%;
+		box-sizing: border-box;
+	}
+	.totalAsset-box {
+		height: auto;
+	}
+	.assetInfo-box-top {
+		width: 100%;
+		height: auto;
+		flex-wrap: wrap;
+	}
+	.assetInfo-box-top div {
+		height: auto;
+		margin-left: 0;
+	}
+	.assetInfo-box-bottom {
+		width: 100%;
+		margin-left: 0;
+	}
+	.mypageMiddle {
+		flex-direction: column;
+	}
+	.portfolio-circle, .portfolio-Structure-box, .history-box {
+		flex: none;
+		width: 100%;
+		box-sizing: border-box;
+	}
+}
+
+@media ( max-width : 600px) {
+	.totalAsset-box {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto;
+		row-gap: 16px;
+	}
+	.totalAsset-summary, .assetInfo-box-top, .assetInfo-box-bottom {
+		grid-column: 1;
+		grid-row: auto;
+	}
+}
 </style>
 
 </head>
 
 <body>
-
-	<!-- 네비게이션바 include -->
 	<jsp:include page="../common/navbar.jsp"></jsp:include>
 
-	<div class="container mt-5">
-	<div class="profile-box">
+	<main class="mypage-content">
+		<div class="mypageHeader">
+			<div class="profile-box">
 
-		<div class="profile-photo">
-			<c:choose>
-				<c:when test="${empty userProfile.userPhoto}">
-					<img src="/resources/images/logo.png" alt="프로필 사진" width="70" height="70">
-				</c:when>
+				<div class="profile-photo">
+					<c:choose>
+						<c:when test="${empty userProfile.userPhoto}">
+							<img src="/resources/images/logo.png" alt="프로필 사진" width="70"
+								height="70">
+						</c:when>
 
-				<c:otherwise>
-					<img src="/file-storage/user_profile/${userProfile.userPhoto}"
-						alt="프로필 사진" width="70" height="70">
-				</c:otherwise>
-			</c:choose>
-		</div>
+						<c:otherwise>
+							<img src="/fileStorage/user_profile/${userProfile.userPhoto}"
+								alt="프로필 사진" width="70" height="70">
+						</c:otherwise>
+					</c:choose>
+				</div>
 
-		<div class="profile-info">
+				<div class="profile-info">
 
-			<div>
-				<strong>${userProfile.userNick}</strong>
+					<div>
+						<strong>${userProfile.userNick}</strong>
+					</div>
+
+
+					<div>가입일 : ${userProfile.userRegistedDateText}</div>
+
+					<button type="button" id="btnProfileEdit">프로필 수정</button>
+
+				</div>
+
 			</div>
 
-			
-			<div>가입일 : ${userProfile.userRegistedDateText}</div>
 
-			<button type="button" id="btnProfileEdit">프로필 수정</button>
+			<!-- 프로필 수정 모달 -->
+			<div id="profileModal" class="profile-modal">
 
-		</div>
+				<div class="profile-modal-content">
 
-	</div>
-	
-	
-	<!-- 프로필 수정 모달 -->
-	<div id="profileModal" class="profile-modal">
+					<div class="profile-modal-header">
+						<h2>프로필 수정</h2>
 
-		<div class="profile-modal-content">
+					</div>
 
-			<div class="profile-modal-header">
-				<h2>프로필 수정</h2>
 
 			</div>
 
@@ -311,6 +483,7 @@
 
 					</div>
 
+								</div>
 
 					<!-- 비밀번호 변경 -->
 					<div class="profile-pw-edit">
@@ -340,6 +513,7 @@
 
 					</div>
 
+							</div>
 
 					<!-- 포트폴리오 공개 여부 -->
 					<div class="profile-public-edit">
@@ -369,41 +543,162 @@
 							<p>탈퇴 시 계정 정보를 복구할 수 없습니다.</p>
 						</div>
 
+								<button type="submit" id="btnProfileSave">변경사항 저장</button>
 
-						<button type="button" id="btnUserDelete">탈퇴하기</button>
+							</div>
 
+						</div>
 
+					</form>
+					<!-- form 끝 -->
+					<form action="/user/withdraw" method="post" id="userDeleteForm"></form>
+
+				</div>
+
+			</div>
+
+			<div class="totalAsset-box">
+				<div class="totalAsset-summary">
+					<p>총 자산</p>
+					<h2>${assetsInfo.totalAsset}원</h2>
+					<p>${assetsInfo.totalRevenue}원<span>${assetsInfo.revenuePercent}%</span>
+					</p>
+				</div>
+
+				<div class="assetInfo-box-top">
+					<div>
+						<p>초기 투자금</p>
+						<p>10000000원</p>
 					</div>
-
-
-					<!-- 모달 하단 버튼 -->
-					<div class="profile-modal-footer">
-
-						<button type="button" id="btnProfileCancel">취소</button>
-
-						<button type="submit" id="btnProfileSave">변경사항 저장</button>
-
+					<div>
+						<p>주식 평가금</p>
+						<p>${assetsInfo.totalValuation}원</p>
+					</div>
+					<div>
+						<p>예수금</p>
+						<p>${assetsInfo.cash}원</p>
 					</div>
 
 				</div>
 
-			</form>
-			<!-- form 끝 -->
-			<form action="/user/withdraw" method="post" id="userDeleteForm"></form>
-
+				<div class="assetInfo-box-bottom">
+					<div>
+						<p>보유 종목수</p>
+						<p>${assetsInfo.stockCnt}원</p>
+					</div>
+					<div>
+						<p>총 거래 횟수</p>
+						<p>${assetsInfo.tradeCnt}원</p>
+					</div>
+				</div>
+			</div>
 		</div>
+
+		<div class="mypageMiddle">
+
+			<div class="portfolio-circle">
+				<canvas id="portfolioChart"></canvas>
+			</div>
+
+
+
+
+			<table class="portfolio-Structure-box">
+				<c:if test="${empty portfolioInfoList}">
+					<td>포트폴리오가 비어있습니다.</td>
+				</c:if>
+				<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
+					<tr>
+						<td>${portfolioInfo.stockName}</td>
+						<td>${portfolioInfo.stockCnt}주</td>
+						<td>${portfolioInfo.valuationAmount}원</td>
+					</tr>
+				</c:forEach>
+			</table>
+
+
+
+			<div class="history-box">
+				<table>
+					<thead>
+						<tr>
+							<th colspan="4">거래기록</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:if test="${empty historyList}">
+							<td>거래기록이 없습니다.</td>
+						</c:if>
+						<c:forEach var="history" items="${historyList}">
+							<tr>
+								<td>${history.stockName}</td>
+								<td>${history.tradePrice}원</td>
+								<td>${history.tradeCnt}주</td>
+								<td>${history.tradeDate}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+
+
+
+		<p style="margin-top: 20px">보유 종목</p>
+		<table class="stock-table">
+			<thead>
+				<tr>
+					<th>종목명</th>
+					<th>보유 수량</th>
+					<th>매수 평단가</th>
+					<th>현재가</th>
+					<th>평가 금액</th>
+					<th>평가 손익</th>
+					<th>수익률</th>
+					<th>비율</th>
+				</tr>
+			</thead>
+
+			<tbody>
+			
+				<c:if test="${empty portfolioInfoList}">
+							<td>보유 종목이 없습니다.</td>
+						</c:if>
+				<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
+					<tr>
+						<td><span class="holding-stock-name">${portfolioInfo.stockName}</span>
+							<span class="holding-stock-code">${portfolioInfo.stockCode}</span>
+						</td>
+						<td>${portfolioInfo.stockCnt}주</td>
+						<td>${portfolioInfo.avgStockBuyCost}원</td>
+						<td>${portfolioInfo.stockNowPrice}원</td>
+						<td>${portfolioInfo.valuationAmount}원</td>
+						<td>${portfolioInfo.pnl}원</td>
+						<td>${portfolioInfo.profitPercent}%</td>
+						<td>${portfolioInfo.weightPercent}%</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+
+
+
+
+
+
+
+
+
+	</main>
+
+
 
 	</div>
 	
 	
 	
-	<!-- 부트스트랩 JS -->
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-		crossorigin="anonymous"></script>
 
-	<!-- 추가 커스텀 JS 필요하면 여기에 -->
 		
 		
 		
@@ -420,6 +715,13 @@
 		    </script>
 			</c:if>
 		
+	<!-- 부트스트랩 JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+
+	<!-- 추가 커스텀 JS 필요하면 여기에 -->
 		
 			<!-- 기존 자바스크립트 -->
 			<script>
@@ -431,117 +733,136 @@
 	<script>
 	
 
-    const btnProfileEdit = document.getElementById("btnProfileEdit");
-    const profileModal = document.getElementById("profileModal");
-    let originalPortfolioPublic;
-    let originalProfilePhoto;
+        const btnProfileEdit = document.getElementById("btnProfileEdit");
+        const profileModal = document.getElementById("profileModal");
+        let originalPortfolioPublic;
+        let originalProfilePhoto;
 
-    // 프로필 수정 모달 열기 (열었을때 기준으로  당시의 닉네임이 저장됨)
-    btnProfileEdit.addEventListener("click", ()=>{
+        // 프로필 수정 모달 열기 (열었을때 기준으로  당시의 닉네임이 저장됨)
+        btnProfileEdit.addEventListener("click", () => {
 
-    originalNick = inputProfileNick.value;
+            originalNick = inputProfileNick.value;
 
+            profileNickCheck = false;
+            profileNickCheckMsg.innerText = "";
+
+            profileModal.style.display = "block";
     profileNickCheck = false;
     profileNickCheckMsg.innerText = "";
     
     // 처음에는 현재 닉네임이므로 중복확인 불가
     btnProfileNickCheck.disabled = true;
 
-    profileModal.style.display = "block";
-    
-    originalPortfolioPublic = portfolioPublic.checked;
-    
-    originalProfilePhoto = profilePreview.src;
+            originalPortfolioPublic = portfolioPublic.checked;
 
-	});
+            originalProfilePhoto = profilePreview.src;
 
-    
-    const btnPhotoChange = document.getElementById("btnPhotoChange");
-    const profilePhotoInput = document.getElementById("profilePhotoInput");
-    const profilePreview = document.getElementById("profilePreview");
-    
-    const btnDefaultPhoto = document.getElementById("btnDefaultPhoto");
-    const defaultPhoto = document.getElementById("defaultPhoto");
-    
-    // 사진 변경 버튼 클릭
-    btnPhotoChange.addEventListener("click", ()=>{
+        });
 
-        profilePhotoInput.click();
 
-    });
-    
-    
+        const btnPhotoChange = document.getElementById("btnPhotoChange");
+        const profilePhotoInput = document.getElementById("profilePhotoInput");
+        const profilePreview = document.getElementById("profilePreview");
 
-    profilePhotoInput.addEventListener("change", ()=>{
+        const btnDefaultPhoto = document.getElementById("btnDefaultPhoto");
+        const defaultPhoto = document.getElementById("defaultPhoto");
 
-        const file = profilePhotoInput.files[0];
+        // 사진 변경 버튼 클릭
+        btnPhotoChange.addEventListener("click", () => {
 
-        if(file == null){
-            return;
-        }
-        
-        //새사진 선택 -> 기본 이미지 변경 취소
-        defaultPhoto.value = "false";
-        
-        // 프로필 사진 확장자 확인(png, jpg, jpeg만 가능)
-        const fileName = file.name.toLowerCase();
+            profilePhotoInput.click();
 
-        if(!fileName.endsWith(".png")
+        });
+
+
+
+        profilePhotoInput.addEventListener("change", () => {
+
+            const file = profilePhotoInput.files[0];
+
+            if (file == null) {
+                return;
+            }
+
+            //새사진 선택 -> 기본 이미지 변경 취소
+            defaultPhoto.value = "false";
+
+            // 프로필 사진 확장자 확인(png, jpg, jpeg만 가능)
+            const fileName = file.name.toLowerCase();
+
+            if (!fileName.endsWith(".png")
                 && !fileName.endsWith(".jpg")
-                && !fileName.endsWith(".jpeg")){
+                && !fileName.endsWith(".jpeg")) {
 
-            alert("PNG, JPG, JPEG 파일만 사용할 수 있습니다.");
+                alert("PNG, JPG, JPEG 파일만 사용할 수 있습니다.");
 
+                profilePhotoInput.value = "";
+
+                return;
+            }
+
+
+            //선택한 프로필 사진 미리보기
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                profilePreview.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+
+        // 기본 이미지 버튼 클릭
+        btnDefaultPhoto.addEventListener("click", () => {
+
+            // 선택한 사진 초기화
             profilePhotoInput.value = "";
 
-            return;
-        }
+            // 기본 이미지 미리보기
+            profilePreview.src = "/resources/images/logo.png";
 
-        
-		//선택한 프로필 사진 미리보기
-        const reader = new FileReader();
+            // 기본 이미지로 변경한다는 값
+            defaultPhoto.value = "true";
 
-        reader.onload = (e)=>{
-            profilePreview.src = e.target.result;
-        };
+        });
 
-        reader.readAsDataURL(file);
 
-    });
-    
-    
- // 기본 이미지 버튼 클릭
-    btnDefaultPhoto.addEventListener("click", ()=>{
+        // 닉네임 중복 확인
+        let profileNickCheck = false;
 
-        // 선택한 사진 초기화
-        profilePhotoInput.value = "";
+        const inputProfileNick = document.getElementById("inputProfileNick");
+        const btnProfileNickCheck = document.getElementById("btnProfileNickCheck");
+        const profileNickCheckMsg = document.getElementById("profileNickCheckMsg");
 
-        // 기본 이미지 미리보기
-        profilePreview.src = "/resources/images/logo.png";
+        let originalNick = "";
 
-        // 기본 이미지로 변경한다는 값
-        defaultPhoto.value = "true";
+        btnProfileNickCheck.addEventListener("click", () => {
 
-    });
-    
-    
- // 닉네임 중복 확인
-    let profileNickCheck = false;
+            const userNick = inputProfileNick.value;
 
-    const inputProfileNick = document.getElementById("inputProfileNick");
-    const btnProfileNickCheck = document.getElementById("btnProfileNickCheck");
-    const profileNickCheckMsg = document.getElementById("profileNickCheckMsg");
-    
-    let originalNick = "";
+            if (userNick.trim() == "") {
+                profileNickCheckMsg.innerText = "닉네임을 입력해주세요.";
+                return;
+            }
 
-    btnProfileNickCheck.addEventListener("click", ()=>{
+            fetch("/user/api/checkNick", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain"
+                },
+                body: userNick
+            })
+                .then(response => response.json())
+                .then(result => {
 
-        const userNick = inputProfileNick.value;
+                    if (result.code == "rej_102") {
 
-        if(userNick.trim() == ""){
-            profileNickCheckMsg.innerText = "닉네임을 입력해주세요.";
-            return;
-        }
+                        profileNickCheck = false;
+                        profileNickCheckMsg.innerText = result.message;
+
+                    } else if (result.code == "suc_001") {
 
         fetch("/api/user/checkNick", {
             method: "POST",
@@ -553,16 +874,85 @@
         .then(response => response.json())
         .then(result => {
 
-            if(result.code == "rej_102"){
+                    }
 
-                profileNickCheck = false;
-                profileNickCheckMsg.innerText = result.message;
+                });
 
-            }else if(result.code == "suc_001"){
 
-                profileNickCheck = true;
-                profileNickCheckMsg.innerText = "사용 가능한 닉네임입니다.";
+        });
 
+        // 닉네임 수정 시 중복확인 초기화 + 공백 제거
+        inputProfileNick.addEventListener("input", () => {
+
+            inputProfileNick.value = inputProfileNick.value.replace(/\s/g, "");
+
+            profileNickCheck = false;
+            profileNickCheckMsg.innerText = "";
+
+        });
+
+        //비밀번호 변경
+        const currentPw = document.getElementById("currentPw");
+        const newPw = document.getElementById("newPw");
+        const newPwCheck = document.getElementById("newPwCheck");
+
+
+        const btnPwToggle = document.getElementById("btnPwToggle");
+        const pwChangeArea = document.getElementById("pwChangeArea");
+        const passwordChange = document.getElementById("passwordChange");
+
+
+        // 현재 비밀번호 공백 입력 방지
+        currentPw.addEventListener("input", () => {
+            currentPw.value = currentPw.value.replace(/\s/g, "");
+            passwordChange.value =
+                currentPw.value != ""
+                || newPw.value != ""
+                || newPwCheck.value != "";
+        });
+
+        // 새 비밀번호 공백 입력 방지
+        newPw.addEventListener("input", () => {
+            newPw.value = newPw.value.replace(/\s/g, "");
+            passwordChange.value =
+                currentPw.value != ""
+                || newPw.value != ""
+                || newPwCheck.value != "";
+        });
+
+        // 새 비밀번호 확인 공백 입력 방지
+        newPwCheck.addEventListener("input", () => {
+            newPwCheck.value = newPwCheck.value.replace(/\s/g, "");
+            passwordChange.value =
+                currentPw.value != ""
+                || newPw.value != ""
+                || newPwCheck.value != "";
+        });
+
+
+        //비밀번호 영역 열기/닫기
+        btnPwToggle.addEventListener("click", () => {
+
+            // 비밀번호 변경 영역 열기
+            if (pwChangeArea.style.display == "none") {
+                pwChangeArea.style.display = "block";
+                btnPwToggle.innerText = "비밀번호 변경 ▲";
+
+            } else {
+
+                // 입력된 비밀번호가 있으면 닫기 불가
+                if (currentPw.value != ""
+                    || newPw.value != ""
+                    || newPwCheck.value != "") {
+
+                    alert("입력한 비밀번호 정보가 있습니다.");
+                    return;
+                }
+
+                // 비밀번호 변경 영역 닫기
+                pwChangeArea.style.display = "none";
+                btnPwToggle.innerText = "비밀번호 변경 ▼";
+                passwordChange.value = "false";
             }
 
         });
@@ -750,9 +1140,74 @@
 	    profileModal.style.display = "none";
 
 	});
-    
+     const data = {
+            labels: ${stockNameList},
+            datasets: [{
+                label: "평가금액",
+                data: ${stockPriceList},
+                backgroundColor: [
+                    "#4e73df",
+                    "#1cc88a",
+                    "#f6c23e",
+                    "#858796"
+                ],
+                borderColor: "#ffffff",
+                borderWidth: 2,
+                hoverOffset: 10
+            }]
+        };
+
+        // 2. 차트 설정
+        const config = {
+            type: "doughnut",
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        position: "right"
+                    },
+
+                    title: {
+                        display: true,
+                        text: "포트폴리오"
+                    },
+
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const values = context.dataset.data;
+
+                                const total = values.reduce(function (sum, value) {
+                                    return sum + value;
+                                }, 0);
+
+                                const value = context.raw;
+                                const percent = value / total * 100;
+
+                                return context.label
+                                    + ": "
+                                    + value.toLocaleString()
+                                    + "원 ("
+                                    + percent.toFixed(1)
+                                    + "%)";
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // 3. canvas에 차트 생성
+        const portfolioChart = new Chart(
+            document.getElementById("portfolioChart"),
+            config
+        );
 
 </script>
 </body>
+
 
 </html>

@@ -37,12 +37,16 @@ public class OrderController {
 		String stockCode = "005930";
 		
 		UserCashDTO cash = orderService.findUserCashByUserNum(userNum);
+		model.addAttribute("userCash", cash.getCash());
+		
 		
 		PortfolioDTO portfolio = portfolioService.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
-		
-		
-		model.addAttribute("userCash", cash.getCash());
-		model.addAttribute("stockCnt", portfolio.getUserStockCnt());
+
+		int userStockCnt = 0;
+		if(portfolio != null) {
+			userStockCnt = portfolio.getUserStockCnt();
+		}
+		model.addAttribute("stockCnt", userStockCnt);
 		
 		
 		
@@ -98,13 +102,8 @@ public class OrderController {
 		} else {
 			System.out.println("거래 실패");
 		}
-		
-		
-		//===========assetInfo 확인용 코드, 추후 마이페이지로 이관 예정============
-		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo();
-		System.out.println(assetsInfo);
 
-		return "redirect:/stock/trade";
+		return "redirect:/stock/" + orderInfo.getStockCode();
 	}
 
 }
