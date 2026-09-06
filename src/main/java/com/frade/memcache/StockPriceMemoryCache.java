@@ -1,5 +1,6 @@
 package com.frade.memcache;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +33,42 @@ public class StockPriceMemoryCache {
 		// 2. 해당 날짜 방이 없으면 동시성 안전 리스트(CopyOnWriteArrayList) 생성 후 최종 DTO 추가
 		priceCache.computeIfAbsent(stockCode, k -> new ConcurrentHashMap<>())
 				.computeIfAbsent(dateStr, k -> new CopyOnWriteArrayList<>()).add(dto);
+	}
+
+	public void putOrUpdate(String stockCode, String dateStr, List<StockPriceDTO> dtoList) {
+		// 💡 0% 유입 안정성 검증 통과 가드 (이름도 명세에 맞게 dtoList로 정렬)
+		if (stockCode == null || dateStr == null || dtoList == null || dtoList.isEmpty()) {
+			return;
+		}
+
+		// 최외각 맵과 내부 맵을 타고 들어가 기존 상주 중인 동시성 안전 리스트 주소 인양
+		List<StockPriceDTO> targetList = priceCache.computeIfAbsent(stockCode, k -> new ConcurrentHashMap<>())
+				.computeIfAbsent(dateStr, k -> new CopyOnWriteArrayList<>());
+
+		// 💡 하드웨어 레벨 최적화: 외부에서 들어온 뭉탱이 리스트를 순회하며 정밀 타격 교체 가동
+		for (StockPriceDTO newDto : dtoList) {
+			boolean isUpdated = false;
+
+			// 🌟 [정밀 추적]: 기존 리스트 뒤에서부터 거꾸로 뒤지는 역순 루프 최적화!
+			// 어차피 갱신 대상인 최신/미완성 봉은 리스트 맨 끝자리에 상주하므로, 
+			// 뒤에서부터 스캔하면 단 1~2번의 루프문 점프로 O(1)급 속도로 정정 대상을 찾아냅니다.
+			for (int i = targetList.size() - 1; i >= 0; i--) {
+				StockPriceDTO oldDto = targetList.get(i);
+
+				// 분 단위 시간축이 완벽히 일치하는 미완성 타깃 발견 시
+				if (oldDto.getDateTime().equals(newDto.getDateTime())) {
+					// 홱 갈아끼우기 (기존 미완성 찌꺼기 주소가 파괴되고 진짜 완성형 DTO로 오버라이딩 정정 완료)
+					targetList.set(i, newDto);
+					isUpdated = true;
+					break; // 정정 끝났으니 내부 루프 탈출
+				}
+			}
+
+			// [신규 캔들 장착]: 기존 타임라인에 전혀 없던 완전히 새로운 시간축 데이터라면 맨 뒤에 연속성 주입
+			if (!isUpdated) {
+				targetList.add(newDto);
+			}
+		}
 	}
 
 	/**
@@ -108,13 +145,13 @@ public class StockPriceMemoryCache {
 	 * 🔍 4. [현재가 추출] 특정 날짜 리스트의 가장 마지막(최신) 캔들 하나만 쏙 빼와서 현재가로 활용할 때 사용
 	 */
 	public int getLatestClosePrice(String stockCode, String dateStr) {
-		List<StockPriceDTO> list = getChartData(stockCode, dateStr);
-		if (list.isEmpty())
-			return 0;
-
-		// CopyOnWriteArrayList 특성상 인덱스 접근이 안전합니다.
-		StockPriceDTO latestDto = list.get(list.size() - 1);
+		StockPriceDTO latestDto = getLatestData(stockCode, dateStr);
 		return latestDto != null ? latestDto.getPriceClose() : 0;
+	}
+
+	public LocalDateTime getLatestDataTime(String stockCode, String dateStr) {
+		StockPriceDTO latestDto = getLatestData(stockCode, dateStr);
+		return latestDto != null ? latestDto.getDateTime() : LocalDateTime.now().minusMinutes(10);
 	}
 
 	/**
@@ -145,5 +182,15 @@ public class StockPriceMemoryCache {
 	 */
 	public void clearAll() {
 		priceCache.clear();
+	}
+
+	private StockPriceDTO getLatestData(String stockCode, String dateStr) {
+		List<StockPriceDTO> list = getChartData(stockCode, dateStr);
+		if (list.isEmpty())
+			return null;
+
+		// CopyOnWriteArrayList 특성상 인덱스 접근이 안전합니다.
+		StockPriceDTO latestDto = list.get(list.size() - 1);
+		return latestDto;
 	}
 }
