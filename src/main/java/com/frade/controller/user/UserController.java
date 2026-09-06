@@ -26,10 +26,8 @@ import com.frade.dto.rest.RestApiResponse;
 import com.frade.dto.user.AssetsInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.PortfolioInfoDTO;
-import com.frade.dto.user.UserCashDTO;
 import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSignDTO;
-import com.frade.service.order.OrderService;
 import com.frade.service.portfolio.PortfolioService;
 import com.frade.service.user.UserService;
 
@@ -43,9 +41,6 @@ public class UserController {
 	@Autowired
 	PortfolioService portfolioService;
 	
-	@Autowired
-	OrderService orderService;
-
 	@Autowired
 	ObjectMapper objectMapper;
 
@@ -222,16 +217,12 @@ public class UserController {
 		long stockPrice = 210_000;   //현재가격 더미
 
 		List<PortfolioDTO> portfolioList = portfolioService.findUserPortfolioListByUserNum(loginUserNumber);
+		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo(loginUserNumber);
+		long totalAsset = assetsInfo == null ? 0L : assetsInfo.getTotalAsset();
+
 		List<String> stockNameList = new ArrayList<String>();
 		List<Long> stockPriceList = new ArrayList<Long>();
 		List<PortfolioInfoDTO> portfolioInfoList = new ArrayList<PortfolioInfoDTO>();
-
-		long totalValuationAmount = 0;
-		for (PortfolioDTO portfolio : portfolioList) {
-			if (portfolio.getUserStockCnt() > 0) {
-				totalValuationAmount += stockPrice * portfolio.getUserStockCnt();
-			}
-		}
 
 		for (PortfolioDTO portfolio : portfolioList) {
 			int stockCnt = portfolio.getUserStockCnt();
@@ -244,7 +235,8 @@ public class UserController {
 			long valuationAmount = currentPrice * stockCnt; //평가 가치
 			long pnl = valuationAmount - portfolio.getUserBuyCost(); //평가 손익
 			double profitPercent = Math.round((double) pnl / portfolio.getUserBuyCost() * 10000) / 100.0; //수익률
-			double weightPercent = Math.round((double) valuationAmount / totalValuationAmount * 10000) / 100.0; //가중치
+			double weightPercent = totalAsset == 0 ? 0.0
+					: Math.round((double) valuationAmount / totalAsset * 10000) / 100.0; //가중치
 
 			PortfolioInfoDTO portfolioInfo = new PortfolioInfoDTO();
 			portfolioInfo.setStockCode(portfolio.getStockCode());
@@ -265,9 +257,8 @@ public class UserController {
 		
 
 		//포트폴리오에 유저 예치금 추가
-		UserCashDTO userCash = orderService.findUserCashByUserNum(loginUserNumber);
 		stockNameList.add("예치금");
-		stockPriceList.add(userCash == null ? 0L : userCash.getCash());
+		stockPriceList.add(assetsInfo == null ? 0L : assetsInfo.getCash());
 		
 		
 		//포트폴리오 정보 전달
@@ -281,7 +272,6 @@ public class UserController {
 		model.addAttribute("historyList", historyList);
 		
 		
-		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo(loginUserNumber);
 		model.addAttribute("assetsInfo", assetsInfo);
 		
 		
