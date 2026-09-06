@@ -237,7 +237,7 @@ public class UserController {
 			}
 
 			long currentPrice = stockPrice; //현재가
-			long avgStockBuyCost = Math.round((double) portfolio.getUserBuyCost() / stockCnt); //평균단가
+			long avgStockBuyCost = portfolio.getUserBuyCost() / stockCnt;
 			long valuationAmount = currentPrice * stockCnt; //평가 가치
 			long pnl = valuationAmount - portfolio.getUserBuyCost(); //평가 손익
 			double profitPercent = Math.round((double) pnl / portfolio.getUserBuyCost() * 100) * 100 / 100.0; //수익률
