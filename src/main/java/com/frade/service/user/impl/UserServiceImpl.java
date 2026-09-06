@@ -206,9 +206,12 @@ public class UserServiceImpl implements UserService{
 
 	        try {
 
-	            // 임시 DB 비밀번호
-	            // 나중에 DAO에서 암호화된 비밀번호 조회
-				String dbPw = SHA256Encryptor.encrypt("test1234!!");
+				// DB에서 현재 회원의 암호화된 비밀번호 조회
+				String dbPw = userDAO.findUserPwByUserNum(userProfileDTO.getUserNum());
+
+				if (dbPw == null) {
+					return ResultCode.FAIL;
+				}
 
 	            // 현재 비밀번호 확인
 				boolean pwMatch = SHA256Encryptor.matches(userProfileDTO.getCurrentPw(), dbPw);
@@ -410,10 +413,15 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public ResultCode deleteUser(int userNum) {
-		
-		//확인용
-		System.out.println("회원 탈퇴 요청 userNum: "+ userNum);
-		
+
+		// 회원 탈퇴 처리
+		int deleteResult = userDAO.deleteUser(userNum);
+
+		// 정상적으로 1명의 회원이 수정되지 않은 경우
+		if (deleteResult != 1) {
+			return ResultCode.FAIL;
+		}
+
 		return ResultCode.SUCCESS;
 	}
 

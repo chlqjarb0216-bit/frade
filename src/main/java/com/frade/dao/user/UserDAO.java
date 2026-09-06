@@ -33,6 +33,12 @@ public interface UserDAO {
 	
 	// 회원 프로필 수정
 	int updateUserProfile(UserDTO userDTO);
+	
+	// 회원 탈퇴 처리
+	int deleteUser(int userNum);
+	
+	// 회원번호로 현재 비밀번호 조회
+	String findUserPwByUserNum(int userNum);
     
     
 }
