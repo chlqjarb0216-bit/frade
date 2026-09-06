@@ -15,9 +15,12 @@ import com.frade.dto.stock.StockInfoDTO;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.service.stock.StockService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
-@RequestMapping("/stock/api")
-public class StockRestController {
+@RequestMapping("api/stock")
+public class RestStockController {
 
 	@Autowired
 	StockService stockService;
@@ -27,6 +30,31 @@ public class StockRestController {
 	public RestApiResponse<List<StockPreviewDTO>> getStockRankingListPage(@RequestParam int page) {
 		List<StockPreviewDTO> stockList = stockService.getSortedStockRankingListPage(page - 1, 10);
 		return RestApiResponse.success(stockList);
+	}
+
+	/**
+	 * 📊 1. [차트 첫 진입용] 특정 종목 또는 KOSPI 지수의 최신 2일 치 타임라인 원샷 조회
+	 * GET /api/stock/timeline?stockCode=KOSPI
+	 */
+	@GetMapping("/timeline")
+	public RestApiResponse<List<Object[]>> getInitialChartTimeline(@RequestParam("stockCode") String stockCode) {
+		try {
+			// 널/공백 유입 상단 가드
+			if (stockCode == null || stockCode.trim().isEmpty()) {
+				return RestApiResponse.error(ResultCode.FAIL);
+			}
+
+			// 💡 [블랙스완 방어막]: 며칠 치가 좀비처럼 밀려있든 상관없이, 
+			// 내부 역순 sorted().limit(2) 가드가 작동해 정확히 가장 싱싱한 최신 2일 치만 결합 인양합니다.
+			// 또한 내부 얕은 복사(Shallow Copy) 가드가 쳐져 있어 Jackson 직렬화 중에도 원본 캐시는 100% 안전합니다.
+			List<Object[]> chartData = stockService.getEveryChartDataCached(stockCode.trim());
+
+			return RestApiResponse.success(chartData); // 0초만에 JSON 바인딩되어 프론트 브라우저로 광속 출격
+
+		} catch (Exception e) {
+			log.error("❌ 최전방 차트 타임라인 조회 중 예외 발생: {}", e.getMessage(), e);
+			return RestApiResponse.error(ResultCode.FAIL);
+		}
 	}
 
 	/**
