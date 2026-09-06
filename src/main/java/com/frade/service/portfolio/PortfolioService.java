@@ -1,22 +1,13 @@
 package com.frade.service.portfolio;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.frade.dao.portfolio.PortfolioDAO;
-import com.frade.dto.order.HistoryDTO;
-import com.frade.dto.order.HistoryForMypageDTO;
-import com.frade.dto.user.AssetsInfoDTO;
+import com.frade.dto.user.MyPagePortfolioDTO;
 import com.frade.dto.user.PortfolioDTO;
-import com.frade.dto.user.UserCashDTO;
 
 
 public interface PortfolioService {
 
-	//userNum으로 포트폴리오 리스트
-	List<PortfolioDTO> findUserPortfolioListByUserNum(int userNum);
+	//마이페이지 포트폴리오 정보
+	MyPagePortfolioDTO getMyPagePortfolio(int userNum);
 
 	//userNum, stockCode로 특정 종목 관련 정보
 	PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode);
@@ -33,9 +24,4 @@ public interface PortfolioService {
 	//DB 조회 후 데이터 없으면 insert 있으면 update
 	int updateOrInsertUserPortfolio(PortfolioDTO portfolio);
 
-	//Asset 정보
-	AssetsInfoDTO getAssetsInfo(int userNum);
-	
-	public List<HistoryForMypageDTO> findTradeHistoryForMypageByUserNum(int userNum);
-	
 }

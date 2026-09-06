@@ -1,8 +1,5 @@
 package com.frade.controller.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frade.common.ResultCode;
-import com.frade.dto.order.HistoryDTO;
-import com.frade.dto.order.HistoryForMypageDTO;
 import com.frade.dto.rest.RestApiResponse;
-import com.frade.dto.user.AssetsInfoDTO;
-import com.frade.dto.user.PortfolioDTO;
-import com.frade.dto.user.PortfolioInfoDTO;
+import com.frade.dto.user.MyPagePortfolioDTO;
 import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSignDTO;
 import com.frade.service.portfolio.PortfolioService;
@@ -212,75 +205,16 @@ public class UserController {
 		UserProfileDTO userProfileDTO = userService.getUserProfile(loginUserNumber);
 		
 		model.addAttribute("userProfile",userProfileDTO);
-		
 
-		long stockPrice = 210_000;   //현재가격 더미
+		MyPagePortfolioDTO myPagePortfolio = portfolioService.getMyPagePortfolio(loginUserNumber);
 
-		List<PortfolioDTO> portfolioList = portfolioService.findUserPortfolioListByUserNum(loginUserNumber);
-		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo(loginUserNumber);
-		long totalAsset = assetsInfo == null ? 0L : assetsInfo.getTotalAsset();
-
-		List<String> stockNameList = new ArrayList<String>();
-		List<Long> stockPriceList = new ArrayList<Long>();
-		List<PortfolioInfoDTO> portfolioInfoList = new ArrayList<PortfolioInfoDTO>();
-
-		for (PortfolioDTO portfolio : portfolioList) {
-			int stockCnt = portfolio.getUserStockCnt();
-			if (stockCnt <= 0) {
-				continue;
-			}
-
-			long currentPrice = stockPrice; //현재가
-			long avgStockBuyCost = portfolio.getUserBuyCost() / stockCnt;
-			long valuationAmount = currentPrice * stockCnt; //평가 가치
-			long pnl = valuationAmount - portfolio.getUserBuyCost(); //평가 손익
-			double profitPercent = Math.round((double) pnl / portfolio.getUserBuyCost() * 10000) / 100.0; //수익률
-			double weightPercent = totalAsset == 0 ? 0.0
-					: Math.round((double) valuationAmount / totalAsset * 10000) / 100.0; //가중치
-
-			PortfolioInfoDTO portfolioInfo = new PortfolioInfoDTO();
-			portfolioInfo.setStockCode(portfolio.getStockCode());
-			portfolioInfo.setStockName(portfolio.getStockName());
-			portfolioInfo.setStockCnt(stockCnt);
-			portfolioInfo.setAvgStockBuyCost(avgStockBuyCost);
-			portfolioInfo.setStockNowPrice(currentPrice);
-			portfolioInfo.setValuationAmount(valuationAmount);
-			portfolioInfo.setPnl(pnl);
-			portfolioInfo.setProfitPercent(profitPercent);
-			portfolioInfo.setWeightPercent(weightPercent);
-			portfolioInfoList.add(portfolioInfo);
-
-			stockNameList.add(portfolio.getStockName());
-			stockPriceList.add(currentPrice);
-		}
-		
-		
-
-		//포트폴리오에 유저 예치금 추가
-		stockNameList.add("예치금");
-		stockPriceList.add(assetsInfo == null ? 0L : assetsInfo.getCash());
-		
-		
-		//포트폴리오 정보 전달
-		model.addAttribute("portfolioInfoList", portfolioInfoList); //포트폴리오 정보
-		
-		//거래기록 전달
-		List<HistoryForMypageDTO> historyList= portfolioService.findTradeHistoryForMypageByUserNum(loginUserNumber);
-		model.addAttribute("historyList", historyList);
-		
-		
-		model.addAttribute("assetsInfo", assetsInfo);
-		
-		
-	    model.addAttribute(
-	        "stockNameList",
-	        objectMapper.writeValueAsString(stockNameList)
-	    );
-
-	    model.addAttribute(
-	        "stockPriceList",
-	        objectMapper.writeValueAsString(stockPriceList)
-	    );
+		model.addAttribute("portfolioInfoList", myPagePortfolio.getPortfolioInfoList());
+		model.addAttribute("historyList", myPagePortfolio.getHistoryList());
+		model.addAttribute("assetsInfo", myPagePortfolio.getAssetsInfo());
+		model.addAttribute("stockNameList",
+				objectMapper.writeValueAsString(myPagePortfolio.getStockNameList()));
+		model.addAttribute("stockPriceList",
+				objectMapper.writeValueAsString(myPagePortfolio.getStockPriceList()));
 
 		
 		return "user/mypage";
