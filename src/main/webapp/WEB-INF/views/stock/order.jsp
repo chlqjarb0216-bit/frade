@@ -156,7 +156,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 		<div>
 			<p>주문 수량</p>
 			<input type="number" id="orderCount" name="orderCount" min="1"
-				step="1" value="1" />
+				step="1" value="0" />
 			<!--max값에 보유수량 넣을 예정-->
 
 				<button type="button" class="btn btn-outline-primary ctlBtn"
@@ -176,7 +176,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 				보유 수량 <span style="margin-left: 167px">${stockCnt} 주</span>
 			</p>
 			<p>
-				예상 주문 금액 <span id="expectedOrderAmount">100원</span>
+				예상 주문 금액 <span id="expectedOrderAmount"></span>
 			</p>
 		</div>
 
