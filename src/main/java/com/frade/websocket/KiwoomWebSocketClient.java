@@ -149,7 +149,7 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 		}
 	}
 
-	//DB에 등록된 종목을 웹소켓에 요청
+	//캐시에 등록된 종목을 웹소켓에 요청
 	private void registStockCodes() {
 		List<String> cacheCodeList = stockMemoryCache.getStockCodeList();
 		int stockCnt = cacheCodeList.size();
@@ -160,17 +160,11 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 		log.info("총 {}개의 종목을 {}개씩 분할하여 구독 등록을 시작합니다.", stockCnt, CHUNK_SIZE);
 
 		for (int i = 0; i < stockCnt; i += CHUNK_SIZE) {
-			// 0.1초 대기 
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				log.error("분할 전송 대기 중 인터럽트 예외 발생. 전송을 중단합니다.");
-				break;
-			}
+
+			final int last = Math.min(i + CHUNK_SIZE, stockCnt);
 
 			//리스트 쪼개기
-			List<String> chunk = cacheCodeList.subList(i, Math.min(i + CHUNK_SIZE, stockCnt));
+			List<String> chunk = cacheCodeList.subList(i, last);
 
 			ObjectNode registerMessage = objectMapper.createObjectNode();
 			registerMessage.put("trnm", "REG"); // 서비스명(REGISTER)
@@ -191,9 +185,11 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 			dataArray.add(dataObject);
 			registerMessage.set("data", dataArray); // 실시간 등록 리스트
 
-			// 등록 메세지 전송
-			sendMessage(registerMessage);
-			log.info("분할 전송 중... ({}/{}) - 묶음 크기: {}개", Math.min(i + CHUNK_SIZE, stockCnt), stockCnt, chunk.size());
+			reconnectScheduler.schedule(() -> {
+				// 등록 메세지 전송
+				sendMessage(registerMessage);
+				log.info("분할 전송 중... ({}/{}) - 묶음 크기: {}개", last, stockCnt, chunk.size());
+			}, last * 100, TimeUnit.MILLISECONDS);
 		}
 	}
 
@@ -232,6 +228,10 @@ public class KiwoomWebSocketClient extends WebSocketClient {
 		if (this.isOpen()) {
 			this.close(CloseFrame.NORMAL, "Spring application shutdown");
 		}
+	}
+
+	public ScheduledExecutorService getReconnectScheduler() {
+		return this.reconnectScheduler;
 	}
 
 }
