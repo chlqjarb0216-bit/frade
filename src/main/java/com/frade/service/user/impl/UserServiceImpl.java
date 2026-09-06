@@ -176,13 +176,14 @@ public class UserServiceImpl implements UserService{
 	     * 현재는 getUserProfile()의 임시 데이터 사용
 	     * DB 연결 후 DAO 조회 결과 사용
 	     */
-	    UserProfileDTO currentProfile =
-	            getUserProfile(
-	                    userProfileDTO.getUserNum());
+		UserProfileDTO currentProfile = getUserProfile(userProfileDTO.getUserNum());
+		
+		if(currentProfile == null) {
+			return ResultCode.USER_NOT_FOUND;
+		}
 
-	    // 현재 프로필 사진
-	    String oldProfilePhoto =
-	            currentProfile.getUserPhoto();
+		// 현재 프로필 사진
+		String oldProfilePhoto = currentProfile.getUserPhoto();
 
 
 	    /*
@@ -206,9 +207,12 @@ public class UserServiceImpl implements UserService{
 
 	        try {
 
-	            // 임시 DB 비밀번호
-	            // 나중에 DAO에서 암호화된 비밀번호 조회
-				String dbPw = SHA256Encryptor.encrypt("test1234!!");
+				// DB에서 현재 회원의 암호화된 비밀번호 조회
+				String dbPw = userDAO.findUserPwByUserNum(userProfileDTO.getUserNum());
+
+				if (dbPw == null) {
+					return ResultCode.FAIL;
+				}
 
 	            // 현재 비밀번호 확인
 				boolean pwMatch = SHA256Encryptor.matches(userProfileDTO.getCurrentPw(), dbPw);
@@ -393,12 +397,15 @@ public class UserServiceImpl implements UserService{
 	    );
 
 
-	    System.out.println(
-	            "DB에 전달할 프로필 수정 정보 : "
-	            + userDTO);
+		System.out.println("DB에 전달할 프로필 수정 정보 : " + userDTO);
 
-	    // 나중에 DAO
-	    // userDAO.updateUserProfile(userDTO);
+		// T_USER 프로필 정보 수정
+		int updateResult = userDAO.updateUserProfile(userDTO);
+
+		// 1건이 정상적으로 수정되지 않은 경우
+		if (updateResult != 1) {
+			return ResultCode.FAIL;
+		}
 
 	    return ResultCode.SUCCESS;
 	}
@@ -407,39 +414,23 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public ResultCode deleteUser(int userNum) {
-		
-		//확인용
-		System.out.println("회원 탈퇴 요청 userNum: "+ userNum);
-		
+
+		// 회원 탈퇴 처리
+		int deleteResult = userDAO.deleteUser(userNum);
+
+		// 정상적으로 1명의 회원이 수정되지 않은 경우
+		if (deleteResult != 1) {
+			return ResultCode.FAIL;
+		}
+
 		return ResultCode.SUCCESS;
 	}
 
 	@Override
 	public UserProfileDTO getUserProfile(int userNum) {
 
-	    // 임시 DB 조회 결과
-	    UserProfileDTO userProfileDTO = new UserProfileDTO(
-	            userNum,
-	            "개미하이",
-	            "1.png",
-	            0,
-	            LocalDateTime.of(2026, 9, 1, 5, 30)
-	    );
-
-	    return userProfileDTO;
+	    return userDAO.findUserProfileByUserNum(userNum);
 	}
 
-	
-	
-	
-
-	
-	
-
-	
-	
-
-	
-	
 
 }
