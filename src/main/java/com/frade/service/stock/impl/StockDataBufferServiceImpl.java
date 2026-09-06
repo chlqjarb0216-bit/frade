@@ -19,16 +19,17 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.frade.config.KiwoomApiConfig;
+import com.frade.dto.event.RealtimeStockEvent;
 import com.frade.dto.stock.StockPriceComputableDTO;
 import com.frade.dto.stock.StockPriceDTO;
 import com.frade.memcache.StockMemoryCache;
-import com.frade.service.stock.SseChartPushService;
 import com.frade.service.stock.StockDataBufferService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 	private final ObjectMapper objectMapper;
 	private final TaskExecutor stockBufferTaskExecutor;
 	private final StockMemoryCache stockMemoryCache; // 이미 RAM에 로드되어 있는 초고속 100종목 캐시
-	private final SseChartPushService sseChartPushService;
+	private final ApplicationEventPublisher eventPublisher;
 
 	private final Queue<String> stockEventQueue = new ConcurrentLinkedQueue<>();
 	private final Map<String, StockPriceComputableDTO> globalBufferMap = new ConcurrentHashMap<>();
@@ -56,12 +57,12 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 	private volatile String prevRecordedMinuteStr = "";
 
 	public StockDataBufferServiceImpl(ObjectMapper objectMapper, TaskExecutor stockBufferTaskExecutor,
-			StockMemoryCache stockMemoryCache, SseChartPushService sseChartPushService,
+			StockMemoryCache stockMemoryCache, ApplicationEventPublisher eventPublisher,
 			KiwoomApiConfig kiwoomApiConfig) {
 		this.objectMapper = objectMapper;
 		this.stockBufferTaskExecutor = stockBufferTaskExecutor;
 		this.stockMemoryCache = stockMemoryCache;
-		this.sseChartPushService = sseChartPushService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -238,8 +239,8 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 					return d;
 				});
 
-				// 💡 D. SSE 단방향 JSON 스트링 멀티캐스팅 푸시 즉시 연동
-				sseChartPushService.pushChartToSse(stockCode, dto.toFinalDTO(), currentMinuteStr);
+				// 💡 D. 이벤트 발행
+				eventPublisher.publishEvent(new RealtimeStockEvent(dto.toFinalDTO()));
 			}
 		} catch (Exception e) {
 			log.error("수집 엔진 에러: {}", e.getMessage());
