@@ -1,9 +1,12 @@
 package com.frade.scheduler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.frade.service.stock.StockService;
+import com.frade.util.MarketUtil;
 import com.frade.websocket.KiwoomWebSocketClient;
 
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +48,36 @@ public class ApiScheduler {
 		kiwoomWebSocketClient.close();
 		log.info("토큰 폐기");
 		stockService.revokeApiToken();
+	}
+
+	@EventListener
+	public void handleContextRefresh(ContextRefreshedEvent event) {
+		if (event.getApplicationContext().getParent() != null) {
+			return; // 중복 호출 방지
+		}
+		// 이미 만들어둔 데몬 스레드 스케줄러를 활용해 비동기로 시퀀스를 틀어줍니다.
+		kiwoomWebSocketClient.getReconnectScheduler().execute(() -> {
+			executeStartupSequence();
+		});
+	}
+
+	//순서 보장 초기화 시퀀스
+	private void executeStartupSequence() {
+		try {
+			// STEP 1: 메모리 캐시 초기화 (DB 조회 등 무거운 작업)
+			log.info("[시퀀스 1/2] 메모리 캐시 로드 시작...");
+			stockService.initMemoryCache();
+
+			//장 시간 이면
+			if (MarketUtil.isMarketOpenTime()) {
+				// STEP 2: 웹소켓 부팅 (캐시가 완료된 후 안전하게 가동)
+				log.info("[시퀀스 2/2] 웹소켓 클라이언트 시동");
+				kiwoomWebSocketClient.boot();
+			}
+
+		} catch (Exception e) {
+			log.error("❌ 가동 시퀀스 실행 중 치명적 에러 발생", e);
+		}
 	}
 
 }
