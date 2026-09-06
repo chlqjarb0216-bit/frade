@@ -261,6 +261,18 @@ body {
 	text-align: left;
 }
 
+.holding-stock-name {
+	display: block;
+	font-weight: 600;
+}
+
+.holding-stock-code {
+	display: block;
+	margin-top: 3px;
+	color: #9ca3af;
+	font-size: 12px;
+}
+
 /* 마지막 열만 오른쪽 정렬 */
 .stock-table th:last-child, .stock-table td:last-child {
 	text-align: right;
@@ -543,21 +555,22 @@ body {
 			</tr>
 		</thead>
 
-
-		<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
-			<tr>
-				<td>${portfolioInfo.stockName}</td>
-				<td>${portfolioInfo.stockCnt}주</td>
-				<td>${portfolioInfo.avgStockBuyCost}원</td>
-				<td>${portfolioInfo.stockNowPrice}원</td>
-				<td>${portfolioInfo.valuationAmount}원</td>
-				<td>${portfolioInfo.pnl}원</td>
-				<td>${portfolioInfo.profitPercent}%</td>
-				<td>${portfolioInfo.weightPercent}%</td>
-			</tr>
-		</c:forEach>
-
-
+		<tbody>
+			<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
+				<tr>
+					<td>
+						<span class="holding-stock-name">${portfolioInfo.stockName}</span>
+						<span class="holding-stock-code">${portfolioInfo.stockCode}</span>
+					</td>
+					<td>${portfolioInfo.stockCnt}주</td>
+					<td>${portfolioInfo.avgStockBuyCost}원</td>
+					<td>${portfolioInfo.stockNowPrice}원</td>
+					<td>${portfolioInfo.valuationAmount}원</td>
+					<td>${portfolioInfo.pnl}원</td>
+					<td>${portfolioInfo.profitPercent}%</td>
+					<td>${portfolioInfo.weightPercent}%</td>
+				</tr>
+			</c:forEach>
 		</tbody>
 	</table>
 
