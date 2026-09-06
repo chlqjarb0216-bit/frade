@@ -55,6 +55,8 @@
     height: 100%;
 
     background-color: rgba(0, 0, 0, 0.4);
+    
+    z-index: 9999;
 }
 
 .profile-modal-content {
