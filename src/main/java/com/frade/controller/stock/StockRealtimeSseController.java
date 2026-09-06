@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/stock/api")
+@RequestMapping("/api/stock")
 @RequiredArgsConstructor
 public class StockRealtimeSseController {
 
@@ -42,15 +42,17 @@ public class StockRealtimeSseController {
 	@PostMapping("/stream/switch-room/{browserSessionId}")
 	public void switchChartRoom(@PathVariable String browserSessionId, @RequestParam String newStockCode) {
 		Response<String> result = sseChartPushService.switchChartRoom(browserSessionId, newStockCode);
+		// 🚨 방어선 보완: 성공이 아닐 때(ResultCode가 에러 계열일 때) 안전하게 리턴하여 NPE 차단
 		if (result.getResultCode() == ResultCode.SAME_STOCK_CODE) {
-			log.info(result.getResultCode().getMessage());
+			log.info("🔄 [구독 전환 스킵] UUID [{}]: 동일한 종목 코드[{}]로 전환을 요청하여 무시합니다.", browserSessionId, newStockCode);
+			return;
+		}
+
+		if (result.getResultCode() == ResultCode.SESSION_NOT_FOUND) {
+			log.warn("🚨 [구독 전환 실패] UUID [{}]: 원장에 실존하지 않는 세션이거나 만료되었습니다.", browserSessionId);
 			return;
 		}
 		log.info("🔄 [구독 전환] UUID [{}] 유저가 [{}]에서 ➔ [{}] 차트 방으로 짐 싸서 스위칭 완료.", browserSessionId, result.getData(),
 				newStockCode);
 	}
-
-	/*
-	
-	*/
 }

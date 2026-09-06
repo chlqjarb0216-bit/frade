@@ -14,8 +14,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frade.common.stock.StockCommonFinalString;
 import com.frade.common.stock.StockSector;
 import com.frade.dao.stock.StockDAO;
@@ -53,9 +51,6 @@ public class StockServiceImpl implements StockService {
 	StockRankingCache stockRankingCache;
 	@Autowired
 	StockPriceMemoryCache stockPriceMemoryCache;
-
-	@Autowired
-	ObjectMapper objectMapper;
 
 	@Override
 	public List<StockInfoDTO> searchStockByName(String stockName) {
@@ -118,7 +113,7 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public String getEveryChartDataCached(String stockCode) {
+	public List<Object[]> getEveryChartDataCached(String stockCode) {
 
 		List<StockPriceDTO> cacheData = stockPriceMemoryCache.getEveryChartDataCached(stockCode);
 		List<Object[]> chartDataList = new ArrayList<>();
@@ -137,14 +132,8 @@ public class StockServiceImpl implements StockService {
 
 			chartDataList.add(singleData);
 		}
-		String jsonString = "[]";
-		try {
-			jsonString = objectMapper.writeValueAsString(chartDataList);
-		} catch (JsonProcessingException e) {
-			log.error("json가공중 에러");
-		}
 
-		return jsonString;
+		return chartDataList;
 	}
 
 	@Override

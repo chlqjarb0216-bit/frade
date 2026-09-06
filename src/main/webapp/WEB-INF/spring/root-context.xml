@@ -174,4 +174,10 @@
 		queue-capacity="10"
 		rejection-policy="CALLER_RUNS" />
 
+	<!-- 💡 100종목 동시 인입 시 순간 버퍼링을 위해 큐 크기만 200으로 확장 -->
+	<task:executor id="sseChartPushExecutor"
+		pool-size="1"
+		queue-capacity="200"
+		rejection-policy="CALLER_RUNS" />
+
 </beans>
