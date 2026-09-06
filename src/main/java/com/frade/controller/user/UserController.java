@@ -262,8 +262,6 @@ public class UserController {
 		
 		
 		//포트폴리오 정보 전달
-		model.addAttribute("stockNameList", stockNameList);  //종목 이르
-		model.addAttribute("stockPriceList", stockPriceList); //종목 현재가
 		model.addAttribute("portfolioInfoList", portfolioInfoList); //포트폴리오 정보
 		model.addAttribute("holdingStockCount", portfolioInfoList.size()); //보유 종목 수
 		
