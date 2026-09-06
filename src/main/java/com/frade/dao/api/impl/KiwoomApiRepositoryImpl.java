@@ -17,9 +17,11 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.frade.common.stock.StockCommonFinalString;
 import com.frade.dao.api.KiwoomApiRepository;
 import com.frade.dto.api.KiwoomAccessToken;
 import com.frade.dto.api.KiwoomIndexChartResponse;
+import com.frade.dto.api.KiwoomStockChartResponse;
 import com.frade.dto.api.KiwoomStockInfoResponse;
 import com.frade.dto.api.KiwoomTokenRequest;
 import com.frade.dto.api.StockInfoRawDTO;
@@ -134,7 +136,7 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 		requestHeaders.set("authorization", token.toTypeToken());
 		requestHeaders.set("api-id", "ka20005");
 		//바디(001: 코스피, 1:1분봉)
-		Map<String, String> requestBody = Map.of("mrkt_tp", "001", "tic_scope", "1", "base_dt", dayString);
+		Map<String, String> requestBody = Map.of("inds_cd", "001", "tic_scope", "1", "base_dt", dayString);
 
 		boolean hasNextPage = true;
 		boolean isDateLimitReached = false; // 💡 날짜 리밋 도달 여부 플래그
@@ -146,12 +148,11 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 			// 앞서 살려낸 100% 순수 자동 매핑 교환 호출
 			ResponseEntity<KiwoomIndexChartResponse> responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST,
 					entity, KiwoomIndexChartResponse.class);
-
 			KiwoomIndexChartResponse body = responseEntity.getBody();
 
 			if (body != null && body.getIndsMinPoleQry() != null) {
 				for (StockPriceRawDTO raw : body.getIndsMinPoleQry()) {
-					StockPriceDTO row = raw.toStockPriceDTO("KOSPI");
+					StockPriceDTO row = raw.toStockPriceDTO(StockCommonFinalString.KOSPI);
 					if (row.getDateTime().isBefore(targetDateTime)) {
 						log.info("[조기 종료] 기준 날짜({})보다 과거 데이터 감지: {}. 루프를 탈출합니다.", targetDateTime, row.getDateTime());
 						isDateLimitReached = true;
@@ -187,6 +188,85 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 			}
 		}
 
+		if (!filteredTotalList.isEmpty()) {
+			Collections.reverse(filteredTotalList);
+		}
+
+		log.info("[연속조회 종료] 수집 완료된 최종 데이터 개수: {}개", filteredTotalList.size());
+		return filteredTotalList;
+	}
+
+	@Override
+	public List<StockPriceDTO> getKOSPIChartDataFromLastData(LocalDateTime last) {
+		KiwoomAccessToken token = this.getOrRefreshAccessToken();
+		if (token == null) {
+			log.error("토큰이 존재하지 않습니다");
+			return Collections.emptyList();
+		}
+		String requestUrl = this.host + "/api/dostk/chart";
+		List<StockPriceDTO> filteredTotalList = new ArrayList<>();
+
+		// 1. 헤더 기본 셋팅 및 첫 요청 준비
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.set("authorization", token.toTypeToken());
+		requestHeaders.set("api-id", "ka20005");
+		//바디(001: 코스피, 1:1분봉)
+		Map<String, String> requestBody = Map.of("mrkt_tp", "001", "tic_scope", "1");
+
+		boolean hasNextPage = true;
+		boolean isDateLimitReached = false; // 💡 날짜 리밋 도달 여부 플래그
+
+		// 2. 다음 페이지가 있고, 날짜 제한에 도달하지 않았다면 무한 루프
+		while (hasNextPage && !isDateLimitReached) {
+			HttpEntity<Object> entity = new HttpEntity<>(requestBody, requestHeaders);
+
+			// 앞서 살려낸 100% 순수 자동 매핑 교환 호출
+			ResponseEntity<KiwoomIndexChartResponse> responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST,
+					entity, KiwoomIndexChartResponse.class);
+
+			KiwoomIndexChartResponse body = responseEntity.getBody();
+
+			if (body != null && body.getIndsMinPoleQry() != null) {
+				for (StockPriceRawDTO raw : body.getIndsMinPoleQry()) {
+					StockPriceDTO row = raw.toStockPriceDTO(StockCommonFinalString.KOSPI);
+					if (row.getDateTime().isBefore(last)) {
+						isDateLimitReached = true;
+						break; // 내부 foreach 문 탈출
+					}
+
+					// 기준 날짜 범위 내에 있는 정상 데이터만 최종 바구니에 저장
+					filteredTotalList.add(row);
+				}
+			}
+
+			// 3. 내부 루프에서 컷 당했다면 바깥 while 루프도 즉시 정지
+			if (isDateLimitReached) {
+				break;
+			}
+
+			// 4. 다음 페이지를 가기 위해 헤더 뜯어서 셋팅
+			HttpHeaders responseHeaders = responseEntity.getHeaders();
+			String contYn = responseHeaders.getFirst("cont-yn");
+			String nextKey = responseHeaders.getFirst("next-key");
+
+			if ("Y".equals(contYn) && nextKey != null && !nextKey.isEmpty()) {
+				requestHeaders.set("cont-yn", contYn);
+				requestHeaders.set("next-key", nextKey); // 다음 페이지 키로 스위칭
+
+				// ⏳ 과부하로 인한 키움 계정 차단 방지를 위한 미세한 휴식 시간 추가
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException ignored) {
+				}
+			} else {
+				hasNextPage = false; // 키움 쪽에 더 이상 데이터가 없음
+			}
+		}
+
+		if (!filteredTotalList.isEmpty()) {
+			Collections.reverse(filteredTotalList);
+		}
+
 		log.info("[연속조회 종료] 수집 완료된 최종 데이터 개수: {}개", filteredTotalList.size());
 		return filteredTotalList;
 	}
@@ -218,13 +298,12 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 			HttpEntity<Object> entity = new HttpEntity<>(requestBody, requestHeaders);
 
 			// 앞서 살려낸 100% 순수 자동 매핑 교환 호출
-			ResponseEntity<KiwoomIndexChartResponse> responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST,
-					entity, KiwoomIndexChartResponse.class);
+			ResponseEntity<KiwoomStockChartResponse> responseEntity = restTemplate.exchange(requestUrl, HttpMethod.POST,
+					entity, KiwoomStockChartResponse.class);
+			KiwoomStockChartResponse body = responseEntity.getBody();
 
-			KiwoomIndexChartResponse body = responseEntity.getBody();
-
-			if (body != null && body.getIndsMinPoleQry() != null) {
-				for (StockPriceRawDTO raw : body.getIndsMinPoleQry()) {
+			if (body != null && body.getStkMinPoleChartQry() != null) {
+				for (StockPriceRawDTO raw : body.getStkMinPoleChartQry()) {
 					StockPriceDTO row = raw.toStockPriceDTO(stockCode);
 					if (row.getDateTime().isBefore(targetDateTime)) {
 						log.info("[조기 종료] 기준 날짜({})보다 과거 데이터 감지: {}. 루프를 탈출합니다.", targetDateTime, row.getDateTime());
@@ -259,6 +338,10 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 			} else {
 				hasNextPage = false; // 키움 쪽에 더 이상 데이터가 없음
 			}
+		}
+
+		if (!filteredTotalList.isEmpty()) {
+			Collections.reverse(filteredTotalList);
 		}
 
 		log.info("[연속조회 종료] 수집 완료된 최종 데이터 개수: {}개", filteredTotalList.size());
