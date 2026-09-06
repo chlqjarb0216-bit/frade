@@ -22,6 +22,11 @@ public class StockPriceDAOImpl implements StockPriceDAO {
 	}
 
 	@Override
+	public int updateOrInsertDailyMinutePrice(List<StockPriceDTO> dailyPriceList) {
+		return sqlSessionTemplate.update("stockprice_mapper.updateOrInsertDailyMinutePrice", dailyPriceList);
+	}
+
+	@Override
 	public List<StockPriceDTO> selectMinuteStockPriceListByStockCodeAndDayString(String stockCode, String dayString) {
 		Map<String, String> paramMap = Map.of("stockCode", stockCode, "dayString", dayString);
 		return sqlSessionTemplate.selectList("stockprice_mapper.selectMinuteStockPriceListByStockCodeAndDayString",
