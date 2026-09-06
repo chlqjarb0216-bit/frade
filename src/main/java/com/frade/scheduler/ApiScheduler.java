@@ -65,7 +65,7 @@ public class ApiScheduler {
 	private void executeStartupSequence() {
 		try {
 			// STEP 1: 메모리 캐시 초기화 (DB 조회 등 무거운 작업)
-			log.info("[시퀀스 1/2] 메모리 캐시 로드 시작...");
+			log.info("[시퀀스 1/3] 메모리 캐시 로드 시작...");
 			stockService.initMemoryCache();
 
 			// 🌟 [추가 STEP]: 오라클 DB에서 오늘 오전 분 봉 이력을 가져와 캐시판 데우기 (Warm-up)
@@ -75,8 +75,8 @@ public class ApiScheduler {
 
 			//장 시간 이면
 			if (MarketUtil.isMarketOpenTime()) {
-				// STEP 2: 웹소켓 부팅 (캐시가 완료된 후 안전하게 가동)
-				log.info("[시퀀스 2/2] 웹소켓 클라이언트 시동");
+				// STEP 3: 웹소켓 부팅 (캐시가 완료된 후 안전하게 가동)
+				log.info("[시퀀스 2/3] 웹소켓 클라이언트 시동");
 				kiwoomWebSocketClient.boot();
 			}
 
