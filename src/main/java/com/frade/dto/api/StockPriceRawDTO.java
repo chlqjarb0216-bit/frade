@@ -20,11 +20,11 @@ public class StockPriceRawDTO {
 	@JsonProperty("cntr_tm")
 	@JsonFormat(pattern = "yyyyMMddHHmmss")
 	LocalDateTime cntrTm;
-	@JsonProperty("open_prc")
+	@JsonProperty("open_pric")
 	int openPric;
-	@JsonProperty("high_prc")
+	@JsonProperty("high_pric")
 	int highPric;
-	@JsonProperty("low_prc")
+	@JsonProperty("low_pric")
 	int lowPric;
 
 	public StockPriceDTO toStockPriceDTO(String stockCode) {
