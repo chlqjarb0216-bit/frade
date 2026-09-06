@@ -79,7 +79,7 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 	public List<StockPriceDTO> flushCompleteMinuteBuffer() {
 		String targetMinuteStr = batchTimeTaskQueue.poll();
 		if (targetMinuteStr == null) {
-			return new ArrayList<>(); // 큐가 비어있으면 0초만에 빈 리스트 직접 리턴 (isEmpty 효과)
+			return Collections.emptyList(); // 큐가 비어있으면 0초만에 빈 리스트 직접 리턴 (isEmpty 효과)
 		}
 
 		List<StockPriceDTO> targetList = new ArrayList<>();

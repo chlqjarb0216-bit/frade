@@ -1,6 +1,6 @@
 package com.frade.dao.api.impl;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +68,7 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 		KiwoomAccessToken token = this.getOrRefreshAccessToken();
 		if (token == null) {
 			log.error("토큰이 존재하지 않습니다");
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 
 		//요청주소
@@ -91,7 +91,7 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 		} catch (RestClientException e) {
 			log.error("ka10099 종목정보 리스트 받아오는 중 에러발생: {}", e.getMessage());
 		}
-		return new ArrayList<>();
+		return Collections.emptyList();
 	}
 
 	private void refreshAccessToken() {
