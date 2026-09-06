@@ -7,11 +7,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.frade.common.stock.StockCommonFinalString;
 import com.frade.dto.community.PostDTO;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.service.community.PostService;
 import com.frade.service.stock.StockService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class MainController {
 
@@ -36,6 +40,11 @@ public class MainController {
 
 		model.addAttribute("topStocks", topStocks);
 		model.addAttribute("topPosts", topPosts);
+
+		//코스피 차트 데이터
+		String kospiDataList = stockService.getEveryChartDataCached(StockCommonFinalString.KOSPI);
+		log.info("코스피 데이터 {}", kospiDataList);
+		model.addAttribute("chartDataJson", kospiDataList);
 
 		return "main/main";
 	}

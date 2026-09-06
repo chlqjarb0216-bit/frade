@@ -4,10 +4,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 public class MarketUtil {
 
-	public static final DateTimeFormatter DATE_FORM = DateTimeFormatter.ofPattern("yyyyMMdd");
+	public static final DateTimeFormatter DATE_FORM = new DateTimeFormatterBuilder().appendPattern("yyyyMMdd")
+			.parseDefaulting(ChronoField.HOUR_OF_DAY, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+			.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0).toFormatter();;
 
 	//평일(월~금)이면서 시각이 09:00:00 ~ 15:30:00 사이인지 판정
 	public static boolean isMarketOpenTime() {
@@ -23,7 +27,18 @@ public class MarketUtil {
 		int hhmm = now.getHour() * 100 + now.getMinute();
 
 		// 09시 00분부터 15시 30분 사이일 때만 True 반환!
-		return hhmm >= 900 && hhmm <= 1530;
+		return hhmm >= 855 && hhmm <= 1535;
+	}
+
+	public static boolean isMarketDay() {
+		LocalDateTime now = LocalDateTime.now();
+		java.time.DayOfWeek day = now.getDayOfWeek();
+
+		//토요일이거나 일요일이면 장이 닫혔으므로 탈락
+		if (day == java.time.DayOfWeek.SATURDAY || day == java.time.DayOfWeek.SUNDAY) {
+			return false;
+		}
+		return true;
 	}
 
 	public static String[] getLast2MarketDayString() {
