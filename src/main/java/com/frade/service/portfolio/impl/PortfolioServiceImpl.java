@@ -49,10 +49,6 @@ public class PortfolioServiceImpl implements PortfolioService {
 
 		for (PortfolioDTO portfolio : portfolioList) {
 			int stockCnt = portfolio.getUserStockCnt();
-			if (stockCnt <= 0) {
-				continue;
-			}
-
 			long currentPrice = getCurrentPrice(portfolio.getStockCode());
 			long valuationAmount = currentPrice * stockCnt;
 			long buyCost = portfolio.getUserBuyCost();
