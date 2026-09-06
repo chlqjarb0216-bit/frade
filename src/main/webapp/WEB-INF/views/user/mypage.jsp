@@ -34,7 +34,7 @@ body {
 <
 !
 -- 부트스트랩 CSS --> <link href ="https: //cdn.jsdelivr.net /npm /bootstrap 
-	@5.0.2 /dist /css /bootstrap.min.css
+	 @5.0.2 /dist /css /bootstrap.min.css
  " rel ="stylesheet " integrity ="sha384-EVSTQN3 /azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC
  " crossorigin ="anonymous ">< !--추가 커스텀 CSS 필요하면 여기에 --> <style>.profile-box
 	{
@@ -399,152 +399,153 @@ body {
 					<div class="profile-modal-header">
 						<h2>프로필 수정</h2>
 					</div>
-				</div>
-				<form action="/user/profile" method="post"
-					enctype="multipart/form-data" id="profileForm">
+					<form action="/user/profile" method="post"
+						enctype="multipart/form-data" id="profileForm">
 
-					<div class="profile-modal-body">
+						<div class="profile-modal-body">
 
-						<!-- 프로필 사진 수정 -->
-						<div class="profile-photo-edit">
+							<!-- 프로필 사진 수정 -->
+							<div class="profile-photo-edit">
 
-							<div class="profile-photo-preview">
+								<div class="profile-photo-preview">
 
-								<c:choose>
+									<c:choose>
 
-									<%-- 저장된 프로필 사진이 있는 경우 --%>
-									<c:when test="${not empty userProfile.userPhoto}">
-										<img src="/file-storage/user_profile/${userProfile.userPhoto}"
-											alt="프로필 사진" id="profilePreview" width="80" height="80">
-									</c:when>
+										<%-- 저장된 프로필 사진이 있는 경우 --%>
+										<c:when test="${not empty userProfile.userPhoto}">
+											<img
+												src="/file-storage/user_profile/${userProfile.userPhoto}"
+												alt="프로필 사진" id="profilePreview" width="80" height="80">
+										</c:when>
 
-									<%-- 프로필 사진이 없는 경우 기본 이미지 --%>
-									<c:otherwise>
-										<img src="/resources/images/Default_profile.png" alt="프로필 사진"
-											id="profilePreview" width="80" height="80">
-									</c:otherwise>
+										<%-- 프로필 사진이 없는 경우 기본 이미지 --%>
+										<c:otherwise>
+											<img src="/resources/images/Default_profile.png" alt="프로필 사진"
+												id="profilePreview" width="80" height="80">
+										</c:otherwise>
 
-								</c:choose>
+									</c:choose>
+
+								</div>
+
+								<div class="profile-photo-buttons">
+									<p>
+										<strong>프로필 사진</strong>
+									</p>
+
+									<p>JPG, PNG JPEG의 사진만 선택이 가능합니다.</p>
+
+									<input type="file" id="profilePhotoInput" name="profilePhoto"
+										accept=".png,.jpg,.jpeg" style="display: none;">
+									<input type="hidden" id="defaultPhoto" name="defaultPhoto"
+										value="false">
+
+									<button type="button" id="btnPhotoChange">사진 변경</button>
+									<button type="button" id="btnDefaultPhoto">기본 이미지</button>
+								</div>
 
 							</div>
 
-							<div class="profile-photo-buttons">
+
+							<!-- 닉네임 변경 -->
+							<div class="profile-nick-edit">
+
 								<p>
-									<strong>프로필 사진</strong>
+									<strong>닉네임</strong>
 								</p>
 
-								<p>JPG, PNG JPEG의 사진만 선택이 가능합니다.</p>
+								<input type="text" name="userNick" id="inputProfileNick"
+									value="${userProfile.userNick}">
 
-								<input type="file" id="profilePhotoInput" name="profilePhoto"
-									accept=".png,.jpg,.jpeg" style="display: none;">
-								<input type="hidden" id="defaultPhoto" name="defaultPhoto"
+								<button type="button" id="btnProfileNickCheck">중복확인</button>
+
+								<p id="profileNickCheckMsg"></p>
+
+							</div>
+
+
+							<!-- 비밀번호 변경 -->
+							<div class="profile-pw-edit">
+								<input type="hidden" id="passwordChange" name="passwordChange"
 									value="false">
 
-								<button type="button" id="btnPhotoChange">사진 변경</button>
-								<button type="button" id="btnDefaultPhoto">기본 이미지</button>
-							</div>
+								<button type="button" id="btnPwToggle">비밀번호 변경 ▼</button>
 
-						</div>
+								<div id="pwChangeArea" style="display: none;">
 
+									<p>
+										<strong>현재 비밀번호</strong>
+									</p>
+									<input type="password" name="currentPw" id="currentPw">
 
-						<!-- 닉네임 변경 -->
-						<div class="profile-nick-edit">
+									<p>
+										<strong>새 비밀번호</strong>
+									</p>
+									<input type="password" name="newPw" id="newPw">
 
-							<p>
-								<strong>닉네임</strong>
-							</p>
+									<p>
+										<strong>새 비밀번호 확인</strong>
+									</p>
+									<input type="password" name="newPwCheck" id="newPwCheck">
 
-							<input type="text" name="userNick" id="inputProfileNick"
-								value="${userProfile.userNick}">
-
-							<button type="button" id="btnProfileNickCheck">중복확인</button>
-
-							<p id="profileNickCheckMsg"></p>
-
-						</div>
-
-
-						<!-- 비밀번호 변경 -->
-						<div class="profile-pw-edit">
-							<input type="hidden" id="passwordChange" name="passwordChange"
-								value="false">
-
-							<button type="button" id="btnPwToggle">비밀번호 변경 ▼</button>
-
-							<div id="pwChangeArea" style="display: none;">
-
-								<p>
-									<strong>현재 비밀번호</strong>
-								</p>
-								<input type="password" name="currentPw" id="currentPw">
-
-								<p>
-									<strong>새 비밀번호</strong>
-								</p>
-								<input type="password" name="newPw" id="newPw">
-
-								<p>
-									<strong>새 비밀번호 확인</strong>
-								</p>
-								<input type="password" name="newPwCheck" id="newPwCheck">
+								</div>
 
 							</div>
 
-						</div>
 
+							<!-- 포트폴리오 공개 여부 -->
+							<div class="profile-public-edit">
 
-						<!-- 포트폴리오 공개 여부 -->
-						<div class="profile-public-edit">
+								<div>
+									<strong>포트폴리오 공개</strong>
+									<p>다른 사용자에게 내 포트폴리오를 공개합니다.</p>
+								</div>
 
-							<div>
-								<strong>포트폴리오 공개</strong>
-								<p>다른 사용자에게 내 포트폴리오를 공개합니다.</p>
-							</div>
-
-							<label class="switch">
-								<input type="checkbox" id="portfolioPublic"
-									name="userPortfolioIsPublic" value="1"
-									<c:if test="${userProfile.userPortfolioIsPublic == 1}">checked
+								<label class="switch">
+									<input type="checkbox" id="portfolioPublic"
+										name="userPortfolioIsPublic" value="1"
+										<c:if test="${userProfile.userPortfolioIsPublic == 1}">checked
 											</c:if>>
 
 
-								<span class="slider"></span>
+									<span class="slider"></span>
 
-							</label>
+								</label>
 
-						</div>
-
-
-						<!-- 회원 탈퇴 -->
-						<div class="profile-delete">
-
-							<div>
-								<strong>회원 탈퇴</strong>
-								<p>탈퇴 시 계정 정보를 복구할 수 없습니다.</p>
 							</div>
 
 
-							<button type="button" id="btnUserDelete">탈퇴하기</button>
+							<!-- 회원 탈퇴 -->
+							<div class="profile-delete">
 
+								<div>
+									<strong>회원 탈퇴</strong>
+									<p>탈퇴 시 계정 정보를 복구할 수 없습니다.</p>
+								</div>
+
+
+								<button type="button" id="btnUserDelete">탈퇴하기</button>
+
+
+							</div>
+
+
+							<!-- 모달 하단 버튼 -->
+							<div class="profile-modal-footer">
+
+								<button type="button" id="btnProfileCancel">취소</button>
+
+								<button type="submit" id="btnProfileSave">변경사항 저장</button>
+
+							</div>
 
 						</div>
 
+					</form>
+					<!-- form 끝 -->
+					<form action="/user/withdraw" method="post" id="userDeleteForm"></form>
 
-						<!-- 모달 하단 버튼 -->
-						<div class="profile-modal-footer">
-
-							<button type="button" id="btnProfileCancel">취소</button>
-
-							<button type="submit" id="btnProfileSave">변경사항 저장</button>
-
-						</div>
-
-					</div>
-
-				</form>
-				<!-- form 끝 -->
-				<form action="/user/withdraw" method="post" id="userDeleteForm"></form>
-
+				</div>
 			</div>
 
 		</div>
