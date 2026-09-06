@@ -71,18 +71,73 @@
 				</div>
 			</div>
 			
-			<!-- 2. 주식뉴스 (컨트롤러 미연동: 제외 및 안내 처리) -->
+			<!-- 2. 주식뉴스 (NewsController 연결) -->
 			<div class="dashboard-card">
 				<div class="card-header-row">
-					<h2 class="card-title">📰 주식뉴스</h2>
-					<span class="card-more-link" style="color: #94a3b8; cursor: default;">더보기</span>
+					<h2 class="card-title">📰 주식뉴스 TOP 5</h2>
+					<a href="${pageContext.request.contextPath}/news" class="card-more-link">더보기</a>
 				</div>
-				<div class="placeholder-section">
-					<span class="badge-preparing">뉴스 컨트롤러 준비 중</span>
-					<p class="placeholder-text">실시간 주요 증시 및 기업 뉴스 피드 연동 예정입니다.</p>
-					<ul class="placeholder-list">
-						
-					</ul>
+				<div class="post-list">
+					<a href="${pageContext.request.contextPath}/news" class="post-item">
+						<div class="post-left">
+							<span class="post-rank-badge" style="color: #ef4444;">1</span>
+							<div class="post-info-box">
+								<span class="post-title" title="AI 반도체 훈풍 지속... 삼성전자·SK하이닉스 HBM 공급망 선점 경쟁 가열">AI 반도체 훈풍 지속... 삼성전자·SK하이닉스 HBM 공급망 선점 경쟁 가열</span>
+								<span class="post-meta-sub">연합인포맥스 · 15분 전</span>
+							</div>
+						</div>
+						<div class="post-right">
+							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">반도체</span>
+						</div>
+					</a>
+					<a href="${pageContext.request.contextPath}/news" class="post-item">
+						<div class="post-left">
+							<span class="post-rank-badge" style="color: #f97316;">2</span>
+							<div class="post-info-box">
+								<span class="post-title" title="美 연준(Fed) 9월 빅컷 기대감 유효... 외국인 코스피 순매수 전환">美 연준(Fed) 9월 빅컷 기대감 유효... 외국인 코스피 순매수 전환</span>
+								<span class="post-meta-sub">한국경제 · 25분 전</span>
+							</div>
+						</div>
+						<div class="post-right">
+							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">시황</span>
+						</div>
+					</a>
+					<a href="${pageContext.request.contextPath}/news" class="post-item">
+						<div class="post-left">
+							<span class="post-rank-badge" style="color: #eab308;">3</span>
+							<div class="post-info-box">
+								<span class="post-title" title="현대차·기아, 북미 친환경차 점유율 2위 굳히기 성공">현대차·기아, 북미 친환경차 점유율 2위 굳히기 성공</span>
+								<span class="post-meta-sub">매일경제 · 42분 전</span>
+							</div>
+						</div>
+						<div class="post-right">
+							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">자동차</span>
+						</div>
+					</a>
+					<a href="${pageContext.request.contextPath}/news" class="post-item">
+						<div class="post-left">
+							<span class="post-rank-badge">4</span>
+							<div class="post-info-box">
+								<span class="post-title" title="2차전지 반등 신호탄? 리튬 가격 바닥 통과 기대에 양극재주 강세">2차전지 반등 신호탄? 리튬 가격 바닥 통과 기대에 양극재주 강세</span>
+								<span class="post-meta-sub">이데일리 · 1시간 전</span>
+							</div>
+						</div>
+						<div class="post-right">
+							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">2차전지</span>
+						</div>
+					</a>
+					<a href="${pageContext.request.contextPath}/news" class="post-item">
+						<div class="post-left">
+							<span class="post-rank-badge">5</span>
+							<div class="post-info-box">
+								<span class="post-title" title="정부, '기업 밸류업 프로그램' 세제 개편안 발표... 배당 분리과세 추진">정부, '기업 밸류업 프로그램' 세제 개편안 발표... 배당 분리과세 추진</span>
+								<span class="post-meta-sub">머니투데이 · 2시간 전</span>
+							</div>
+						</div>
+						<div class="post-right">
+							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">정책</span>
+						</div>
+					</a>
 				</div>
 			</div>
 		</div>
