@@ -27,11 +27,6 @@ public class PortfolioDAOImpl implements PortfolioDAO{
 	}
 
 	@Override
-	public List<String> findUserPortfolioStockNameListByUserNum(int userNum) {
-		return sqlSessionTemplate.selectList("portfolio_mapper.findUserPortfolioStockNameListByUserNum", userNum);
-	}
-	
-	@Override
 	public PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode) {
 		Map<String, Object> params = new HashMap<>();
 	    params.put("userNum", userNum);
