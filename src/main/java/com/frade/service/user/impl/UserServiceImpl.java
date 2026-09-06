@@ -177,6 +177,10 @@ public class UserServiceImpl implements UserService{
 	     * DB 연결 후 DAO 조회 결과 사용
 	     */
 		UserProfileDTO currentProfile = getUserProfile(userProfileDTO.getUserNum());
+		
+		if(currentProfile == null) {
+			return ResultCode.USER_NOT_FOUND;
+		}
 
 		// 현재 프로필 사진
 		String oldProfilePhoto = currentProfile.getUserPhoto();

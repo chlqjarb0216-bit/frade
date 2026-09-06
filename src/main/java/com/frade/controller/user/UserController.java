@@ -150,6 +150,10 @@ public class UserController {
 		int loginUserNumber = LoginManager.getLoginUserNum(session);
 
 		UserProfileDTO userProfileDTO = userService.getUserProfile(loginUserNumber);
+		
+		if(userProfileDTO == null) {
+			return "redirect:/user/login";
+		}
 
 		model.addAttribute("userProfile", userProfileDTO);
 
