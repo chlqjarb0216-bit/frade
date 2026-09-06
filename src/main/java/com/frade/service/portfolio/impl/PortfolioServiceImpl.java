@@ -84,12 +84,9 @@ public class PortfolioServiceImpl implements PortfolioService {
 		stockNameList.add("예치금");
 		stockPriceList.add(cash);
 
-		MyPagePortfolioDTO myPagePortfolio = new MyPagePortfolioDTO();
-		myPagePortfolio.setAssetsInfo(assetsInfo);
-		myPagePortfolio.setPortfolioInfoList(portfolioInfoList);
-		myPagePortfolio.setHistoryList(historyList);
-		myPagePortfolio.setStockNameList(stockNameList);
-		myPagePortfolio.setStockPriceList(stockPriceList);
+		MyPagePortfolioDTO myPagePortfolio = new MyPagePortfolioDTO(assetsInfo, 
+				portfolioInfoList, historyList, stockNameList, stockPriceList);
+		
 
 		return myPagePortfolio;
 	}
