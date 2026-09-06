@@ -31,7 +31,7 @@ public class PostDAOImpl implements PostDAO{
 	}
 
 	@Override
-	public int selectPostTotalCount(Map<String, Object> params) {
+	public int getPostTotalCount(Map<String, Object> params) {
 			int result = sqlSessionTemplate.selectOne("post_mapper.selectPostTotalCount", params);
 		
 		return result;
@@ -67,6 +67,12 @@ public class PostDAOImpl implements PostDAO{
 	@Override
 	public int deletePost(int postNum) {
 		int result = sqlSessionTemplate.delete("post_mapper.deletePost", postNum);
+		return result;
+	}
+
+	@Override
+	public int updatePost(PostDTO post) {
+		int result = sqlSessionTemplate.update("post_mapper.updatePost", post);
 		return result;
 	}
 	

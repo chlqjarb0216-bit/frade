@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.frade.common.FilePath;
+import com.frade.common.ResultCode;
 import com.frade.dto.community.PostDTO;
 import com.frade.service.community.PostService;
+import com.frade.util.LoginManager;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,22 +34,15 @@ public class CommunityController {
 
 	// 게시글 목록 페이지 이동
 	@GetMapping("")
-	public String lists(HttpSession session) {
-		
-		// [TEST] 강제 로그인 처리: 세션에 로그인 정보가 없다면 1번 유저로 세팅
-				if(session.getAttribute("loginUserNum") == null) {
-					session.setAttribute("loginUserNum", 1); // 확인하신 실제 테스트 유저 번호 입력
-					System.out.println("테스트 로그인 완료! 유저 번호: 1");
-				}
-		
+	public String lists() {
 		return "community/lists";
 	}
 
 	// 게시글 작성 페이지 이동
 	@GetMapping("/write")
-	public String write( @RequestParam(value = "error", required = false) String error, Model model) {
-		if (error != null) {
-			model.addAttribute("msg", "게시글 작성 중 서버 오류가 발생했습니다.");
+	public String write(HttpSession session) {
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
 		}
 		return "community/write";
 	}
@@ -55,34 +51,31 @@ public class CommunityController {
 	@PostMapping("/write")
 	public String writeAction(@Valid PostDTO post, BindingResult br,
 			@RequestParam(value = "uploadFiles", required = false) MultipartFile[] files,
-														HttpSession session) {
+														HttpSession session,
+														RedirectAttributes rttr) {
 
-		//임시 로그인 코드(테스트용)
-		Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-		
-		// 만약 세션이 날아갔거나 비정상 접근이면 튕겨냄
-		if(loginUserNum == null) {
-			return "redirect:/community-lists"; // 실제로는 로그인 페이지로 리다이렉트
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
 		}
-		
-		post.setUserNum(loginUserNum); // 세션에서 꺼낸 번호를 DTO에 주입
-		//임시 로그인 코드(테스트용)
+
+		int loginUserNum = LoginManager.getLoginUserNum(session);
+		post.setUserNum(loginUserNum);
 		
 		if (br.hasErrors()) {
 			return "redirect:/community-lists/write?error=true";
 		}
 
 		try {
-			int result = postService.savePost(post, files);
-			if (result > 0) {
-				return "redirect:/community-lists";
-			} else {
-				return "redirect:/community-lists/write?error=true";
-			}
+			
+			postService.savePost(post, files);
+			return "redirect:/community-lists";
+			
 		} catch (Exception e) {
-
+			
 			log.error(e.getMessage());
-			return "redirect:/community-lists/write?error=true";
+			rttr.addFlashAttribute("msg",ResultCode.POST_WRT_FAIL.getMessage());
+			
+			return "redirect:/community-lists";
 		}
 	}
 
@@ -96,10 +89,14 @@ public class CommunityController {
 	    Cookie[] cookies = request.getCookies();
 	    String viewedPosts = "";
 
-	    // 기존 쿠키들 중에서 "viewedPosts"가 있는지 검사
+	    // 로그인 유저별로 쿠키를 구분하여, 같은 브라우저에서 다른 계정으로 조회 시 각각 정상 카운팅되도록 처리
+	    int loginUserNum = LoginManager.getLoginUserNum(request);
+	    String cookieName = (loginUserNum != -1) ? "viewedPosts_u" + loginUserNum : "viewedPosts_guest";
+
+	    // 기존 쿠키들 중에서 해당 유저의 조회 쿠키가 있는지 검사
 	    if (cookies != null) {
 	        for (Cookie cookie : cookies) {
-	            if (cookie.getName().equals("viewedPosts")) {
+	            if (cookie.getName().equals(cookieName)) {
 	                viewedPosts = cookie.getValue();
 	                
 	                // 쿠키 값에 현재 글 번호가 포함되어 있다면? (예: "[105][106]")
@@ -115,8 +112,7 @@ public class CommunityController {
 	    if (isViewUp) {
 	        // 기존 쿠키 문자열에 새 글 번호를 누적 (숫자가 겹치지 않게 대괄호 사용)
 	        viewedPosts += "[" + postNum + "]";
-	        Cookie newCookie = new Cookie("viewedPosts", viewedPosts);
-	        
+	        Cookie newCookie = new Cookie(cookieName, viewedPosts);
 	        response.addCookie(newCookie); // 사용자 브라우저에 쿠키 저장
 	    }
 
@@ -130,12 +126,10 @@ public class CommunityController {
 	@PostMapping("/delete")
 	public String deleteAction(@RequestParam("postNum") int postNum, HttpSession session) {
 	    
-	    // 현재 로그인한 사람의 세션 번호 가져오기
-	    Integer loginUserNum = (Integer) session.getAttribute("loginUserNum");
-	    
-	    if (loginUserNum == null) {
-	        return "redirect:/community-lists"; // 로그인이 안 되어있으면 튕겨냄
+	    if (!LoginManager.isLogin(session)) {
+	        return "redirect:/user/login";
 	    }
+	    int loginUserNum = LoginManager.getLoginUserNum(session);
 
 	    try {
 	        // DB에서 삭제하려는 게시글 정보 먼저 조회
@@ -158,5 +152,66 @@ public class CommunityController {
 	        log.error("게시글 삭제 중 에러 발생", e);
 	        return "redirect:/community-lists";
 	    }
+	}
+
+	// 게시글 수정 페이지 이동 (GET)
+	@GetMapping("/edit")
+	public String edit(@RequestParam("postNum") int postNum,
+					   HttpSession session,
+					   Model model) {
+
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
+		}
+		int loginUserNum = LoginManager.getLoginUserNum(session);
+
+		PostDTO post = postService.getPost(postNum, false);
+		if (post == null || post.getUserNum() != loginUserNum) {
+			return "redirect:/community-lists/detail?postNum=" + postNum + "&error=auth";
+		}
+
+		model.addAttribute("post", post);
+		return "community/write";
+	}
+
+	// 게시글 수정 처리 (POST)
+	@PostMapping("/edit")
+	public String editAction(@Valid PostDTO post, BindingResult br,
+							 @RequestParam(value = "uploadFiles", required = false) MultipartFile[] files,
+							 @RequestParam(value = "deleteExistingFiles", defaultValue = "false") boolean deleteExistingFiles,
+							 HttpSession session,
+							 RedirectAttributes rttr) {
+
+		if (!LoginManager.isLogin(session)) {
+			return "redirect:/user/login";
+		}
+		int loginUserNum = LoginManager.getLoginUserNum(session);
+
+		if (post.getPostNum() == null) {
+			return "redirect:/community-lists";
+		}
+
+		// 본인 게시글 검증
+		PostDTO existingPost = postService.getPost(post.getPostNum().intValue(), false);
+		if (existingPost == null || existingPost.getUserNum() != loginUserNum) {
+			return "redirect:/community-lists/detail?postNum=" + post.getPostNum() + "&error=auth";
+		}
+
+		if (br.hasErrors()) {
+			return "redirect:/community-lists/edit?postNum=" + post.getPostNum() + "&error=true";
+		}
+
+		try {
+			post.setUserNum(loginUserNum);
+			postService.updatePost(post, files, deleteExistingFiles);
+			
+			return "redirect:/community-lists/detail?postNum=" + post.getPostNum();
+			
+		} catch (Exception e) {
+			log.error("게시글 수정 중 에러 발생", e);
+			
+			rttr.addFlashAttribute("msg",ResultCode.POST_MOD_FAIL.getMessage());
+			return "redirect:/community-lists";
+		}
 	}
 }

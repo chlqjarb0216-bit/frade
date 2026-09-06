@@ -110,6 +110,40 @@
 		</property>
 	</bean>
 
+	<!-- ⭕ 외부 라이브러리 일절 없이 1분 주기 통신까지 무결하게 수용하는 자바 내장 엔진 -->
+	<bean id="simpleClientHttpRequestFactory"
+		class="org.springframework.http.client.SimpleClientHttpRequestFactory">
+		<property name="connectTimeout" value="5000" /> <!-- 연결 마진 5초 -->
+		<property name="readTimeout" value="10000" />    <!-- 데이터 대기 마진 10초 -->
+	</bean>
+
+	<!-- RestTemplate 빈 등록 및 어제 완성한 표준 objectMapper 결합 -->
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+		<constructor-arg ref="simpleClientHttpRequestFactory" />
+		<property name="messageConverters">
+			<list>
+				<!-- 💡 요청/응답 시 Jackson ObjectMapper를 통한 자바 객체 ↔ JSON 자동 파싱 컨버터 -->
+				<bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+					<property name="objectMapper" ref="objectMapper" />
+				</bean>
+				<!-- 문자열 인코딩 깨짐 방지 -->
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<bean class="org.springframework.http.MediaType">
+								<constructor-arg value="text" />
+								<constructor-arg value="plain" />
+								<constructor-arg value="UTF-8" />
+							</bean>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 
 	<!-- 스케줄러 Bean 등록 -->
 	<bean

@@ -114,4 +114,14 @@
 	WHERE post_num = #{postNum}
 </delete>
 
+<update id="updatePost" parameterType="PostDTO">
+	UPDATE t_post
+	SET post_category_num = #{postCategoryNum},
+		post_title = #{postTitle},
+		post_content = #{postContent},
+		post_files = #{postFiles},
+		post_updated_date = SYSDATE
+	WHERE post_num = #{postNum}
+</update>
+
 </mapper>

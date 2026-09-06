@@ -14,28 +14,24 @@ import com.frade.service.stock.StockService;
 
 @Controller
 public class MainController {
-	
+
 	@Autowired
 	private StockService stockService;
-	
+
 	@Autowired
 	private PostService postService;
-	
+
 	/**
 	 * 메인 대시보드 화면 매핑 (루트 / 및 /main 경로 모두 처리)
 	 */
-	@GetMapping({"/", "/main"})
+	@GetMapping({ "/", "/main" })
 	public String main(Model model) {
 		// 1. 실시간 주식 상위 5개 테스트 데이터 조회
-		
-		List<StockPreviewDTO> topStocks = stockService.getSortedStockRankingListPage(0,5)
-				.stream()  //임시로 넣어놓음
-		        .limit(5)
-		        .toList();
+
+		List<StockPreviewDTO> topStocks = stockService.getSortedStockRankingListPage(0, 5);
 
 		// 2. 커뮤니티 인기글 상위 5개 테스트 데이터 조회
-		
-		
+
 		List<PostDTO> topPosts = postService.getPostListPagingSortedByView(5);
 
 		model.addAttribute("topStocks", topStocks);
@@ -43,11 +39,5 @@ public class MainController {
 
 		return "main/main";
 	}
-
-
-
-	
-
-	
 
 }
