@@ -78,8 +78,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 					calculatePercent(portfolioInfo.getValuationAmount(), totalAsset));
 		}
 
-		AssetsInfoDTO assetsInfo = createAssetsInfo(
-				totalValuation, cash, portfolioInfoList.size(), historyList.size());
+		AssetsInfoDTO assetsInfo = new AssetsInfoDTO(
+				totalValuation, cash, portfolioInfoList.size(), historyList.size(), INITIAL_ASSET);
 
 		stockNameList.add("예치금");
 		stockPriceList.add(cash);
@@ -106,21 +106,6 @@ public class PortfolioServiceImpl implements PortfolioService {
 		return Math.round((double) amount / total * 10000) / 100.0;
 	}
 
-	private AssetsInfoDTO createAssetsInfo(long totalValuation, long cash, int stockCnt, int tradeCnt) {
-		AssetsInfoDTO assetsInfo = new AssetsInfoDTO();
-		long totalAsset = totalValuation + cash;
-		long totalRevenue = totalAsset - INITIAL_ASSET;
-
-		assetsInfo.setTotalAsset(totalAsset);
-		assetsInfo.setTotalValuation(totalValuation);
-		assetsInfo.setCash(cash);
-		assetsInfo.setStockCnt(stockCnt);
-		assetsInfo.setTradeCnt(tradeCnt);
-		assetsInfo.setTotalRevenue(totalRevenue);
-		assetsInfo.setRevenuePercent(calculatePercent(totalRevenue, INITIAL_ASSET));
-
-		return assetsInfo;
-	}
 
 	//	=============t_portfolio DAO==============
 
