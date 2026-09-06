@@ -263,7 +263,6 @@ public class UserController {
 		
 		//포트폴리오 정보 전달
 		model.addAttribute("portfolioInfoList", portfolioInfoList); //포트폴리오 정보
-		model.addAttribute("holdingStockCount", portfolioInfoList.size()); //보유 종목 수
 		
 		//거래기록 전달
 		List<HistoryForMypageDTO> historyList= portfolioService.findTradeHistoryForMypageByUserNum(loginUserNumber);
