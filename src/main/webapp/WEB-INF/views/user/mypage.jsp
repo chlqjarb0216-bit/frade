@@ -209,7 +209,7 @@ body {
 
 .totalAsset-summary {
 	grid-column: 1;
-	grid-row: 1 / 3;
+	grid-row: 1/3;
 	align-self: center;
 }
 
@@ -266,16 +266,16 @@ body {
 	flex: 2 1 0;
 	min-width: 0;
 	width: auto;
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid lightgray;
-    padding: 10px;
-    box-sizing: border-box;
+	height: 300px;
+	overflow-y: auto;
+	border: 1px solid lightgray;
+	padding: 10px;
+	box-sizing: border-box;
 }
 
-.history-box > table {
-    width: 100%;
-    border-collapse: collapse;
+.history-box>table {
+	width: 100%;
+	border-collapse: collapse;
 }
 
 .stock-table {
@@ -310,40 +310,33 @@ body {
 	text-align: right;
 }
 
-@media (max-width: 900px) {
+@media ( max-width : 900px) {
 	.mypageHeader {
 		flex-direction: column;
 	}
-
 	.profile-box, .totalAsset-box {
 		width: 100%;
 		box-sizing: border-box;
 	}
-
 	.totalAsset-box {
 		height: auto;
 	}
-
 	.assetInfo-box-top {
 		width: 100%;
 		height: auto;
 		flex-wrap: wrap;
 	}
-
 	.assetInfo-box-top div {
 		height: auto;
 		margin-left: 0;
 	}
-
 	.assetInfo-box-bottom {
 		width: 100%;
 		margin-left: 0;
 	}
-
 	.mypageMiddle {
 		flex-direction: column;
 	}
-
 	.portfolio-circle, .portfolio-Structure-box, .history-box {
 		flex: none;
 		width: 100%;
@@ -351,13 +344,12 @@ body {
 	}
 }
 
-@media (max-width: 600px) {
+@media ( max-width : 600px) {
 	.totalAsset-box {
 		grid-template-columns: 1fr;
 		grid-template-rows: auto;
 		row-gap: 16px;
 	}
-
 	.totalAsset-summary, .assetInfo-box-top, .assetInfo-box-bottom {
 		grid-column: 1;
 		grid-row: auto;
@@ -371,297 +363,306 @@ body {
 	<jsp:include page="../common/navbar.jsp"></jsp:include>
 
 	<main class="mypage-content">
-	<div class="mypageHeader">
-		<div class="profile-box">
+		<div class="mypageHeader">
+			<div class="profile-box">
 
-			<div class="profile-photo">
-				<c:choose>
-					<c:when test="${empty userProfile.userPhoto}">
-						<img src="/resources/images/logo.png" alt="프로필 사진" width="70"
-							height="70">
-					</c:when>
+				<div class="profile-photo">
+					<c:choose>
+						<c:when test="${empty userProfile.userPhoto}">
+							<img src="/resources/images/logo.png" alt="프로필 사진" width="70"
+								height="70">
+						</c:when>
 
-					<c:otherwise>
-						<img src="/fileStorage/user_profile/${userProfile.userPhoto}"
-							alt="프로필 사진" width="70" height="70">
-					</c:otherwise>
-				</c:choose>
-			</div>
-
-			<div class="profile-info">
-
-				<div>
-					<strong>${userProfile.userNick}</strong>
+						<c:otherwise>
+							<img src="/fileStorage/user_profile/${userProfile.userPhoto}"
+								alt="프로필 사진" width="70" height="70">
+						</c:otherwise>
+					</c:choose>
 				</div>
 
+				<div class="profile-info">
 
-				<div>가입일 : ${userProfile.userRegistedDateText}</div>
-
-				<button type="button" id="btnProfileEdit">프로필 수정</button>
-
-			</div>
-
-		</div>
+					<div>
+						<strong>${userProfile.userNick}</strong>
+					</div>
 
 
-		<!-- 프로필 수정 모달 -->
-		<div id="profileModal" class="profile-modal">
+					<div>가입일 : ${userProfile.userRegistedDateText}</div>
 
-			<div class="profile-modal-content">
-
-				<div class="profile-modal-header">
-					<h2>프로필 수정</h2>
+					<button type="button" id="btnProfileEdit">프로필 수정</button>
 
 				</div>
 
-
-				<form id="profileForm" enctype="multipart/form-data">
-
-					<div class="profile-modal-body">
-
-						<!-- 프로필 사진 수정 -->
-						<div class="profile-photo-edit">
-
-							<div class="profile-photo-preview">
-								<img src="/resources/images/logo.png" alt="프로필 사진"
-									id="profilePreview" width="80" height="80">
-							</div>
-
-							<div class="profile-photo-buttons">
-								<p>
-									<strong>프로필 사진</strong>
-								</p>
-
-								<p>JPG, PNG JPEG의 사진만 선택이 가능합니다.</p>
-
-								<input type="file" id="profilePhotoInput" name="profilePhoto"
-									accept=".png,.jpg,.jpeg" style="display: none;"> <input
-									type="hidden" id="defaultPhoto" name="defaultPhoto"
-									value="false">
-
-								<button type="button" id="btnPhotoChange">사진 변경</button>
-								<button type="button" id="btnDefaultPhoto">기본 이미지</button>
-							</div>
-
-						</div>
+			</div>
 
 
-						<!-- 닉네임 변경 -->
-						<div class="profile-nick-edit">
+			<!-- 프로필 수정 모달 -->
+			<div id="profileModal" class="profile-modal">
 
-							<p>
-								<strong>닉네임</strong>
-							</p>
+				<div class="profile-modal-content">
 
-							<input type="text" name="userNick" id="inputProfileNick"
-								value="${userProfile.userNick}">
-
-							<button type="button" id="btnProfileNickCheck">중복확인</button>
-
-							<p id="profileNickCheckMsg"></p>
-
-						</div>
-
-
-						<!-- 비밀번호 변경 -->
-						<div class="profile-pw-edit">
-							<input type="hidden" id="passwordChange" name="passwordChange"
-								value="false">
-
-							<button type="button" id="btnPwToggle">비밀번호 변경 ▼</button>
-
-							<div id="pwChangeArea" style="display: none;">
-
-								<p>
-									<strong>현재 비밀번호</strong>
-								</p>
-								<input type="password" name="currentPw" id="currentPw">
-
-								<p>
-									<strong>새 비밀번호</strong>
-								</p>
-								<input type="password" name="newPw" id="newPw">
-
-								<p>
-									<strong>새 비밀번호 확인</strong>
-								</p>
-								<input type="password" name="newPwCheck" id="newPwCheck">
-
-							</div>
-
-						</div>
-
-
-						<!-- 포트폴리오 공개 여부 -->
-						<div class="profile-public-edit">
-
-							<div>
-								<strong>포트폴리오 공개</strong>
-								<p>다른 사용자에게 내 포트폴리오를 공개합니다.</p>
-							</div>
-
-							<label class="switch"> <input type="checkbox"
-								id="portfolioPublic" name="userPortfolioIsPublic" value="1"
-								<c:if
-                                    test="${userProfile.userPortfolioIsPublic == 1}">checked</c:if>>
-
-
-								<span class="slider"></span>
-
-							</label>
-
-						</div>
-
-
-						<!-- 회원 탈퇴 -->
-						<div class="profile-delete">
-
-							<div>
-								<strong>회원 탈퇴</strong>
-								<p>탈퇴 시 계정 정보를 복구할 수 없습니다.</p>
-							</div>
-
-
-							<button type="button" id="btnUserDelete">탈퇴하기</button>
-
-
-						</div>
-
-
-						<!-- 모달 하단 버튼 -->
-						<div class="profile-modal-footer">
-
-							<button type="button" id="btnProfileCancel">취소</button>
-
-							<button type="submit" id="btnProfileSave">변경사항 저장</button>
-
-						</div>
+					<div class="profile-modal-header">
+						<h2>프로필 수정</h2>
 
 					</div>
 
-				</form>
-				<!-- form 끝 -->
-				<form action="/user/withdraw" method="post" id="userDeleteForm"></form>
+
+					<form id="profileForm" enctype="multipart/form-data">
+
+						<div class="profile-modal-body">
+
+							<!-- 프로필 사진 수정 -->
+							<div class="profile-photo-edit">
+
+								<div class="profile-photo-preview">
+									<img src="/resources/images/logo.png" alt="프로필 사진"
+										id="profilePreview" width="80" height="80">
+								</div>
+
+								<div class="profile-photo-buttons">
+									<p>
+										<strong>프로필 사진</strong>
+									</p>
+
+									<p>JPG, PNG JPEG의 사진만 선택이 가능합니다.</p>
+
+									<input type="file" id="profilePhotoInput" name="profilePhoto"
+										accept=".png,.jpg,.jpeg" style="display: none;"> <input
+										type="hidden" id="defaultPhoto" name="defaultPhoto"
+										value="false">
+
+									<button type="button" id="btnPhotoChange">사진 변경</button>
+									<button type="button" id="btnDefaultPhoto">기본 이미지</button>
+								</div>
+
+							</div>
+
+
+							<!-- 닉네임 변경 -->
+							<div class="profile-nick-edit">
+
+								<p>
+									<strong>닉네임</strong>
+								</p>
+
+								<input type="text" name="userNick" id="inputProfileNick"
+									value="${userProfile.userNick}">
+
+								<button type="button" id="btnProfileNickCheck">중복확인</button>
+
+								<p id="profileNickCheckMsg"></p>
+
+							</div>
+
+
+							<!-- 비밀번호 변경 -->
+							<div class="profile-pw-edit">
+								<input type="hidden" id="passwordChange" name="passwordChange"
+									value="false">
+
+								<button type="button" id="btnPwToggle">비밀번호 변경 ▼</button>
+
+								<div id="pwChangeArea" style="display: none;">
+
+									<p>
+										<strong>현재 비밀번호</strong>
+									</p>
+									<input type="password" name="currentPw" id="currentPw">
+
+									<p>
+										<strong>새 비밀번호</strong>
+									</p>
+									<input type="password" name="newPw" id="newPw">
+
+									<p>
+										<strong>새 비밀번호 확인</strong>
+									</p>
+									<input type="password" name="newPwCheck" id="newPwCheck">
+
+								</div>
+
+							</div>
+
+
+							<!-- 포트폴리오 공개 여부 -->
+							<div class="profile-public-edit">
+
+								<div>
+									<strong>포트폴리오 공개</strong>
+									<p>다른 사용자에게 내 포트폴리오를 공개합니다.</p>
+								</div>
+
+								<label class="switch"> <input type="checkbox"
+									id="portfolioPublic" name="userPortfolioIsPublic" value="1"
+									<c:if
+                                    test="${userProfile.userPortfolioIsPublic == 1}">checked</c:if>>
+
+
+									<span class="slider"></span>
+
+								</label>
+
+							</div>
+
+
+							<!-- 회원 탈퇴 -->
+							<div class="profile-delete">
+
+								<div>
+									<strong>회원 탈퇴</strong>
+									<p>탈퇴 시 계정 정보를 복구할 수 없습니다.</p>
+								</div>
+
+
+								<button type="button" id="btnUserDelete">탈퇴하기</button>
+
+
+							</div>
+
+
+							<!-- 모달 하단 버튼 -->
+							<div class="profile-modal-footer">
+
+								<button type="button" id="btnProfileCancel">취소</button>
+
+								<button type="submit" id="btnProfileSave">변경사항 저장</button>
+
+							</div>
+
+						</div>
+
+					</form>
+					<!-- form 끝 -->
+					<form action="/user/withdraw" method="post" id="userDeleteForm"></form>
+
+				</div>
 
 			</div>
 
+			<div class="totalAsset-box">
+				<div class="totalAsset-summary">
+					<p>총 자산</p>
+					<h2>${assetsInfo.totalAsset}원</h2>
+					<p>${assetsInfo.totalRevenue}원<span>${assetsInfo.revenuePercent}%</span>
+					</p>
+				</div>
+
+				<div class="assetInfo-box-top">
+					<div>
+						<p>초기 투자금</p>
+						<p>10000000원</p>
+					</div>
+					<div>
+						<p>주식 평가금</p>
+						<p>${assetsInfo.totalValuation}원</p>
+					</div>
+					<div>
+						<p>예수금</p>
+						<p>${assetsInfo.cash}원</p>
+					</div>
+
+				</div>
+
+				<div class="assetInfo-box-bottom">
+					<div>
+						<p>보유 종목수</p>
+						<p>${assetsInfo.stockCnt}원</p>
+					</div>
+					<div>
+						<p>총 거래 횟수</p>
+						<p>${assetsInfo.tradeCnt}원</p>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<div class="totalAsset-box">
-			<div class="totalAsset-summary">
-				<p>총 자산</p>
-				<h2>${assetsInfo.totalAsset}원</h2>
-				<p>${assetsInfo.totalRevenue}원<span>${assetsInfo.revenuePercent}%</span>
-				</p>
+		<div class="mypageMiddle">
+
+			<div class="portfolio-circle">
+				<canvas id="portfolioChart"></canvas>
 			</div>
 
-			<div class="assetInfo-box-top">
-				<div>
-					<p>초기 투자금</p>
-					<p>10000000원</p>
-				</div>
-				<div>
-					<p>주식 평가금</p>
-					<p>${assetsInfo.totalValuation}원</p>
-				</div>
-				<div>
-					<p>예수금</p>
-					<p>${assetsInfo.cash}원</p>
-				</div>
-
-			</div>
-
-			<div class="assetInfo-box-bottom">
-				<div>
-					<p>보유 종목수</p>
-					<p>${assetsInfo.stockCnt}원</p>
-				</div>
-				<div>
-					<p>총 거래 횟수</p>
-					<p>${assetsInfo.tradeCnt}원</p>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="mypageMiddle">
-
-		<div class="portfolio-circle">
-			<canvas id="portfolioChart"></canvas>
-		</div>
 
 
 
-
-		<table class="portfolio-Structure-box">
-			<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
-				<tr>
-					<td>${portfolioInfo.stockName}</td>
-					<td>${portfolioInfo.stockCnt}주</td>
-					<td>${portfolioInfo.valuationAmount}원</td>
-				</tr>
-			</c:forEach>
-		</table>
-
-
-
-		<div class="history-box">
-			<table>
-				<thead>
+			<table class="portfolio-Structure-box">
+				<c:if test="${empty portfolioInfoList}">
+					<td>포트폴리오가 비어있습니다.</td>
+				</c:if>
+				<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
 					<tr>
-						<th colspan="4">거래기록</th>
+						<td>${portfolioInfo.stockName}</td>
+						<td>${portfolioInfo.stockCnt}주</td>
+						<td>${portfolioInfo.valuationAmount}원</td>
 					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="history" items="${historyList}">
-						<tr>
-							<td>${history.stockName}</td>
-							<td>${history.tradePrice}원</td>
-							<td>${history.tradeCnt}주</td>
-							<td>${history.tradeDate}</td>
-						</tr>
-					</c:forEach>
-				</tbody>
+				</c:forEach>
 			</table>
+
+
+
+			<div class="history-box">
+				<table>
+					<thead>
+						<tr>
+							<th colspan="4">거래기록</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:if test="${empty historyList}">
+							<td>거래기록이 없습니다.</td>
+						</c:if>
+						<c:forEach var="history" items="${historyList}">
+							<tr>
+								<td>${history.stockName}</td>
+								<td>${history.tradePrice}원</td>
+								<td>${history.tradeCnt}주</td>
+								<td>${history.tradeDate}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
 		</div>
-	</div>
 
 
 
 
-	<p style="margin-top: 20px">보유 종목</p>
-	<table class="stock-table">
-		<thead>
-			<tr>
-				<th>종목명</th>
-				<th>보유 수량</th>
-				<th>매수 평단가</th>
-				<th>현재가</th>
-				<th>평가 금액</th>
-				<th>평가 손익</th>
-				<th>수익률</th>
-				<th>비율</th>
-			</tr>
-		</thead>
-
-		<tbody>
-			<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
+		<p style="margin-top: 20px">보유 종목</p>
+		<table class="stock-table">
+			<thead>
 				<tr>
-					<td>
-						<span class="holding-stock-name">${portfolioInfo.stockName}</span>
-						<span class="holding-stock-code">${portfolioInfo.stockCode}</span>
-					</td>
-					<td>${portfolioInfo.stockCnt}주</td>
-					<td>${portfolioInfo.avgStockBuyCost}원</td>
-					<td>${portfolioInfo.stockNowPrice}원</td>
-					<td>${portfolioInfo.valuationAmount}원</td>
-					<td>${portfolioInfo.pnl}원</td>
-					<td>${portfolioInfo.profitPercent}%</td>
-					<td>${portfolioInfo.weightPercent}%</td>
+					<th>종목명</th>
+					<th>보유 수량</th>
+					<th>매수 평단가</th>
+					<th>현재가</th>
+					<th>평가 금액</th>
+					<th>평가 손익</th>
+					<th>수익률</th>
+					<th>비율</th>
 				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
+			</thead>
+
+			<tbody>
+			
+				<c:if test="${empty portfolioInfoList}">
+							<td>보유 종목이 없습니다.</td>
+						</c:if>
+				<c:forEach var="portfolioInfo" items="${portfolioInfoList}">
+					<tr>
+						<td><span class="holding-stock-name">${portfolioInfo.stockName}</span>
+							<span class="holding-stock-code">${portfolioInfo.stockCode}</span>
+						</td>
+						<td>${portfolioInfo.stockCnt}주</td>
+						<td>${portfolioInfo.avgStockBuyCost}원</td>
+						<td>${portfolioInfo.stockNowPrice}원</td>
+						<td>${portfolioInfo.valuationAmount}원</td>
+						<td>${portfolioInfo.pnl}원</td>
+						<td>${portfolioInfo.profitPercent}%</td>
+						<td>${portfolioInfo.weightPercent}%</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
 
 
 
