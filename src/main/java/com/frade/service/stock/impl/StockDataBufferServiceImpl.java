@@ -19,16 +19,17 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.frade.config.KiwoomApiConfig;
+import com.frade.dto.event.RealtimeStockEvent;
 import com.frade.dto.stock.StockPriceComputableDTO;
 import com.frade.dto.stock.StockPriceDTO;
 import com.frade.memcache.StockMemoryCache;
-import com.frade.service.stock.SseChartPushService;
 import com.frade.service.stock.StockDataBufferService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 	private final ObjectMapper objectMapper;
 	private final TaskExecutor stockBufferTaskExecutor;
 	private final StockMemoryCache stockMemoryCache; // 이미 RAM에 로드되어 있는 초고속 100종목 캐시
-	private final SseChartPushService sseChartPushService;
+	private final ApplicationEventPublisher eventPublisher;
 
 	private final Queue<String> stockEventQueue = new ConcurrentLinkedQueue<>();
 	private final Map<String, StockPriceComputableDTO> globalBufferMap = new ConcurrentHashMap<>();
@@ -56,12 +57,12 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 	private volatile String prevRecordedMinuteStr = "";
 
 	public StockDataBufferServiceImpl(ObjectMapper objectMapper, TaskExecutor stockBufferTaskExecutor,
-			StockMemoryCache stockMemoryCache, SseChartPushService sseChartPushService,
+			StockMemoryCache stockMemoryCache, ApplicationEventPublisher eventPublisher,
 			KiwoomApiConfig kiwoomApiConfig) {
 		this.objectMapper = objectMapper;
 		this.stockBufferTaskExecutor = stockBufferTaskExecutor;
 		this.stockMemoryCache = stockMemoryCache;
-		this.sseChartPushService = sseChartPushService;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 	public List<StockPriceDTO> flushCompleteMinuteBuffer() {
 		String targetMinuteStr = batchTimeTaskQueue.poll();
 		if (targetMinuteStr == null) {
-			return new ArrayList<>(); // 큐가 비어있으면 0초만에 빈 리스트 직접 리턴 (isEmpty 효과)
+			return Collections.emptyList(); // 큐가 비어있으면 0초만에 빈 리스트 직접 리턴 (isEmpty 효과)
 		}
 
 		List<StockPriceDTO> targetList = new ArrayList<>();
@@ -230,16 +231,13 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 
 				// 💡 C. 글로벌 맵 실시간 다이렉트 적재 연산 (초고속 차트 연동용 '종목코드_분시간' 결합키 사용)
 				String compositeKey = stockCode + "_" + currentMinuteStr;
-				StockPriceComputableDTO dto = globalBufferMap.compute(compositeKey, (k, d) -> {
-					if (d == null)
-						return new StockPriceComputableDTO(stockCode,
-								LocalDateTime.parse(currentMinuteStr, MINUTE_FORMATTER), currentPrice, rawVolume);
-					d.updateRealtimeData(currentPrice, rawVolume);
-					return d;
-				});
+				StockPriceComputableDTO dto = globalBufferMap.computeIfAbsent(compositeKey,
+						k -> new StockPriceComputableDTO(stockCode,
+								LocalDateTime.parse(currentMinuteStr, MINUTE_FORMATTER), currentPrice, rawVolume));
+				dto.updateRealtimeData(currentPrice, rawVolume);
 
-				// 💡 D. SSE 단방향 JSON 스트링 멀티캐스팅 푸시 즉시 연동
-				sseChartPushService.pushChartToSse(stockCode, dto.toFinalDTO(), currentMinuteStr);
+				// 💡 D. 이벤트 발행
+				eventPublisher.publishEvent(new RealtimeStockEvent(dto.toFinalDTO()));
 			}
 		} catch (Exception e) {
 			log.error("수집 엔진 에러: {}", e.getMessage());
