@@ -1,233 +1,456 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주식 주문</title>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+    crossorigin="anonymous">
+
 <style>
+body {
+    background-color: #f8f9fa;
+    color: #191f28;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, "Noto Sans KR", sans-serif;
+    letter-spacing: -0.02em;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
 .order-form {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 20px;
-	border: 1px solid black;
-	border-radius: 15px;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	align-content: center;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 28px 24px;
+    background: #ffffff;
+    border: 1px solid #e5e8eb;
+    border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
 }
 
 .trOption, .prOption {
-	width: 100%;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	justify-content: space-around;
+    display: flex;
+    gap: 8px;
+    width: 100%;
 }
 
 .custom-radio {
-	width: 185px;
-	margin: 3px;
-	border-radius: 15px;
-	/* border: 0.1px solid gray; */
+    flex: 1;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.custom-radio h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.trOption .btn-outline-primary {
+    border-color: #f04452;
+    color: #f04452;
+}
+
+.trOption .btn-check:checked + .btn-outline-primary {
+    background-color: #f04452;
+    border-color: #f04452;
+    color: #ffffff;
+}
+
+.trOption .btn-outline-danger {
+    border-color: #3182f6;
+    color: #3182f6;
+}
+
+.trOption .btn-check:checked + .btn-outline-danger {
+    background-color: #3182f6;
+    border-color: #3182f6;
+    color: #ffffff;
+}
+
+.prOption .btn-secondary {
+    background-color: #f2f4f6;
+    border-color: transparent;
+    color: #8b95a1;
+}
+
+.prOption .btn-check:checked + .btn-secondary {
+    background-color: #333d4b;
+    border-color: transparent;
+    color: #ffffff;
+}
+
+.order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) {
+    width: 100%;
+}
+
+.order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) p {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #4e5968;
+}
+
+.order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) p {
+    width: 100%;
 }
 
 #orderPrice, #orderCount {
-	width: 300px;
-	height: 30px;
-	border: 1px solid lightgray;
+    flex: 1;
+    height: 44px;
+    border: 1px solid #e5e8eb;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #191f28;
+    outline: none;
+    margin-right: 6px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.custom-submit {
-	width: 100%;
-}
-
-.caculPrice {
-	box-sizing: border-box;
-	width: 100%;
-	text-align: left;
-	margin: 20px 0;
-	padding: 5px;
-	border: 1px solid lightgray;
-	border-radius: 10px;
-}
-
-.caculPrice p {
-	margin: 10px;
-}
-
-.caculPrice span {
-	margin-left: 130px;
+#orderPrice:focus, #orderCount:focus {
+    border-color: #3182f6;
+    box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.12);
 }
 
 .ctlBtn {
-	width: 35px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e8eb;
+    background-color: #ffffff;
+    color: #4e5968;
 }
 
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-	-webkit-appearance: none;
-	margin: 0;
+.ctlBtn:hover {
+    background-color: #f2f4f6;
+    color: #191f28;
+    border-color: #e5e8eb;
+}
+
+.caculPrice {
+    width: 100%;
+    margin: 4px 0 0 0;
+    padding: 16px 18px;
+    border: none;
+    background-color: #f8f9fa;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.caculPrice p {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #8b95a1;
+    font-weight: 500;
+}
+
+.caculPrice span {
+    margin-left: 0 !important;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333d4b;
+}
+
+.caculPrice p:last-child {
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px dashed #e5e8eb;
+}
+
+.caculPrice p:last-child span {
+    font-size: 16px;
+    font-weight: 700;
+    color: #3182f6;
+}
+
+.custom-submit {
+    width: 100%;
+    height: 52px;
+    background-color: #3182f6;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: background-color 0.15s ease;
+}
+
+.custom-submit:hover {
+    background-color: #1b64da;
 }
 
 .order-modal {
-	display: none;
-	position: fixed;
-	z-index: 1000;
-	width: 500px;
-	height: 500px;
-	margin: 50px;
-	padding: 50px;
-	border: 2px solid lightgray;
-	border-radius: 25px;
-	background-color: #0e0f37;
-	color: white;
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
+    width: 90%;
+    max-width: 400px;
+    height: auto;
+    margin: 0;
+    padding: 28px 24px;
+    border: none;
+    border-radius: 20px;
+    background-color: #ffffff;
+    color: #191f28;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 .order-modal.modalOpen {
-	display: block;
+    display: block;
+}
+
+.order-modal h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #191f28;
+    margin-bottom: 20px;
 }
 
 .text-box {
-	border: 1px solid gray;
-	border-radius: 10px;
-	padding: 20px;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
+    border: 1px solid #f2f4f6;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-.custom-btn {
-	width: 195px;
+.text-box p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.text-box > div:first-child p {
+    color: #8b95a1;
+    font-weight: 500;
+}
+
+.text-box > div:last-child p {
+    color: #191f28;
+    font-weight: 600;
+    text-align: right;
+}
+
+.order-modal h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #4e5968;
+    text-align: right;
+    margin-bottom: 24px;
+}
+
+.order-modal h4 span {
+    font-size: 20px;
+    font-weight: 700;
+    color: #3182f6;
+    margin-left: 8px;
+}
+
+.order-modal .custom-btn {
+    width: calc(50% - 4px);
+    height: 48px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.order-modal .custom-btn h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#cancleOrderBtn {
+    background-color: #f2f4f6;
+    color: #4e5968;
+}
+
+#cancleOrderBtn:hover {
+    background-color: #e5e8eb;
+}
+
+#confirmOrderBtn {
+    background-color: #3182f6;
+    color: #ffffff;
+}
+
+#confirmOrderBtn:hover {
+    background-color: #1b64da;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 </style>
 
 	<form action="${pageContext.request.contextPath}/stock/trade" method="post" class="order-form">
 
-		<!-- <input type="hidden" id="stockName" value="${stockPreview.stockName}">
-		<input type="hidden" id="stockCode" name="stockCode" value="${stockPreview.stockCode}"> -->
+    <form action="" method="post" class="order-form">
 
-		<!--============더미데이터==============-->
-		<input type="hidden" id="stockName" value="삼성전자"> <input
-			type="hidden" id="stockCode" name="stockCode" value="005930">
-		<!--============더미데이터==============-->
+        <input type="hidden" id="stockName" value="삼성전자"> <input
+            type="hidden" id="stockCode" name="stockCode" value="005930">
 
-		<div class="trOption">
-			<input type="radio" class="btn-check" name="tradeOption"
-				id="success-outlined" autocomplete="off" checked value="BUY">
-			<label class="btn btn-outline-primary custom-radio"
-				for="success-outlined">
-				<h3>매수</h3>
-			</label> <input type="radio" class="btn-check" name="tradeOption"
-				id="danger-outlined" autocomplete="off" value="SELL"> <label
-				class="btn btn-outline-danger custom-radio" for="danger-outlined">
-				<h3>매도</h3>
-			</label>
-		</div>
+        <div class="trOption">
+            <input type="radio" class="btn-check" name="tradeOption"
+                id="success-outlined" autocomplete="off" checked value="BUY">
+            <label class="btn btn-outline-primary custom-radio"
+                for="success-outlined">
+                <h3>매수</h3>
+            </label> <input type="radio" class="btn-check" name="tradeOption"
+                id="danger-outlined" autocomplete="off" value="SELL"> <label
+                class="btn btn-outline-danger custom-radio" for="danger-outlined">
+                <h3>매도</h3>
+            </label>
+        </div>
 
 
 
-		<div class="prOption">
-			<input type="radio" class="btn-check" name="priceOption"
-				id="limitPriceOpt" autocomplete="off" value="LIMITPRICE" checked> <label
-				class="btn btn-secondary custom-radio" for="limitPriceOpt">
-				<h3>지정가</h3>
-				
-			</label> <input type="radio" class="btn-check" name="priceOption"
-				id="marketPriceOpt" autocomplete="off" value="MARKETPRICE">
-			<label class="btn btn-secondary custom-radio" for="marketPriceOpt">
-				<h3>시장가</h3>
-			</label>
+        <div class="prOption">
+            <input type="radio" class="btn-check" name="priceOption"
+                id="limitPriceOpt" autocomplete="off" value="LIMITPRICE" checked> <label
+                class="btn btn-secondary custom-radio" for="limitPriceOpt">
+                <h3>지정가</h3>
+                
+            </label> <input type="radio" class="btn-check" name="priceOption"
+                id="marketPriceOpt" autocomplete="off" value="MARKETPRICE">
+            <label class="btn btn-secondary custom-radio" for="marketPriceOpt">
+                <h3>시장가</h3>
+            </label>
 
 
 
-		</div>
+        </div>
 
-		<div style="margin-top: 20px;">
-			<p>주문 가격</p>
-			<!-- 시장가 하드코딩 -->
-			<input type="number" id="orderPrice" name="orderPrice" min="0"
-				value="210000" />
+        <div style="margin-top: 20px;">
+            <p>주문 가격</p>
+            <input type="number" id="orderPrice" name="orderPrice" min="0"
+                value="210000" />
 
 
-			<button type="button" class="btn btn-outline-primary ctlBtn pricePtn"
-				onclick="changeValue('orderPrice', 100)">+</button>
-			<button type="button" class="btn btn-outline-danger ctlBtn pricePtn"
-				onclick="changeValue('orderPrice', -100)">-</button>
-		</div>
+            <button type="button" class="btn btn-outline-primary ctlBtn pricePtn"
+                onclick="changeValue('orderPrice', 100)">+</button>
+            <button type="button" class="btn btn-outline-danger ctlBtn pricePtn"
+                onclick="changeValue('orderPrice', -100)">-</button>
+        </div>
 
-		<div>
-			<p>주문 수량</p>
-			<input type="number" id="orderCount" name="orderCount" min="1"
-				step="1" value="0" />
-			<!--max값에 보유수량 넣을 예정-->
+        <div>
+            <p>주문 수량</p>
+            <input type="number" id="orderCount" name="orderCount" min="1"
+                step="1" value="1" />
 
-				<button type="button" class="btn btn-outline-primary ctlBtn"
-				onclick="changeValue('orderCount', 1)">+</button>
-				<button type="button" class="btn btn-outline-danger ctlBtn"
-				onclick="changeValue('orderCount', -1)">-</button>
-		</div>
+                <button type="button" class="btn btn-outline-primary ctlBtn"
+                onclick="changeValue('orderCount', 1)">+</button>
+                <button type="button" class="btn btn-outline-danger ctlBtn"
+                onclick="changeValue('orderCount', -1)">-</button>
+        </div>
 
 
 
 
-		<div class="caculPrice">
-			<p>
-				주문 가능 금액 <span>${userCash} 원</span>
-			</p>
-			<p>
-				보유 수량 <span style="margin-left: 167px">${stockCnt} 주</span>
-			</p>
-			<p>
-				예상 주문 금액 <span id="expectedOrderAmount"></span>
-			</p>
-		</div>
+        <div class="caculPrice">
+            <p>
+                주문 가능 금액 <span>${userCash} 원</span>
+            </p>
+            <p>
+                보유 수량 <span style="margin-left: 167px">${stockCnt} 주</span>
+            </p>
+            <p>
+                예상 주문 금액 <span id="expectedOrderAmount">100원</span>
+            </p>
+        </div>
 
-		<!-- <button type="submit">주문하기</button> -->
-		<button type="button" class="btn btn-primary btn-lg custom-submit"
-			id="openModal">주문하기</button>
-
-
-
-		<div class="order-modal">
-
-			<h3 style="font-weight: bold">주문 확인</h3>
-			<br>
+        <button type="button" class="btn btn-primary btn-lg custom-submit"
+            id="openModal">주문하기</button>
 
 
 
-			<div class="text-box">
-				<div style="opacity: 0.5;">
-					<p>종목</p>
-					<p>구분</p>
-					<p>주문 가격</p>
-					<p>수량</p>
-				</div>
+        <div class="order-modal">
 
-				<div>
-					<!--입력값대로 넣을 예정-->
-					<p id="cfStockName">삼성전자 (005930)</p>
-					<p id="cfTradeOption">매수 (지정가)</p>
-					<p id="cfOrderPrice">271,000원</p>
-					<p id="cfOrderCount">1주</p>
-				</div>
-			</div>
-			<br>
-			<h4 style="text-align: right; font-weight: bold;">
-				총 주문 금액 <span id="cfTotalPrice">271,000원</span>
-				</h5>
-				<br>
+            <h3 style="font-weight: bold">주문 확인</h3>
+            <br>
 
-				<button type="button" class="btn btn-secondary custom-btn"
-					id="cancleOrderBtn">
-					<h3>취소</h3>
-				</button>
-				<button type="submit" class="btn btn-primary custom-btn"
-					id="confirmOrderBtn">
-					<h3>주문 확정</h3>
-				</button>
-		</div>
 
-	</form>
 
-	<script>
+            <div class="text-box">
+                <div style="opacity: 0.5;">
+                    <p>종목</p>
+                    <p>구분</p>
+                    <p>주문 가격</p>
+                    <p>수량</p>
+                </div>
+
+                <div>
+                    <p id="cfStockName">삼성전자 (005930)</p>
+                    <p id="cfTradeOption">매수 (지정가)</p>
+                    <p id="cfOrderPrice">271,000원</p>
+                    <p id="cfOrderCount">1주</p>
+                </div>
+            </div>
+            <br>
+            <h4 style="text-align: right; font-weight: bold;">
+                총 주문 금액 <span id="cfTotalPrice">271,000원</span>
+                </h4>
+                <br>
+
+                <button type="button" class="btn btn-secondary custom-btn"
+                    id="cancleOrderBtn">
+                    <h3>취소</h3>
+                </button>
+                <button type="submit" class="btn btn-primary custom-btn"
+                    id="confirmOrderBtn">
+                    <h3>주문 확정</h3>
+                </button>
+        </div>
+
+    </form>
+
+    <script>
 
         const orderPriceInput = document.getElementById("orderPrice");
         const orderCountInput = document.getElementById("orderCount");
@@ -252,7 +475,6 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
             const input = document.getElementById(inputId);
             const currentValue = Number(input.value) || 0;
 
-            // 가격과 수량이 음수가 되지 않도록 제한
             input.value = Math.max(0, currentValue + changeAmount);
 
             updateExpectedAmount();
@@ -274,22 +496,15 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
             const orderPrice = Number(orderPriceInput.value) || 0;
             const orderCount = Number(orderCountInput.value) || 0;
 
-/*             const validationMessages = []; */
-
             if (orderPrice <= 0) {
-            	alert("가격이 0보다 커야 합니다.");
-            	return;
+                alert("가격이 0보다 커야 합니다.");
+                return;
             }
 
             if (orderCount <= 0) {
-            	alert("수량이 0보다 커야 합니다.");
-            	return;
-            }
-
-/*             if (validationMessages.length > 0) {
-                alert(validationMessages.join("\n"));
+                alert("수량이 0보다 커야 합니다.");
                 return;
-            } */
+            }
 
             const tradeOption = document.querySelector('input[name="tradeOption"]:checked').value;
             const priceOption = document.querySelector('input[name="priceOption"]:checked').value;
@@ -342,20 +557,20 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         priceOption.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === "MARKETPRICE") {
-                	orderPriceInput.value = 210000;   //시장가 하드코딩
-                	orderPriceInput.readOnly = true;
-                	
-                	orderPriceInput.style.backgroundColor = "#e9ecef";
+                    orderPriceInput.value = 210000;
+                    orderPriceInput.readOnly = true;
+                    
+                    orderPriceInput.style.backgroundColor = "#e9ecef";
 
                     pricePtn.forEach(btn => {
                     btn.disabled = true;
             });
 
                 } else {
-                	orderPriceInput.value = orderPriceInput.value;
-                	orderPriceInput.readOnly = false;
-                	
-                	orderPriceInput.style.backgroundColor = "";
+                    orderPriceInput.value = orderPriceInput.value;
+                    orderPriceInput.readOnly = false;
+                    
+                    orderPriceInput.style.backgroundColor = "";
                     orderPriceInput.style.cursor = "";
                     
                     pricePtn.forEach(btn => {
@@ -366,3 +581,6 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         });
 
     </script>
+</body>
+
+</html>
