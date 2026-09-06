@@ -122,7 +122,7 @@ body {
         </div>
         <div class="chart-body">
 			<div class="chart-box">
-				<h2>📈 가상 거래 차트 (BTC/USDT 시뮬레이터 예시)</h2>
+				<h2>📈 가상 거래 차트</h2>
 				<!-- 차트가 그려질 영역 -->
 				<div id="stock-chart"></div>
 			</div>
@@ -143,7 +143,11 @@ body {
         src="https://cdn.jsdelivr.net/npm/apexstock/dist/apexstock.min.js"></script>
 
     <script src="/resources/js/stock_search_preview.js"></script>
-    <script src="/resources/js/draw_chart.js"></script>
+    <script>
+		// 💡 핵심: 백엔드 데이터를 브라우저 전역 변수에 먼저 심어줍니다.
+		window.SERVER_CHART_DATA = ${chartDataJson};
+	</script>
+    <script src="/resources/js/draw_stock_chart.js"></script>
 </body>
 
 </html>
