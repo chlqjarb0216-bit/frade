@@ -1049,17 +1049,20 @@ body {
 						profileModal.style.display = "none";
 
 					});
-					const data = {
-						labels: ${stockNameList},
+					
+                    const portfolioLabels = ${stockNameList};
+                    const portfolioColors = portfolioLabels.map(function (_, index) {
+                        const hue = (220 + index * 137.508) % 360;
+                        const saturation = [72, 65, 78][index % 3];
+                        const lightness = [48, 58, 40][Math.floor(index / 3) % 3];
+                        return "hsl(" + hue.toFixed(3) + ", " + saturation + "%, " + lightness + "%)";
+                    });
+                    const data = {
+						labels: portfolioLabels,
 						datasets: [{
 							label: "평가금액",
 							data: ${stockPriceList},
-							backgroundColor: [
-								"#4e73df",
-								"#1cc88a",
-								"#f6c23e",
-								"#858796"
-							],
+							backgroundColor: portfolioColors,
 							borderColor: "#ffffff",
 							borderWidth: 2,
 							hoverOffset: 10

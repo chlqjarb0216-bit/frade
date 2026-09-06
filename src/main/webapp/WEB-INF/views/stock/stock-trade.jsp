@@ -22,18 +22,19 @@ body {
     color: #191f28;
 }
 
-.container {
-    max-width: 900px;
+.stock-trade-container {
+    max-width: 1280px;
 }
 
-form {
+.stock-search-form {
     display: flex;
     gap: 8px;
     margin-bottom: 20px;
 }
 
-form input {
+.stock-search-form input {
     flex: 1;
+    min-width: 0;
     height: 44px;
     padding: 0 16px;
     border: 1px solid #e5e8eb;
@@ -41,7 +42,7 @@ form input {
     outline: none;
 }
 
-form button {
+.stock-search-form button {
     padding: 0 20px;
     background-color: #3182f6;
     color: #ffffff;
@@ -71,8 +72,13 @@ form button {
 
 .stock-trade-layout { display: flex; align-items: flex-start; gap: 24px; }
 .stock-trade-main { flex: 1; min-width: 0; }
-.stock-order-panel { flex: 0 0 430px; }
+.stock-order-panel { flex: 0 0 430px; min-width: 0; }
 .stock-trade-main .chart-box { max-width: none; }
+@media (max-width: 991px) {
+    .stock-trade-layout { flex-direction: column; }
+    .stock-trade-main, .stock-order-panel { width: 100%; }
+    .stock-order-panel { flex: none; }
+}
 </style>
 </head>
 
@@ -80,8 +86,10 @@ form button {
 
     <jsp:include page="../common/navbar.jsp"></jsp:include>
 
-    <div class="container mt-5">
-        <form action="/stock/search">
+    <div class="container stock-trade-container mt-5">
+        <div class="stock-trade-layout">
+        <div class="stock-trade-main">
+        <form action="/stock/search" class="stock-search-form">
             <input id="searchKeyword" name="searchKeyword" type="text"
                 placeholder="${ stockPreview.stockName }" />
             <ul id="previewList" style="display: none;"></ul>
@@ -121,7 +129,7 @@ form button {
 		</div>
 		</div>
 		<aside class="stock-order-panel">
-			<jsp:include page="./order.jsp"></jsp:include>
+			<jsp:include page="./order.jsp"><jsp:param name="embedded" value="true" /></jsp:include>
 		</aside>
 		</div>
     </div>
