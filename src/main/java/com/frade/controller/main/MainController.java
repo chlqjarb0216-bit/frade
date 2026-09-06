@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frade.common.stock.StockCommonFinalString;
 import com.frade.dto.community.PostDTO;
 import com.frade.dto.stock.StockPreviewDTO;
@@ -25,6 +27,9 @@ public class MainController {
 	@Autowired
 	private PostService postService;
 
+	@Autowired
+	ObjectMapper objectMapper;
+
 	/**
 	 * 메인 대시보드 화면 매핑 (루트 / 및 /main 경로 모두 처리)
 	 */
@@ -42,9 +47,14 @@ public class MainController {
 		model.addAttribute("topPosts", topPosts);
 
 		//코스피 차트 데이터
-		String kospiDataList = stockService.getEveryChartDataCached(StockCommonFinalString.KOSPI);
-		log.info("코스피 데이터 {}", kospiDataList);
-		model.addAttribute("chartDataJson", kospiDataList);
+		List<Object[]> kospiDataList = stockService.getEveryChartDataCached(StockCommonFinalString.KOSPI);
+		String jsonString = "[]";
+		try {
+			jsonString = objectMapper.writeValueAsString(kospiDataList);
+		} catch (JsonProcessingException e) {
+			log.error("jsonString 매핑중 에러 발생");
+		}
+		model.addAttribute("chartDataJson", jsonString);
 
 		return "main/main";
 	}

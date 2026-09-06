@@ -27,7 +27,7 @@ public interface StockService {
 			List<StockPriceDTO> priceList);
 
 	//StockPriceMemoryCache에서 해당 종목의 최신 2일간의 차트 데이터를 불러옴
-	public String getEveryChartDataCached(String stockCode);
+	public List<Object[]> getEveryChartDataCached(String stockCode);
 
 	//버퍼에서 마감데이터를 가져와 DB에 저장
 	public void flushCompletedMinuteBufferAndSave();
