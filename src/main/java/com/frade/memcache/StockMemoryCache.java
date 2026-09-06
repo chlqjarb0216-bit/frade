@@ -44,8 +44,8 @@ public class StockMemoryCache {
 
 		// 초고속 조회를 위한 메모리 적재
 		for (StockInfoDTO stock : stockList) {
-			codeCacheMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
-			allStockList.add(stock); // 이름/자동완성 검색용 리스트 채우기
+			newMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
+			newList.add(stock); // 이름/자동완성 검색용 리스트 채우기
 		}
 
 		// 메모리 객체 갈아끼우기
