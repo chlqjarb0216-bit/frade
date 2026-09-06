@@ -1,5 +1,8 @@
 package com.frade.service.order;
 
+import java.util.List;
+
+import com.frade.dto.order.HistoryDTO;
 import com.frade.dto.order.OrderInfoDTO;
 import com.frade.dto.user.UserCashDTO;
 
@@ -14,5 +17,7 @@ public interface OrderService {
 	public boolean saveMarketPrice(OrderInfoDTO orderInfo);
 	
 	public UserCashDTO findUserCashByUserNum(int userNum);
+	
+	public List<HistoryDTO> findTradeHistoryByUserNum(int userNum);
 	
 }

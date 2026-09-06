@@ -1,27 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-<title>Insert title here</title>
-
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-	crossorigin="anonymous">
-
 <style>
 .order-form {
-	margin: 5%;
-	padding: 5%;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 20px;
 	border: 1px solid black;
 	border-radius: 15px;
-	width: 40%;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -29,6 +15,7 @@
 }
 
 .trOption, .prOption {
+	width: 100%;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -49,13 +36,14 @@
 }
 
 .custom-submit {
-	width: 400px;
+	width: 100%;
 }
 
 .caculPrice {
-	width: 400px;
+	box-sizing: border-box;
+	width: 100%;
 	text-align: left;
-	margin: 20px;
+	margin: 20px 0;
 	padding: 5px;
 	border: 1px solid lightgray;
 	border-radius: 10px;
@@ -110,12 +98,11 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 	width: 195px;
 }
 </style>
-</head>
 
+	<form action="${pageContext.request.contextPath}/stock/trade" method="post" class="order-form">
 
-<body>
-
-	<form action="" method="post" class="order-form">
+		<!-- <input type="hidden" id="stockName" value="${stockPreview.stockName}">
+		<input type="hidden" id="stockCode" name="stockCode" value="${stockPreview.stockCode}"> -->
 
 		<!--============더미데이터==============-->
 		<input type="hidden" id="stockName" value="삼성전자"> <input
@@ -169,7 +156,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 		<div>
 			<p>주문 수량</p>
 			<input type="number" id="orderCount" name="orderCount" min="1"
-				step="1" value="1" />
+				step="1" value="0" />
 			<!--max값에 보유수량 넣을 예정-->
 
 				<button type="button" class="btn btn-outline-primary ctlBtn"
@@ -189,7 +176,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 				보유 수량 <span style="margin-left: 167px">${stockCnt} 주</span>
 			</p>
 			<p>
-				예상 주문 금액 <span id="expectedOrderAmount">100원</span>
+				예상 주문 금액 <span id="expectedOrderAmount"></span>
 			</p>
 		</div>
 
@@ -379,6 +366,3 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         });
 
     </script>
-</body>
-
-</html>

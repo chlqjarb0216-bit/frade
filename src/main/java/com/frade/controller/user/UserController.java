@@ -12,7 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frade.common.ResultCode;
+import com.frade.dto.rest.RestApiResponse;
+import com.frade.dto.user.MyPagePortfolioDTO;
+import com.frade.dto.user.UserProfileDTO;
+import com.frade.service.portfolio.PortfolioService;
 import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSessionDTO;
@@ -27,6 +33,12 @@ public class UserController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	PortfolioService portfolioService;
+	
+	@Autowired
+	ObjectMapper objectMapper;
 
 	// 로그인 화면
 	@GetMapping("/login")
@@ -172,6 +184,53 @@ public class UserController {
 		int loginUserNumber = LoginManager.getLoginUserNum(session);
 
 
+	    return RestApiResponse.success();
+	}
+	
+	
+	//------------------------------------------------------------
+	
+	//마이페이지
+	@GetMapping("/mypage")
+	public String myPage(HttpSession session, Model model) throws JsonProcessingException {
+		
+		 // 로그인 여부 확인
+	    if(session.getAttribute("loginUser") == null) {
+	        return "redirect:/user/login";
+	    }
+		int loginUserNumber = (int)session.getAttribute("loginUser");
+		
+		UserProfileDTO userProfileDTO = userService.getUserProfile(loginUserNumber);
+		
+		model.addAttribute("userProfile",userProfileDTO);
+
+		MyPagePortfolioDTO myPagePortfolio = portfolioService.getMyPagePortfolio(loginUserNumber);
+
+		model.addAttribute("portfolioInfoList", myPagePortfolio.getPortfolioInfoList());
+		model.addAttribute("historyList", myPagePortfolio.getHistoryList());
+		model.addAttribute("assetsInfo", myPagePortfolio.getAssetsInfo());
+		model.addAttribute("stockNameList",
+				objectMapper.writeValueAsString(myPagePortfolio.getStockNameList()));
+		model.addAttribute("stockPriceList",
+				objectMapper.writeValueAsString(myPagePortfolio.getStockPriceList()));
+
+		
+		return "user/mypage";
+	}
+	
+	
+	@PostMapping("/api/profile")
+	@ResponseBody
+	public RestApiResponse<Void> updateUserProfile(UserProfileDTO userProfileDTO,
+					@RequestParam(value="profilePhoto", required=false) MultipartFile profilePhoto,
+					@RequestParam(value="defaultPhoto", defaultValue="false") boolean defaultPhoto,
+					@RequestParam(value="passwordChange", defaultValue="false") boolean passwordChange,
+					HttpSession session){
+		
+		// 로그인한 회원 번호
+		int loginUserNumber = (int)session.getAttribute("loginUser");
+		
+		// 새션의 회원 번호를 DTO에 저장
 		userProfileDTO.setUserNum(loginUserNumber);
 
 		// 비밀번호 변경을 선택한 경우
