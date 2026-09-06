@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Component;
 
 import com.frade.dao.stock.StockDAO;
@@ -23,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StockMemoryCache {
 
 	private final StockDAO stockDAO;
+	private final StockRankingCache stockRankingCache;
 
 	private Map<String, StockInfoDTO> codeCacheMap = new HashMap<>();
 	private List<StockInfoDTO> allStockList = new ArrayList<>();
@@ -45,8 +44,8 @@ public class StockMemoryCache {
 
 		// 초고속 조회를 위한 메모리 적재
 		for (StockInfoDTO stock : stockList) {
-			codeCacheMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
-			allStockList.add(stock); // 이름/자동완성 검색용 리스트 채우기
+			newMap.put(stock.getStockCode(), stock); // 코드 검색용 맵 채우기
+			newList.add(stock); // 이름/자동완성 검색용 리스트 채우기
 		}
 
 		// 메모리 객체 갈아끼우기
@@ -93,9 +92,9 @@ public class StockMemoryCache {
 	 * 서버가 켜질때 딱 1번 실행 
 	 * DB에 등록된 100종목을 자바 메모리에 탑재
 	 */
-	@PostConstruct
-	private void initStockCache() {
+	public void initStockCache() {
 		refreshCache();
+		stockRankingCache.init(allStockList);
 	}
 
 	/**

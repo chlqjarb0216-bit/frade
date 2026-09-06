@@ -4,9 +4,11 @@ import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Getter
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
 	
@@ -45,11 +47,13 @@ public class UserDTO {
     
     // 회원가입용 생성자
     public UserDTO(
+    		int userNum,
             String userId,
             String userNick,
             String userEmail,
             String userPw) {
 
+    	this.userNum = userNum;
         this.userId = userId;
         this.userNick = userNick;
         this.userEmail = userEmail;
