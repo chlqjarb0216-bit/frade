@@ -8,7 +8,6 @@ import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
 
 public interface PortfolioDAO {
-	
 
 	public List<PortfolioDTO> findUserPortfolioListByUserNum(int userNum); //portfolio 테이블 정보를 list로 받기
 	public PortfolioDTO findUserPortfolioByUserNumAndStockCode(int userNum, String stockCode); //종목별 포트폴리오 찾기

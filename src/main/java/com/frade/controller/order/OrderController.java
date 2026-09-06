@@ -1,6 +1,6 @@
 package com.frade.controller.order;
 
-import java.util.List;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.frade.common.order.PriceOptionCommon;
 import com.frade.common.order.TradeOptionCommon;
 import com.frade.dto.order.OrderInfoDTO;
-import com.frade.dto.user.AssetsInfoDTO;
+import com.frade.dto.stock.StockPreviewDTO;
+import com.frade.service.stock.StockService;
+import com.frade.util.LoginManager;
+import org.springframework.web.bind.annotation.RequestParam;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
 import com.frade.service.order.OrderService;
@@ -27,22 +30,36 @@ public class OrderController {
 	
 	@Autowired
 	PortfolioService portfolioService;
+	@Autowired
+	StockService stockService;
 
 
 	@GetMapping("/stock/trade")
-	public String trade(Model model) {
+	public String trade(@RequestParam("stockCode") String stockCode, Model model, HttpSession session) {
 
 		
-		int userNum = 1; //userNum 임시데이터 
-		String stockCode = "005930";
+		if (!LoginManager.isLogin(session)) {
+            return "redirect:/user/login";
+        }
+        StockPreviewDTO stock = stockService.getStockPreviewByStockCode(stockCode);
+        if (stock == null) {
+            return "redirect:/stock";
+        }
+        model.addAttribute("stockPreview", stock);
+        int userNum = LoginManager.getLoginUserNum(session);
+
 		
 		UserCashDTO cash = orderService.findUserCashByUserNum(userNum);
+		model.addAttribute("userCash", cash == null ? 0 : cash.getCash());
+		
 		
 		PortfolioDTO portfolio = portfolioService.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
-		
-		
-		model.addAttribute("userCash", cash.getCash());
-		model.addAttribute("stockCnt", portfolio.getUserStockCnt());
+
+		int userStockCnt = 0;
+		if(portfolio != null) {
+			userStockCnt = portfolio.getUserStockCnt();
+		}
+		model.addAttribute("stockCnt", userStockCnt);
 		
 		
 		
@@ -50,7 +67,25 @@ public class OrderController {
 	}
 
 	@PostMapping("/stock/trade")
-	public String tradeAction(OrderInfoDTO orderInfo) {
+	public String tradeAction(OrderInfoDTO orderInfo, HttpSession session) {
+        if (!LoginManager.isLogin(session)) {
+            return "redirect:/user/login";
+        }
+        
+        orderInfo.setUserNum(LoginManager.getLoginUserNum(session));
+        if (orderInfo.getStockCode() == null || orderInfo.getStockCode().isBlank()) {
+            return "redirect:/stock";
+        }
+        StockPreviewDTO stock = stockService.getStockPreviewByStockCode(orderInfo.getStockCode());
+        if (stock == null) {
+            return "redirect:/stock";
+        }
+        orderInfo.setStockCode(stock.getStockCode());
+
+        if (orderInfo.getPriceOption() == null
+                || (long) orderInfo.getOrderCount() * orderInfo.getOrderPrice() > Integer.MAX_VALUE) {
+            return "redirect:/stock/" + stock.getStockCode();
+        }
 
 		boolean result = false;
 		
@@ -98,13 +133,8 @@ public class OrderController {
 		} else {
 			System.out.println("거래 실패");
 		}
-		
-		
-		//===========assetInfo 확인용 코드, 추후 마이페이지로 이관 예정============
-		AssetsInfoDTO assetsInfo = portfolioService.getAssetsInfo();
-		System.out.println(assetsInfo);
 
-		return "redirect:/stock/trade";
+		return "redirect:/stock/" + orderInfo.getStockCode();
 	}
 
 }

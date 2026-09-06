@@ -270,6 +270,9 @@ details summary {
 			.then(response => response.json())
 			.then(commentList=>{
 				if(commentList.code === "suc_002"){
+					document.getElementById('commentCount').innerText = 0;
+					renderCommentList([]);
+					document.getElementById('paging').innerHTML = '';
 					return;
 				}
 				if(commentList.code !== "suc_001") {
