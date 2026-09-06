@@ -336,7 +336,7 @@
         <div style="margin-top: 20px;">
             <p>주문 가격</p>
             <input type="number" id="orderPrice" name="orderPrice" min="0"
-                value="${stockPreview.price}" />
+                value="${stockPreview.price}" data-market-price="${stockPreview.price}" />
 
 
             <button type="button" class="btn btn-outline-primary ctlBtn pricePtn"
@@ -527,7 +527,7 @@
         priceOption.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === "MARKETPRICE") {
-                    orderPriceInput.value = 210000;
+                    orderPriceInput.value = orderPriceInput.dataset.marketPrice;
                     orderPriceInput.readOnly = true;
                     
                     orderPriceInput.style.backgroundColor = "#e9ecef";
@@ -547,6 +547,7 @@
                     btn.disabled = false;
             });
                 }
+                updateExpectedAmount();
             });
         });
 
