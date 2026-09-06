@@ -36,8 +36,8 @@ public class OrderServiceImpl implements OrderService {
 		
 		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
 
-		//임시 유저넘버
-		int userNum = 1;
+		// 로그인 세션에서 검증한 회원번호
+		int userNum = orderInfo.getUserNum();
 
 		UserCashDTO cash = findUserCashByUserNumForUpdate(userNum);
 		if (cash == null) {
@@ -85,8 +85,8 @@ public class OrderServiceImpl implements OrderService {
 
 		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
 		
-		//임시 유저넘버
-		int userNum = 1;
+		// 로그인 세션에서 검증한 회원번호
+		int userNum = orderInfo.getUserNum();
 
 		UserCashDTO cash = findUserCashByUserNumForUpdate(userNum);
 		if (cash == null) {

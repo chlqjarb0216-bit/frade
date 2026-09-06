@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>주식 주문</title>
@@ -331,10 +331,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 
 	<form action="${pageContext.request.contextPath}/stock/trade" method="post" class="order-form">
 
-    <form action="" method="post" class="order-form">
 
-        <input type="hidden" id="stockName" value="삼성전자"> <input
-            type="hidden" id="stockCode" name="stockCode" value="005930">
+
+        <input type="hidden" id="stockName" value="<c:out value="${stockPreview.stockName}"/>"> <input
+            type="hidden" id="stockCode" name="stockCode" value="<c:out value="${stockPreview.stockCode}"/>">
 
         <div class="trOption">
             <input type="radio" class="btn-check" name="tradeOption"
@@ -370,7 +370,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         <div style="margin-top: 20px;">
             <p>주문 가격</p>
             <input type="number" id="orderPrice" name="orderPrice" min="0"
-                value="210000" />
+                value="${stockPreview.price}" />
 
 
             <button type="button" class="btn btn-outline-primary ctlBtn pricePtn"
@@ -401,7 +401,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
                 보유 수량 <span style="margin-left: 167px">${stockCnt} 주</span>
             </p>
             <p>
-                예상 주문 금액 <span id="expectedOrderAmount">100원</span>
+                예상 주문 금액 <span id="expectedOrderAmount">0원</span>
             </p>
         </div>
 
@@ -426,15 +426,15 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
                 </div>
 
                 <div>
-                    <p id="cfStockName">삼성전자 (005930)</p>
-                    <p id="cfTradeOption">매수 (지정가)</p>
-                    <p id="cfOrderPrice">271,000원</p>
-                    <p id="cfOrderCount">1주</p>
+                    <p id="cfStockName"></p>
+                    <p id="cfTradeOption"></p>
+                    <p id="cfOrderPrice"></p>
+                    <p id="cfOrderCount"></p>
                 </div>
             </div>
             <br>
             <h4 style="text-align: right; font-weight: bold;">
-                총 주문 금액 <span id="cfTotalPrice">271,000원</span>
+                총 주문 금액 <span id="cfTotalPrice"></span>
                 </h4>
                 <br>
 
@@ -475,7 +475,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
             const input = document.getElementById(inputId);
             const currentValue = Number(input.value) || 0;
 
-            input.value = Math.max(0, currentValue + changeAmount);
+            input.value = Math.max(Number(input.min), currentValue + changeAmount);
 
             updateExpectedAmount();
         }
@@ -490,6 +490,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         }
 
         function openOrderModal() {
+            if ('${empty sessionScope.loginUser}' === 'true') {
+                window.location.href = '${pageContext.request.contextPath}/user/login';
+                return;
+            }
             const stockName = document.getElementById("stockName").value;
             const stockCode = document.getElementById("stockCode").value;
 
@@ -580,7 +584,5 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
             });
         });
 
+        updateExpectedAmount();
     </script>
-</body>
-
-</html>
