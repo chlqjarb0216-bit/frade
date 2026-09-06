@@ -10,7 +10,7 @@
 
 <!-- 특정 게시글의 전체 댓글 개수 조회 -->
 <select id="selectCommentTotalCount" parameterType="int" resultType="int">
-	SELECT COUNT(*) 
+	SELECT count(*) 
 	FROM t_comment
 	WHERE post_num = #{postNum}
 </select>
@@ -28,9 +28,23 @@
 	INNER JOIN t_user u 
 		ON c.user_num = u.user_num
 	WHERE c.post_num = #{postNum}
-	ORDER BY c.comment_num ASC
+	ORDER BY c.comment_num DESC
 	OFFSET #{offset} ROWS
 	FETCH NEXT #{limit} ROWS ONLY
 </select>
+
+<!-- 댓글 단건 조회 (본인 확인용) -->
+<select id="isWriterComment" parameterType="map" resultType="int">
+	SELECT 
+		1
+	FROM t_comment
+	WHERE comment_num = #{commentNum} AND user_num = #{userNum}
+</select>
+
+<!-- 댓글 삭제 -->
+<delete id="deleteComment" parameterType="int">
+	DELETE FROM t_comment
+	WHERE comment_num = #{commentNum}
+</delete>
 
 </mapper>

@@ -17,6 +17,7 @@ import com.frade.dto.user.UserLoginDTO;
 import com.frade.dto.user.UserProfileDTO;
 import com.frade.dto.user.UserSessionDTO;
 import com.frade.dto.user.UserSignupDTO;
+import com.frade.exception.UserSignupException;
 import com.frade.service.user.UserService;
 import com.frade.util.LoginManager;
 
@@ -117,12 +118,13 @@ public class UserController {
 			return "user/signup";
 		}
 
-		// 중복일때 처리
-		ResultCode signupResult = userService.userSignup(userSignupDTO);
+		try {
+			// 회원가입 처리
+			userService.userSignup(userSignupDTO);
 
-		if (signupResult.getCode().startsWith("rej_")) {
-
-			model.addAttribute("signupFail", signupResult.getMessage());
+		} catch (UserSignupException e) {
+			// 회원가입 처리 중 실패
+			model.addAttribute("signupFail", e.getMessage());
 
 			return "user/signup";
 		}
