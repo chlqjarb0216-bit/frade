@@ -19,12 +19,9 @@ public class NewsController {
 	 */
 	@GetMapping({"", "/"})
 	public String newsList(
-			@RequestParam(value = "category", required = false, defaultValue = "all") String category,
-			@RequestParam(value = "keyword", required = false) String keyword,
-			Model model) {
+			) {
 
-		model.addAttribute("currentCategory", category);
-		model.addAttribute("keyword", keyword);
+
 
 		return "news/news";
 	}
