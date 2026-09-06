@@ -36,7 +36,7 @@ public class CommentDAOImpl implements CommentDAO {
 
 	@Override
 	public int isWriterComment(Map<String, Object> commentUserNum) {
-		int result = sqlSessionTemplate.selectOne("comment_mapper.selectComment", commentUserNum);
+		int result = sqlSessionTemplate.selectOne("comment_mapper.isWriterComment", commentUserNum);
 		return result;
 	}
 
