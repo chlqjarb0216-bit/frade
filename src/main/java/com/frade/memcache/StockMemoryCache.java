@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Component;
 
 import com.frade.dao.stock.StockDAO;
@@ -94,8 +92,7 @@ public class StockMemoryCache {
 	 * 서버가 켜질때 딱 1번 실행 
 	 * DB에 등록된 100종목을 자바 메모리에 탑재
 	 */
-	@PostConstruct
-	private void initStockCache() {
+	public void initStockCache() {
 		refreshCache();
 		stockRankingCache.init(allStockList);
 	}

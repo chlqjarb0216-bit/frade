@@ -90,4 +90,9 @@ public class StockServiceImpl implements StockService {
 		}
 		return 0;
 	}
+
+	@Override
+	public void initMemoryCache() {
+		stockMemoryCache.initStockCache();
+	}
 }
