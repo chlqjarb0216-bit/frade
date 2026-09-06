@@ -14,18 +14,29 @@
 
 <style>
 body {
+	margin: 0;
+	padding: 0;
+}
+
+.mypage-content {
+	width: 100%;
 	padding: 20px;
+	box-sizing: border-box;
 }
 
 .mypageHeader {
 	display: flex;
+	align-items: stretch;
+	gap: 20px;
+	width: 100%;
 }
 
 .profile-box {
 	display: flex;
 	align-items: center;
 	gap: 20px;
-	width: 450px;
+	flex: 0 1 32%;
+	width: auto;
 	padding: 25px;
 	border: 1px solid #ccc;
 }
@@ -184,56 +195,77 @@ body {
 
 .totalAsset-box {
 	border: 1px solid lightgray;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	width: 75vh;
+	display: grid;
+	grid-template-columns: minmax(180px, 1fr) minmax(0, 2fr);
+	grid-template-rows: repeat(2, minmax(0, 1fr));
+	column-gap: 32px;
+	align-items: center;
+	flex: 1 1 68%;
+	width: auto;
 	height: 169px;
 	padding: 20px;
-	margin-left: 20px;
+	margin-left: 0;
+}
+
+.totalAsset-summary {
+	grid-column: 1;
+	grid-row: 1 / 3;
+	align-self: center;
 }
 
 .assetInfo-box-top {
-	display: flex;
-	flex-direction: row;
-	width: 70%;
-	justify-content: space-around;
-	height: 100px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-column: 2;
+	grid-row: 1;
+	width: 100%;
+	height: auto;
+	align-items: center;
 }
 
 .assetInfo-box-top div {
-	height: 100px;
-	margin-left: 50px;
+	height: auto;
+	margin-left: 0;
 }
 
 .assetInfo-box-bottom {
-	width: 300px;
-	display: flex;
-	justify-content: space-around;
-	margin-left: 190px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-column: 2;
+	grid-row: 2;
+	width: 100%;
+	margin-left: 0;
+	align-items: center;
 }
 
 .mypageMiddle {
 	display: flex;
+	gap: 20px;
+	width: 100%;
 	margin-top: 50px;
 }
 
 .portfolio-circle {
-	width: 300px;
+	flex: 1 1 0;
+	min-width: 0;
 	height: 300px;
 	border: 1px solid lightgray;
+	box-sizing: border-box;
 }
 
 .portfolio-Structure-box {
-	margin-left: 20px;
+	flex: 1 1 0;
+	min-width: 0;
 	border: 1px solid lightgray;
-	width: 300px;
+	width: auto;
 	padding: 10px;
+	box-sizing: border-box;
 }
 
 .history-box {
-    margin-left: 20px;
-    width: 600px;
+	flex: 2 1 0;
+	min-width: 0;
+	width: auto;
     height: 300px;
     overflow-y: auto;
     border: 1px solid lightgray;
@@ -277,11 +309,68 @@ body {
 .stock-table th:last-child, .stock-table td:last-child {
 	text-align: right;
 }
+
+@media (max-width: 900px) {
+	.mypageHeader {
+		flex-direction: column;
+	}
+
+	.profile-box, .totalAsset-box {
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.totalAsset-box {
+		height: auto;
+	}
+
+	.assetInfo-box-top {
+		width: 100%;
+		height: auto;
+		flex-wrap: wrap;
+	}
+
+	.assetInfo-box-top div {
+		height: auto;
+		margin-left: 0;
+	}
+
+	.assetInfo-box-bottom {
+		width: 100%;
+		margin-left: 0;
+	}
+
+	.mypageMiddle {
+		flex-direction: column;
+	}
+
+	.portfolio-circle, .portfolio-Structure-box, .history-box {
+		flex: none;
+		width: 100%;
+		box-sizing: border-box;
+	}
+}
+
+@media (max-width: 600px) {
+	.totalAsset-box {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto;
+		row-gap: 16px;
+	}
+
+	.totalAsset-summary, .assetInfo-box-top, .assetInfo-box-bottom {
+		grid-column: 1;
+		grid-row: auto;
+	}
+}
 </style>
 
 </head>
 
 <body>
+	<jsp:include page="../common/navbar.jsp"></jsp:include>
+
+	<main class="mypage-content">
 	<div class="mypageHeader">
 		<div class="profile-box">
 
@@ -459,7 +548,7 @@ body {
 		</div>
 
 		<div class="totalAsset-box">
-			<div style="height: 100px;">
+			<div class="totalAsset-summary">
 				<p>총 자산</p>
 				<h2>${assetsInfo.totalAsset}원</h2>
 				<p>${assetsInfo.totalRevenue}원<span>${assetsInfo.revenuePercent}%</span>
@@ -488,7 +577,7 @@ body {
 					<p>${assetsInfo.stockCnt}원</p>
 				</div>
 				<div>
-					<p>총 매수 횟수</p>
+					<p>총 거래 횟수</p>
 					<p>${assetsInfo.tradeCnt}원</p>
 				</div>
 			</div>
@@ -582,7 +671,7 @@ body {
 
 
 
-	</div>
+	</main>
 
 
 
