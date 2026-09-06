@@ -149,7 +149,7 @@
 </head>
 <body>
 
-    <jsp:include page="../common/navbar.jsp"></jsp:include>
+    
 
     <div class="signup-container">
         <div class="signup-header">

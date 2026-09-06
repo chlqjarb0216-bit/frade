@@ -114,7 +114,7 @@ uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="spring" uri="http:
     </head>
     <body>
 
-        <jsp:include page="../common/navbar.jsp"></jsp:include>
+        
 
         <div class="login-container">
             <h1 class="login-title">로그인</h1>
