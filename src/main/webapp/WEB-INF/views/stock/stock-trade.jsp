@@ -113,7 +113,7 @@
 		</div>
 		</div>
 		<aside class="stock-order-panel">
-			<jsp:include page="/stock/trade"></jsp:include>
+			<jsp:include page="./order.jsp"></jsp:include>
 		</aside>
 		</div>
 	</div>
