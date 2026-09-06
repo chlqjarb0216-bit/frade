@@ -89,10 +89,14 @@ public class CommunityController {
 	    Cookie[] cookies = request.getCookies();
 	    String viewedPosts = "";
 
-	    // 기존 쿠키들 중에서 "viewedPosts"가 있는지 검사
+	    // 로그인 유저별로 쿠키를 구분하여, 같은 브라우저에서 다른 계정으로 조회 시 각각 정상 카운팅되도록 처리
+	    int loginUserNum = LoginManager.getLoginUserNum(request);
+	    String cookieName = (loginUserNum != -1) ? "viewedPosts_u" + loginUserNum : "viewedPosts_guest";
+
+	    // 기존 쿠키들 중에서 해당 유저의 조회 쿠키가 있는지 검사
 	    if (cookies != null) {
 	        for (Cookie cookie : cookies) {
-	            if (cookie.getName().equals("viewedPosts")) {
+	            if (cookie.getName().equals(cookieName)) {
 	                viewedPosts = cookie.getValue();
 	                
 	                // 쿠키 값에 현재 글 번호가 포함되어 있다면? (예: "[105][106]")
@@ -108,8 +112,7 @@ public class CommunityController {
 	    if (isViewUp) {
 	        // 기존 쿠키 문자열에 새 글 번호를 누적 (숫자가 겹치지 않게 대괄호 사용)
 	        viewedPosts += "[" + postNum + "]";
-	        Cookie newCookie = new Cookie("viewedPosts", viewedPosts);
-	        
+	        Cookie newCookie = new Cookie(cookieName, viewedPosts);
 	        response.addCookie(newCookie); // 사용자 브라우저에 쿠키 저장
 	    }
 

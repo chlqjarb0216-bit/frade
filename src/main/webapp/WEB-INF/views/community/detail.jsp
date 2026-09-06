@@ -252,13 +252,14 @@ details summary {
 		crossorigin="anonymous"></script>
 
 	<script>
+		const postNum = "${post.postNum}";
+		const loginUserNum = ${not empty sessionScope.loginUser ? sessionScope.loginUser.userNum : -1};
+
 		window.onload = function(){
 			loadComments(1);
 		}
 		
 		function loadComments(page){
-			const postNum = "${post.postNum}";
-			
 			//게시글 번호에 맞는 댓글 정보 요청
 			fetch(`/api/community-lists/comment-list?page=\${page}&postNum=\${postNum}`,{
 				method: 'GET',
@@ -293,8 +294,6 @@ details summary {
 				commentTable.innerHTML = '<div class="text-center py-4 text-secondary small">등록된 댓글이 없습니다.</div>';
 				return;
 			}
-
-			const loginUserNum = ${not empty sessionScope.loginUser ? sessionScope.loginUser.userNum : -1};
 			
 			commentList.forEach(comment =>{
 				const dateStr = comment.commentedDateString || '';
@@ -374,7 +373,6 @@ details summary {
 				return;
 			}
 			
-			const postNum = "${post.postNum}";
 			const requestData = {
 					postNum: postNum,
 					commentContent: content
