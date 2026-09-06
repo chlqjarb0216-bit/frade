@@ -1,5 +1,7 @@
 package com.frade.scheduler;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -20,6 +22,8 @@ public class ApiScheduler {
 	@Autowired
 	KiwoomWebSocketClient kiwoomWebSocketClient;
 
+	private String nowDateString;
+
 	//장 시작전 전체 종목 상태 갱신
 	@Scheduled(cron = "0 40 8 * * MON-FRI")
 	public void preMarketTask() {
@@ -28,6 +32,19 @@ public class ApiScheduler {
 		if (result < 100) {
 			log.warn("작업완료된 건수 미달. 현재 작업 완료된 건수: {}건. 확인요망", result);
 		}
+	}
+
+	@Scheduled(fixedDelay = 60000)
+	public void updateKOSPI() {
+		if (!MarketUtil.isMarketOpenTime()) {
+			return;
+		}
+		stockService.updateKOSPIChartData(nowDateString);
+	}
+
+	@Scheduled(cron = "0 40 15 * * MON-FRI")
+	public void updateKOSPIDataBase() {
+		stockService.updateKOSPIChartDataToDB(nowDateString);
 	}
 
 	@Scheduled(cron = "0 50 8 * * MON-FRI")
@@ -55,6 +72,7 @@ public class ApiScheduler {
 		if (event.getApplicationContext().getParent() != null) {
 			return; // 중복 호출 방지
 		}
+		this.nowDateString = LocalDateTime.now().format(MarketUtil.DATE_FORM);
 		// 이미 만들어둔 데몬 스레드 스케줄러를 활용해 비동기로 시퀀스를 틀어줍니다.
 		kiwoomWebSocketClient.getReconnectScheduler().execute(() -> {
 			executeStartupSequence();
