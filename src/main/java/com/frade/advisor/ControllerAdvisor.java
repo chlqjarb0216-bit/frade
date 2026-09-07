@@ -2,16 +2,33 @@ package com.frade.advisor;
 
 import java.io.IOException;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ControllerAdvice(annotations = Controller.class)
+@Order(1)
+@ControllerAdvice
 public class ControllerAdvisor {
+	// 💡 404 에러 전용 핸들러
+	@ExceptionHandler(NoHandlerFoundException.class)
+	public String handle404(NoHandlerFoundException e, Model model) {
+		log.warn("[404 에러 발생] 존재하지 않는 URL 요청: {}", e.getRequestURL());
+
+		model.addAttribute("errorMessage", "요청하신 페이지를 찾을 수 없습니다.");
+		return "error/404"; // src/main/resources/templates/error/404.html 등으로 이동
+	}
+}
+
+//2. [화면 컨트롤러 전용] 일반 화면 단에서 터진 예외만 따로 잡는 어드바이저
+@Slf4j
+@ControllerAdvice(annotations = Controller.class) // 💡 다시 필터를 걸어줍니다.
+class HtmlExceptionAdvisor {
 	// 💡 1. 클라이언트가 연결을 끊어서 발생한 예외 처리
 	@ExceptionHandler({ IOException.class, org.apache.catalina.connector.ClientAbortException.class })
 	public void handleClientAbortException(Exception e) {
@@ -22,10 +39,8 @@ public class ControllerAdvisor {
 
 	@ExceptionHandler(Exception.class)
 	public String handleHtmlException(Exception e, Model model) {
-		// 💡 서버 콘솔에 에러의 구체적인 내용과 발생 위치(t)를 남깁니다.
 		log.error("[WEB 화면 오류] URL 처리 중 예외 발생: {}", e.getMessage(), e);
-
-		model.addAttribute("errorMessage", "요청을 처리하는 중 오류가 발생했습니다.");
+		model.addAttribute("errorMessage", "일시적인 오류가 발생했습니다.");
 		return "error/generic";
 	}
 }
