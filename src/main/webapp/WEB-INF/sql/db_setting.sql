@@ -188,7 +188,7 @@ INSERT ALL
   INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('010060','OCI홀딩스',2,0,50000)
   INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('175330','JB금융지주',2,0,50000)
   INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('271560','오리온',8,0,50000)
-  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('KOSPI', 'KOSPI', 99, 0, 100000);
+  INTO t_stock (stock_code, stock_name, sector_num, stock_status, prev_day_close_price) VALUES ('KOSPI', 'KOSPI', 99, 0, 100000)
 SELECT * FROM DUAL;
 
 
