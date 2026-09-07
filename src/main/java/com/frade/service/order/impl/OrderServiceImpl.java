@@ -341,7 +341,7 @@ public class OrderServiceImpl implements OrderService {
 			} else if (orderInfo.getOrderPrice() <= 0) {
 				System.out.println("주문 금액은 1 이상이어야 함.");
 			} else {
-				if (orderInfo.getPriceOption() == PriceOptionCommon.MARKETPRICE) {
+				if (priceOption == PriceOptionCommon.MARKETPRICE) {
 					System.out.println("시장가");
 					result = processMarketBuy(orderInfo);
 				} else {
@@ -359,7 +359,7 @@ public class OrderServiceImpl implements OrderService {
 			} else if (orderInfo.getOrderPrice() <= 0) {
 				System.out.println("매도가격은 0보다 커야함");
 			} else {
-				if (orderInfo.getPriceOption() == PriceOptionCommon.MARKETPRICE) {
+				if (priceOption == PriceOptionCommon.MARKETPRICE) {
 					System.out.println("시장가");
 					result = processMarketSell(orderInfo);
 				} else {
