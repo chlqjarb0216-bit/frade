@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.frade.common.order.PriceOptionCommon;
 import com.frade.common.order.TradeOptionCommon;
 import com.frade.dao.portfolio.CashDAO;
 import com.frade.dao.portfolio.HistoryDAO;
@@ -135,6 +136,8 @@ public class OrderServiceImpl implements OrderService {
 		// 포트폴리오 업데이트
 		long soldCost = portfolio.getUserBuyCost() / portfolio.getUserStockCnt() * orderInfo.getOrderCount()
 				+ portfolio.getUserBuyCost() % portfolio.getUserStockCnt() * orderInfo.getOrderCount() / portfolio.getUserStockCnt();
+		
+		
 		portfolio.setUserStockCnt(portfolio.getUserStockCnt() - orderInfo.getOrderCount());
 		portfolio.setUserBuyCost(portfolio.getUserBuyCost() - soldCost);
 		if (portfolio.getUserStockCnt() == 0) {
@@ -316,6 +319,63 @@ public class OrderServiceImpl implements OrderService {
 			return processLimitSell(orderInfo);
 		});
 	}
+	
+	
+	@Override
+	public boolean orderAnalyzer(OrderInfoDTO orderInfo) {
+		
+		boolean result = false;
+		
+		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
+		PriceOptionCommon priceOption = orderInfo.getPriceOption();
+
+
+		// 매수 매도 및 DAO 호출 전 검증
+		if (tradeOption == (TradeOptionCommon.BUY)) {
+			if (orderInfo.getOrderCount() <= 0) {
+				System.out.println("주문 수량은 1 이상이어야 함.");
+			} else if (orderInfo.getOrderPrice() <= 0) {
+				System.out.println("주문 금액은 1 이상이어야 함.");
+			} else {
+				if (orderInfo.getPriceOption() == PriceOptionCommon.MARKETPRICE) {
+					System.out.println("시장가");
+					result = processMarketBuy(orderInfo);
+				} else {
+					System.out.println("지정가");
+					result = saveLimitBuy(orderInfo);
+				}
+			}
+		}
+		if (tradeOption == (TradeOptionCommon.SELL)) {
+			if (orderInfo.getOrderCount() <= 0) {
+				System.out.println("매도수량은 0보다 커야함");
+			} else if (orderInfo.getOrderPrice() <= 0) {
+				System.out.println("매도가격은 0보다 커야함");
+			} else {
+				if (orderInfo.getPriceOption() == PriceOptionCommon.MARKETPRICE) {
+					System.out.println("시장가");
+					result = processMarketSell(orderInfo);
+				} else {
+					System.out.println("지정가");
+					result = saveLimitSell(orderInfo);
+				}
+
+			}
+		}
+		return result;
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 //	=============t_cash==============
 
@@ -353,5 +413,7 @@ public class OrderServiceImpl implements OrderService {
 
 		return false;
 	}
+
+	
 
 }

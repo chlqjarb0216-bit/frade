@@ -19,6 +19,8 @@ public interface OrderService {
 	public boolean saveLimitBuy(OrderInfoDTO orderInfo);
 	// 지정가 매도 저장
 	public boolean saveLimitSell(OrderInfoDTO orderInfo);
+	
+	public boolean orderAnalyzer(OrderInfoDTO orderInfo);
 
 
 	// 시장가 주문 저장

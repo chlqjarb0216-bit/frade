@@ -53,50 +53,8 @@ public class OrderController {
 				|| (long) orderInfo.getOrderCount() * orderInfo.getOrderPrice() > Integer.MAX_VALUE) {
 			return "redirect:/stock/" + stock.getStockCode();
 		}
-
-		boolean result = false;
-
-		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
-		PriceOptionCommon priceOption = orderInfo.getPriceOption();
-
-		// 시장가 저장로직 추후 구현 예정
-//		if(priceOption == PriceOptionCommon.LIMITPRICE) {
-//			orderService.saveMarketPrice(orderInfo);
-//			return "redirect:/stock/trade";
-//		}
-
-		// 매수 매도 및 DAO 호출 전 검증
-		if (tradeOption == (TradeOptionCommon.BUY)) {
-			if (orderInfo.getOrderCount() <= 0) {
-				System.out.println("주문 수량은 1 이상이어야 함.");
-			} else if (orderInfo.getOrderPrice() <= 0) {
-				System.out.println("주문 금액은 1 이상이어야 함.");
-			} else {
-				if (orderInfo.getPriceOption() == PriceOptionCommon.MARKETPRICE) {
-					System.out.println("시장가");
-					result = orderService.processMarketBuy(orderInfo);
-				} else {
-					System.out.println("지정가");
-					result = orderService.saveLimitBuy(orderInfo);
-				}
-			}
-		}
-		if (tradeOption == (TradeOptionCommon.SELL)) {
-			if (orderInfo.getOrderCount() <= 0) {
-				System.out.println("매도수량은 0보다 커야함");
-			} else if (orderInfo.getOrderPrice() <= 0) {
-				System.out.println("매도가격은 0보다 커야함");
-			} else {
-				if (orderInfo.getPriceOption() == PriceOptionCommon.MARKETPRICE) {
-					System.out.println("시장가");
-					result = orderService.processMarketSell(orderInfo);
-				} else {
-					System.out.println("지정가");
-					result = orderService.saveLimitSell(orderInfo);
-				}
-
-			}
-		}
+		
+		boolean result = orderService.orderAnalyzer(orderInfo);
 		
 		
 		if(orderInfo.getPriceOption() == PriceOptionCommon.MARKETPRICE) {
