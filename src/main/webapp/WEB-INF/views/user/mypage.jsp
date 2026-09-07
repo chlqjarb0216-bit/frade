@@ -789,13 +789,13 @@ body {
                                 <span class="holding-stock-name">${portfolioInfo.stockName}</span>
                                 <span class="holding-stock-code">${portfolioInfo.stockCode}</span>
                             </td>
-                            <td>${portfolioInfo.stockCnt}주</td>
-                            <td>${portfolioInfo.avgStockBuyCost}원</td>
-                            <td>${portfolioInfo.stockNowPrice}원</td>
-                            <td>${portfolioInfo.valuationAmount}원</td>
-                            <td style="font-weight: 600;">${portfolioInfo.pnl}원</td>
-                            <td style="font-weight: 600;">${portfolioInfo.profitPercent}%</td>
-                            <td>${portfolioInfo.weightPercent}%</td>
+                            <td><fmt:formatNumber value="${portfolioInfo.stockCnt}" pattern="#,###"/>주</td>
+                            <td><fmt:formatNumber value="${portfolioInfo.avgStockBuyCost}" pattern="#,###"/>원</td>
+                            <td><fmt:formatNumber value="${portfolioInfo.stockNowPrice}" pattern="#,###"/>원</td>
+                            <td><fmt:formatNumber value="${portfolioInfo.valuationAmount}" pattern="#,###"/>원</td>
+                            <td style="font-weight: 600;"><fmt:formatNumber value="${portfolioInfo.pnl}" pattern="#,###"/>원</td>
+                            <td style="font-weight: 600;"><fmt:formatNumber value="${portfolioInfo.profitPercent}" pattern="#,##0.00"/>%</td>
+                            <td><fmt:formatNumber value="${portfolioInfo.weightPercent}" pattern="#,##0.00"/>%</td>
                         </tr>
                     </c:forEach>
                 </tbody>
