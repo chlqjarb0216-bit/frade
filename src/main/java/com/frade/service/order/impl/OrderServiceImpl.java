@@ -23,6 +23,7 @@ import com.frade.exception.OrderProcessingException;
 import com.frade.service.order.LimitOrderMatchingService;
 import com.frade.service.order.OrderService;
 import com.frade.service.portfolio.PortfolioService;
+import com.frade.service.stock.StockService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -43,6 +44,9 @@ public class OrderServiceImpl implements OrderService {
 
 	@Autowired
 	PortfolioService portfolioService;
+	
+	@Autowired
+	StockService stockService;
 
 	@Autowired
 	LimitOrderMatchingService limitOrderMatchingService;
@@ -341,8 +345,11 @@ public class OrderServiceImpl implements OrderService {
 					System.out.println("시장가");
 					result = processMarketBuy(orderInfo);
 				} else {
-					System.out.println("지정가");
-					result = saveLimitBuy(orderInfo);
+					if(orderInfo.getOrderPrice() >= stockService.getLatestPrice(orderInfo.getStockCode())) {
+						result = processMarketBuy(orderInfo);
+					}else {
+						result = saveLimitBuy(orderInfo);
+					}
 				}
 			}
 		}
@@ -356,8 +363,11 @@ public class OrderServiceImpl implements OrderService {
 					System.out.println("시장가");
 					result = processMarketSell(orderInfo);
 				} else {
-					System.out.println("지정가");
-					result = saveLimitSell(orderInfo);
+					if(orderInfo.getOrderPrice() <= stockService.getLatestPrice(orderInfo.getStockCode())) {
+						result = processMarketSell(orderInfo);
+					}else {
+						result = saveLimitSell(orderInfo);
+					}
 				}
 
 			}
