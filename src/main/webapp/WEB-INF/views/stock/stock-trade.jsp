@@ -22,18 +22,19 @@ body {
     color: #191f28;
 }
 
-.container {
-    max-width: 900px;
+.stock-trade-container {
+    max-width: 1280px;
 }
 
-form {
+.stock-search-form {
     display: flex;
     gap: 8px;
     margin-bottom: 20px;
 }
 
-form input {
+.stock-search-form input {
     flex: 1;
+    min-width: 0;
     height: 44px;
     padding: 0 16px;
     border: 1px solid #e5e8eb;
@@ -41,7 +42,7 @@ form input {
     outline: none;
 }
 
-form button {
+.stock-search-form button {
     padding: 0 20px;
     background-color: #3182f6;
     color: #ffffff;
@@ -71,8 +72,13 @@ form button {
 
 .stock-trade-layout { display: flex; align-items: flex-start; gap: 24px; }
 .stock-trade-main { flex: 1; min-width: 0; }
-.stock-order-panel { flex: 0 0 430px; }
+.stock-order-panel { flex: 0 0 430px; min-width: 0; }
 .stock-trade-main .chart-box { max-width: none; }
+@media (max-width: 991px) {
+    .stock-trade-layout { flex-direction: column; }
+    .stock-trade-main, .stock-order-panel { width: 100%; }
+    .stock-order-panel { flex: none; }
+}
 </style>
 </head>
 
@@ -80,8 +86,10 @@ form button {
 
     <jsp:include page="../common/navbar.jsp"></jsp:include>
 
-    <div class="container mt-5">
-        <form action="/stock/search">
+    <div class="container stock-trade-container mt-5">
+        <div class="stock-trade-layout">
+        <div class="stock-trade-main">
+        <form action="/stock/search" class="stock-search-form">
             <input id="searchKeyword" name="searchKeyword" type="text"
                 placeholder="${ stockPreview.stockName }" />
             <ul id="previewList" style="display: none;"></ul>
@@ -114,14 +122,14 @@ form button {
         </div>
         <div class="chart-body">
 			<div class="chart-box">
-				<h2>📈 가상 거래 차트 (BTC/USDT 시뮬레이터 예시)</h2>
+				<h2>📈 가상 거래 차트</h2>
 				<!-- 차트가 그려질 영역 -->
 				<div id="stock-chart"></div>
 			</div>
 		</div>
 		</div>
 		<aside class="stock-order-panel">
-			<jsp:include page="./order.jsp"></jsp:include>
+			<jsp:include page="./order.jsp"><jsp:param name="embedded" value="true" /></jsp:include>
 		</aside>
 		</div>
     </div>
@@ -135,7 +143,11 @@ form button {
         src="https://cdn.jsdelivr.net/npm/apexstock/dist/apexstock.min.js"></script>
 
     <script src="/resources/js/stock_search_preview.js"></script>
-    <script src="/resources/js/draw_chart.js"></script>
+    <script>
+		// 💡 핵심: 백엔드 데이터를 브라우저 전역 변수에 먼저 심어줍니다.
+		window.SERVER_CHART_DATA = ${chartDataJson};
+	</script>
+    <script src="/resources/js/draw_stock_chart.js"></script>
 </body>
 
 </html>

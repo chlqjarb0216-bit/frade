@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+
+<c:if test="${param.embedded ne 'true'}">
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,21 +16,19 @@
     rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
     crossorigin="anonymous">
+</head>
+<body>
+</c:if>
 
 <style>
-body {
-    background-color: #f8f9fa;
+.order-form {
     color: #191f28;
     font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", Roboto, "Noto Sans KR", sans-serif;
     letter-spacing: -0.02em;
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
 }
-
 .order-form {
     width: 100%;
-    max-width: 440px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 28px 24px;
     background: #ffffff;
@@ -37,15 +39,14 @@ body {
     flex-direction: column;
     gap: 18px;
 }
-
-.trOption, .prOption {
+.order-form .trOption, .order-form .prOption {
     display: flex;
     gap: 8px;
     width: 100%;
 }
-
-.custom-radio {
+.order-form .custom-radio {
     flex: 1;
+    min-width: 0;
     height: 46px;
     display: flex;
     align-items: center;
@@ -55,70 +56,59 @@ body {
     cursor: pointer;
     transition: all 0.15s ease;
 }
-
-.custom-radio h3 {
+.order-form .custom-radio h3 {
     margin: 0;
     font-size: 16px;
     font-weight: 700;
 }
-
-.trOption .btn-outline-primary {
+.order-form .trOption .btn-outline-primary {
     border-color: #f04452;
     color: #f04452;
 }
-
-.trOption .btn-check:checked + .btn-outline-primary {
+.order-form .trOption .btn-check:checked + .btn-outline-primary {
     background-color: #f04452;
     border-color: #f04452;
     color: #ffffff;
 }
-
-.trOption .btn-outline-danger {
+.order-form .trOption .btn-outline-danger {
     border-color: #3182f6;
     color: #3182f6;
 }
-
-.trOption .btn-check:checked + .btn-outline-danger {
+.order-form .trOption .btn-check:checked + .btn-outline-danger {
     background-color: #3182f6;
     border-color: #3182f6;
     color: #ffffff;
 }
-
-.prOption .btn-secondary {
+.order-form .prOption .btn-secondary {
     background-color: #f2f4f6;
     border-color: transparent;
     color: #8b95a1;
 }
-
-.prOption .btn-check:checked + .btn-secondary {
+.order-form .prOption .btn-check:checked + .btn-secondary {
     background-color: #333d4b;
     border-color: transparent;
     color: #ffffff;
 }
-
 .order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) {
     width: 100%;
 }
-
 .order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) p {
     margin-bottom: 8px;
     font-size: 14px;
     font-weight: 600;
     color: #4e5968;
 }
-
 .order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
 }
-
 .order-form > div:not(.trOption):not(.prOption):not(.caculPrice):not(.order-modal) p {
     width: 100%;
 }
-
-#orderPrice, #orderCount {
+.order-form #orderPrice, .order-form #orderCount {
     flex: 1;
+    min-width: 0;
     height: 44px;
     border: 1px solid #e5e8eb;
     border-radius: 10px;
@@ -130,13 +120,11 @@ body {
     margin-right: 6px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
-#orderPrice:focus, #orderCount:focus {
+.order-form #orderPrice:focus, .order-form #orderCount:focus {
     border-color: #3182f6;
     box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.12);
 }
-
-.ctlBtn {
+.order-form .ctlBtn {
     width: 44px;
     height: 44px;
     border-radius: 10px;
@@ -150,14 +138,12 @@ body {
     background-color: #ffffff;
     color: #4e5968;
 }
-
-.ctlBtn:hover {
+.order-form .ctlBtn:hover {
     background-color: #f2f4f6;
     color: #191f28;
     border-color: #e5e8eb;
 }
-
-.caculPrice {
+.order-form .caculPrice {
     width: 100%;
     margin: 4px 0 0 0;
     padding: 16px 18px;
@@ -168,8 +154,7 @@ body {
     flex-direction: column;
     gap: 10px;
 }
-
-.caculPrice p {
+.order-form .caculPrice p {
     margin: 0;
     display: flex;
     justify-content: space-between;
@@ -178,27 +163,23 @@ body {
     color: #8b95a1;
     font-weight: 500;
 }
-
-.caculPrice span {
+.order-form .caculPrice span {
     margin-left: 0 !important;
     font-size: 14px;
     font-weight: 600;
     color: #333d4b;
 }
-
-.caculPrice p:last-child {
+.order-form .caculPrice p:last-child {
     margin-top: 4px;
     padding-top: 10px;
     border-top: 1px dashed #e5e8eb;
 }
-
-.caculPrice p:last-child span {
+.order-form .caculPrice p:last-child span {
     font-size: 16px;
     font-weight: 700;
     color: #3182f6;
 }
-
-.custom-submit {
+.order-form .custom-submit {
     width: 100%;
     height: 52px;
     background-color: #3182f6;
@@ -211,12 +192,10 @@ body {
     margin-top: 6px;
     transition: background-color 0.15s ease;
 }
-
-.custom-submit:hover {
+.order-form .custom-submit:hover {
     background-color: #1b64da;
 }
-
-.order-modal {
+.order-form .order-modal {
     display: none;
     position: fixed;
     top: 50%;
@@ -226,6 +205,8 @@ body {
     width: 90%;
     max-width: 400px;
     height: auto;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
     margin: 0;
     padding: 28px 24px;
     border: none;
@@ -234,19 +215,16 @@ body {
     color: #191f28;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
-
-.order-modal.modalOpen {
+.order-form .order-modal.modalOpen {
     display: block;
 }
-
-.order-modal h3 {
+.order-form .order-modal h3 {
     font-size: 20px;
     font-weight: 700;
     color: #191f28;
     margin-bottom: 20px;
 }
-
-.text-box {
+.order-form .text-box {
     border: 1px solid #f2f4f6;
     background-color: #f8f9fa;
     border-radius: 12px;
@@ -256,39 +234,33 @@ body {
     justify-content: space-between;
     margin-bottom: 20px;
 }
-
-.text-box p {
+.order-form .text-box p {
     margin: 6px 0;
     font-size: 14px;
 }
-
-.text-box > div:first-child p {
+.order-form .text-box > div:first-child p {
     color: #8b95a1;
     font-weight: 500;
 }
-
-.text-box > div:last-child p {
+.order-form .text-box > div:last-child p {
     color: #191f28;
     font-weight: 600;
     text-align: right;
 }
-
-.order-modal h4 {
+.order-form .order-modal h4 {
     font-size: 16px;
     font-weight: 600;
     color: #4e5968;
     text-align: right;
     margin-bottom: 24px;
 }
-
-.order-modal h4 span {
+.order-form .order-modal h4 span {
     font-size: 20px;
     font-weight: 700;
     color: #3182f6;
     margin-left: 8px;
 }
-
-.order-modal .custom-btn {
+.order-form .order-modal .custom-btn {
     width: calc(50% - 4px);
     height: 48px;
     border-radius: 12px;
@@ -298,32 +270,26 @@ body {
     justify-content: center;
     border: none;
 }
-
-.order-modal .custom-btn h3 {
+.order-form .order-modal .custom-btn h3 {
     margin: 0;
     font-size: 15px;
     font-weight: 600;
 }
-
-#cancleOrderBtn {
+.order-form #cancleOrderBtn {
     background-color: #f2f4f6;
     color: #4e5968;
 }
-
-#cancleOrderBtn:hover {
+.order-form #cancleOrderBtn:hover {
     background-color: #e5e8eb;
 }
-
-#confirmOrderBtn {
+.order-form #confirmOrderBtn {
     background-color: #3182f6;
     color: #ffffff;
 }
-
-#confirmOrderBtn:hover {
+.order-form #confirmOrderBtn:hover {
     background-color: #1b64da;
 }
-
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+.order-form input::-webkit-outer-spin-button, .order-form input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
@@ -331,10 +297,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 
 	<form action="${pageContext.request.contextPath}/stock/trade" method="post" class="order-form">
 
-    <form action="" method="post" class="order-form">
 
-        <input type="hidden" id="stockName" value="삼성전자"> <input
-            type="hidden" id="stockCode" name="stockCode" value="005930">
+
+        <input type="hidden" id="stockName" value="<c:out value="${stockPreview.stockName}"/>"> <input
+            type="hidden" id="stockCode" name="stockCode" value="<c:out value="${stockPreview.stockCode}"/>">
 
         <div class="trOption">
             <input type="radio" class="btn-check" name="tradeOption"
@@ -370,7 +336,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         <div style="margin-top: 20px;">
             <p>주문 가격</p>
             <input type="number" id="orderPrice" name="orderPrice" min="0"
-                value="210000" />
+                value="${stockPreview.price}" data-market-price="${stockPreview.price}" />
 
 
             <button type="button" class="btn btn-outline-primary ctlBtn pricePtn"
@@ -398,10 +364,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
                 주문 가능 금액 <span>${userCash} 원</span>
             </p>
             <p>
-                보유 수량 <span style="margin-left: 167px">${stockCnt} 주</span>
+                보유 수량 <span>${stockCnt} 주</span>
             </p>
             <p>
-                예상 주문 금액 <span id="expectedOrderAmount">100원</span>
+                예상 주문 금액 <span id="expectedOrderAmount">0원</span>
             </p>
         </div>
 
@@ -426,15 +392,15 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
                 </div>
 
                 <div>
-                    <p id="cfStockName">삼성전자 (005930)</p>
-                    <p id="cfTradeOption">매수 (지정가)</p>
-                    <p id="cfOrderPrice">271,000원</p>
-                    <p id="cfOrderCount">1주</p>
+                    <p id="cfStockName"></p>
+                    <p id="cfTradeOption"></p>
+                    <p id="cfOrderPrice"></p>
+                    <p id="cfOrderCount"></p>
                 </div>
             </div>
             <br>
             <h4 style="text-align: right; font-weight: bold;">
-                총 주문 금액 <span id="cfTotalPrice">271,000원</span>
+                총 주문 금액 <span id="cfTotalPrice"></span>
                 </h4>
                 <br>
 
@@ -475,7 +441,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
             const input = document.getElementById(inputId);
             const currentValue = Number(input.value) || 0;
 
-            input.value = Math.max(0, currentValue + changeAmount);
+            input.value = Math.max(Number(input.min), currentValue + changeAmount);
 
             updateExpectedAmount();
         }
@@ -490,6 +456,10 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         }
 
         function openOrderModal() {
+            if ('${empty sessionScope.loginUser}' === 'true') {
+                window.location.href = '${pageContext.request.contextPath}/user/login';
+                return;
+            }
             const stockName = document.getElementById("stockName").value;
             const stockCode = document.getElementById("stockCode").value;
 
@@ -557,7 +527,7 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
         priceOption.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === "MARKETPRICE") {
-                    orderPriceInput.value = 210000;
+                    orderPriceInput.value = orderPriceInput.dataset.marketPrice;
                     orderPriceInput.readOnly = true;
                     
                     orderPriceInput.style.backgroundColor = "#e9ecef";
@@ -577,10 +547,13 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
                     btn.disabled = false;
             });
                 }
+                updateExpectedAmount();
             });
         });
 
+        updateExpectedAmount();
     </script>
+<c:if test="${param.embedded ne 'true'}">
 </body>
-
 </html>
+</c:if>

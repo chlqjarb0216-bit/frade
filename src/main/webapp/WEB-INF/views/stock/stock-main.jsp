@@ -309,7 +309,7 @@ uri="http://www.springframework.org/tags"%>
         <div class="chart-panel-wrapper">
           <div class="chart-body">
             <div class="chart-box">
-              <h2>📈 가상 거래 차트 (BTC/USDT 시뮬레이터 예시)</h2>
+              <h2>📈 가상 거래 차트</h2>
               <div id="stock-chart"></div>
             </div>
             <button class="btn-move-trade" onclick="moveToTrade()">
@@ -326,6 +326,7 @@ uri="http://www.springframework.org/tags"%>
       crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexstock/dist/apexstock.min.js"></script>
+    <script src="/resources/js/stock_list_chart.js"></script>
 
     <script src="/resources/js/stock_search_preview.js"></script>
     <script>
@@ -334,7 +335,7 @@ uri="http://www.springframework.org/tags"%>
       };
 
       function loadStockList(page) {
-        fetch(`/stock/api/stock-list?page=\${page}`, {
+        fetch(`/api/stock/stock-list?page=\${page}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -360,6 +361,7 @@ uri="http://www.springframework.org/tags"%>
             currentActive.classList.remove("active-stock");
           }
           targetChild.classList.add("active-stock");
+          initChartFromDOM();
         });
 
         stockList.forEach((stock, index) => {
@@ -385,6 +387,11 @@ uri="http://www.springframework.org/tags"%>
                 `;
         });
         stockTableBody.innerHTML = html;
+        
+     // 2. ⭐ 이제 화면에 태그들이 확실히 존재하므로, 안전하게 호출합니다.
+        if (typeof initChartFromDOM === "function") {
+            initChartFromDOM();
+        }
       }
 
       function renderPaging(page) {
@@ -439,7 +446,5 @@ uri="http://www.springframework.org/tags"%>
         }
       }
     </script>
-
-    <script src="/resources/js/draw_chart.js"></script>
   </body>
 </html>

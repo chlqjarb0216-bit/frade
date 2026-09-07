@@ -26,6 +26,9 @@ public interface StockService {
 	public void putStockPriceListToStockPriceMemoryCache(String stockCode, String dayString,
 			List<StockPriceDTO> priceList);
 
+	//StockPriceMemoryCache에서 해당 종목의 최신 2일간의 차트 데이터를 불러옴
+	public List<Object[]> getEveryChartDataCached(String stockCode);
+
 	//버퍼에서 마감데이터를 가져와 DB에 저장
 	public void flushCompletedMinuteBufferAndSave();
 
@@ -37,6 +40,12 @@ public interface StockService {
 
 	//KiwoomApiService에서 StockInfoRawDTO리스트를 받아와 StockInfoDTO리스트로 변환한뒤 DB에 저장
 	public int updateStockInfoList();
+
+	//KiwoomApiService KOSPI 분봉 데이터를 받아와 메모리캐시 업데이트
+	public void updateKOSPIChartData(String nowDateString);
+
+	//KOSPI 분봉 DB로 업데이트
+	public void updateKOSPIChartDataToDB(String nowDateString);
 
 	//메모리캐시 초기화
 	public void initMemoryCache();
