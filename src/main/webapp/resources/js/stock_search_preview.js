@@ -17,7 +17,7 @@ searchInput.addEventListener('input', (e) => {
 
 	// 3. 300ms(0.3초) 동안 입력이 없으면 최종적으로 서버에 딱 한 번 요청
 	debounceTimer = setTimeout(() => {
-		fetch(`/stock/api/search-preview?keyword=${encodeURIComponent(keyword)}`)
+		fetch(`/api/stock/search-preview?keyword=${encodeURIComponent(keyword)}`)
 			.then(response => {
 				// 404, 500 에러 등이 나면 response.ok가 false가 됩니다.
 				if (!response.ok) {

@@ -53,7 +53,7 @@ public class StockRankingCache {
 			return;
 		this.sortedCache = sortedList;
 		this.codeCacheMap = newCodeMap;
-		log.info("랭킹 캐시 갱신 완료");
+		//		log.info("랭킹 캐시 갱신 완료");
 	}
 
 	public List<StockPreviewDTO> getSortedCachePage(int pageIdx, int pageSize) {

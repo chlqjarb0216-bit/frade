@@ -89,7 +89,11 @@ public class StockDataBufferServiceImpl implements StockDataBufferService {
 			String fullKey = stockCode + "_" + targetMinuteStr;
 
 			// 💡 제로 카피(Zero-Copy): 맵에서 끈을 완전히 끊음과 동시에 리스트로 주소지 이관
-			StockPriceDTO dto = globalBufferMap.remove(fullKey).toFinalDTO();
+			StockPriceComputableDTO cDto = globalBufferMap.remove(fullKey);
+			StockPriceDTO dto = null;
+			if (cDto != null) {
+				dto = cDto.toFinalDTO();
+			}
 			if (dto != null) {
 				targetList.add(dto);
 			}
