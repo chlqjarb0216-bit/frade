@@ -39,7 +39,7 @@ class HtmlExceptionAdvisor {
 
 	@ExceptionHandler(Exception.class)
 	public String handleHtmlException(Exception e, Model model) {
-		log.error("[WEB 화면 오류] URL 처리 중 예외 발생: {}", e.getMessage(), e);
+		log.error("[WEB 화면 오류] URL 처리 중 예외 발생: {}", e.getMessage());
 		model.addAttribute("errorMessage", "일시적인 오류가 발생했습니다.");
 		return "error/generic";
 	}

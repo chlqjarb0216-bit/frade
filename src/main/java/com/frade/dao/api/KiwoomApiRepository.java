@@ -19,4 +19,6 @@ public interface KiwoomApiRepository {
 	public List<StockPriceDTO> getKOSPIChartDataFromLastData(LocalDateTime last);
 
 	public List<StockPriceDTO> getStockChartDataByDay(String stockCode, String dayString);
+
+	public List<StockPriceDTO> getStockChartDataFromLastData(String stockCode, LocalDateTime last);
 }

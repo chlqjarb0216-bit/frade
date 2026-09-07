@@ -23,4 +23,7 @@ public interface KiwoomApiService {
 
 	//하루치 해당종목 데이터를 받아옴
 	public List<StockPriceDTO> getStockChartDataByDay(String stockCode, String dayString);
+
+	//해당종목 데이터를 받아옴
+	public List<StockPriceDTO> getStockChartDataFromLastData(String stockCode, LocalDateTime last);
 }

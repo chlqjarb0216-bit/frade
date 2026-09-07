@@ -253,6 +253,7 @@ public class StockServiceImpl implements StockService {
 
 		int loadedCount = 0;
 		boolean isBeforeMarket = LocalDateTime.now().getHour() < 9; // 💡 상단에서 시간 조건 플래그 1방에 추출
+		boolean isAfterMarket = LocalDateTime.now().getHour() > 3; // 💡 상단에서 시간 조건 플래그 1방에 추출
 
 		// 🌟 지저분한 이중 루프를 박멸하고 단 하나의 클린한 종목 순회 루프로 대통합
 		for (String stockCode : activeStockCodes) {
@@ -292,37 +293,40 @@ public class StockServiceImpl implements StockService {
 						stockPriceMemoryCache.putAll(stockCode, yesterdayStr, yesterdayDbBars);
 					}
 
-					//					if (!todayDbBars.isEmpty()) {
-					//						stockPriceMemoryCache.putAll(stockCode, todayStr, todayDbBars);
-					//					} else {
-					//						// 🚨 장중 오늘 자 크래시 유실 가드 작동
-					//						log.warn("[{} 장중 유실 감지] 아침 9시 이후 부팅되었으나 오늘 자 DB가 0건입니다. API 복구를 트리거합니다.", stockCode);
-					//
-					//						List<StockPriceDTO> apiStockTodayBars = kiwoomApiService.getStockChartDataByDay(stockCode,
-					//								todayStr);
-					//						if (apiStockTodayBars != null && !apiStockTodayBars.isEmpty()) {
-					//							stockPriceMemoryCache.putOrUpdate(stockCode, todayStr, apiStockTodayBars);
-					//							stockPriceDAO.updateOrInsertDailyMinutePrice(apiStockTodayBars);
-					//							log.info("[{} 장중 복구 성공] 오늘 자 실시간 누적 이력 복원 및 영속화 종결", stockCode);
-					//
-					//							// ⏳ [핵심 트래픽 가드]: 증권사 방화벽 세션 차단 예방 휴식 추가
-					//							Thread.sleep(150);
-					//						}
-					//					}
-					//당일 데이터 무조건 api로 건져오기
+					if (isAfterMarket) {
+						if (!todayDbBars.isEmpty()) {
+							stockPriceMemoryCache.putAll(stockCode, todayStr, todayDbBars);
+						} else {
+							// 🚨 장중 오늘 자 크래시 유실 가드 작동
+							log.warn("[{} 장중 유실 감지] 아침 9시 이후 부팅되었으나 오늘 자 DB가 0건입니다. API 복구를 트리거합니다.", stockCode);
 
-					// 🚨 장중 오늘 자 크래시 유실 가드 작동
-					log.warn("[{} 장 시작 감지] 아침 9시 이후 부팅되었습니다. API 복구를 트리거합니다.", stockCode);
+							List<StockPriceDTO> apiStockTodayBars = kiwoomApiService.getStockChartDataByDay(stockCode,
+									todayStr);
+							if (apiStockTodayBars != null && !apiStockTodayBars.isEmpty()) {
+								stockPriceMemoryCache.putOrUpdate(stockCode, todayStr, apiStockTodayBars);
+								stockPriceDAO.updateOrInsertDailyMinutePrice(apiStockTodayBars);
+								log.info("[{} 장중 복구 성공] 오늘 자 실시간 누적 이력 복원 및 영속화 종결", stockCode);
 
-					List<StockPriceDTO> apiStockTodayBars = kiwoomApiService.getStockChartDataByDay(stockCode,
-							todayStr);
-					if (apiStockTodayBars != null && !apiStockTodayBars.isEmpty()) {
-						stockPriceMemoryCache.putOrUpdate(stockCode, todayStr, apiStockTodayBars);
-						stockPriceDAO.updateOrInsertDailyMinutePrice(apiStockTodayBars);
-						log.info("[{} 장중 복구 성공] 오늘 자 실시간 누적 이력 복원 및 영속화 종결", stockCode);
+								// ⏳ [핵심 트래픽 가드]: 증권사 방화벽 세션 차단 예방 휴식 추가
+								Thread.sleep(150);
+							}
+						}
+					} else {
+						//당일 데이터 무조건 api로 건져오기
 
-						// ⏳ [핵심 트래픽 가드]: 증권사 방화벽 세션 차단 예방 휴식 추가
-						Thread.sleep(150);
+						// 🚨 장중 오늘 자 크래시 유실 가드 작동
+						log.warn("[{} 장 시작 감지] 아침 9시 이후 부팅되었습니다. API 복구를 트리거합니다.", stockCode);
+
+						List<StockPriceDTO> apiStockTodayBars = kiwoomApiService.getStockChartDataByDay(stockCode,
+								todayStr);
+						if (apiStockTodayBars != null && !apiStockTodayBars.isEmpty()) {
+							stockPriceMemoryCache.putOrUpdate(stockCode, todayStr, apiStockTodayBars);
+							stockPriceDAO.updateOrInsertDailyMinutePrice(apiStockTodayBars);
+							log.info("[{} 장중 복구 성공] 오늘 자 실시간 누적 이력 복원 및 영속화 종결", stockCode);
+
+							// ⏳ [핵심 트래픽 가드]: 증권사 방화벽 세션 차단 예방 휴식 추가
+							Thread.sleep(150);
+						}
 					}
 				}
 				loadedCount++;
@@ -378,35 +382,44 @@ public class StockServiceImpl implements StockService {
 				stockPriceMemoryCache.putAll(StockCommonFinalString.KOSPI, yesterdayStr, kospiYesterdayDbBars);
 			}
 
-			//			if (!kospiTodayDbBars.isEmpty()) {
-			//				// 장중 재부팅 시 오늘 자 적재본이 정상 상주 중이라면 그대로 캐시판 스왑
-			//				stockPriceMemoryCache.putAll(StockCommonFinalString.KOSPI, todayStr, kospiTodayDbBars);
-			//			} else {
-			//				// 🚨 [장중 비상 구출]: 장 개막 이후인데 오늘 자 데이터가 DB에 0건으로 통째로 낙오되어 있다면!
-			//				log.warn("[KOSPI 장중 유실 감지] 아침 9시 이후 부팅되었으나 오늘 자 DB 데이터가 0건입니다! API 구출을 기동합니다.");
-			//
-			//				// 오늘 자 아침 00:00:00 기점 마커를 들고 가 오늘 아침 9시부터 현재 찰나까지 쌓인 라이브 누적 세트를 인양합니다.
-			//				List<StockPriceDTO> apiKospiTodayBars = kiwoomApiService.getKOSPIChartDataByDay(todayStr);
-			//
-			//				if (apiKospiTodayBars != null && !apiKospiTodayBars.isEmpty()) {
-			//					// 역순 스캔 덮어쓰기 엔진으로 최신 정산가 오버라이딩 복구 완료
-			//					stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, todayStr, apiKospiTodayBars);
-			//					stockPriceDAO.updateOrInsertDailyMinutePrice(apiKospiTodayBars);
-			//					log.info("[KOSPI 장중 복구 성공] 오늘 자 누적 지수 {}건을 캐시판에 오버라이딩 강제 적재 완료!", apiKospiTodayBars.size());
-			//				}
-			//			}
-			//무조건 업데이트
-			// 🚨 [장중 비상 구출]: 장 개막 이후인데 오늘 자 데이터가 DB에 0건으로 통째로 낙오되어 있다면!
-			log.warn("[KOSPI 장 시작 감지] 아침 9시 이후 부팅되었습니다. API 구출을 기동합니다.");
+			if (isAfterMarket) {
+				if (!kospiTodayDbBars.isEmpty()) {
+					// 장중 재부팅 시 오늘 자 적재본이 정상 상주 중이라면 그대로 캐시판 스왑
+					stockPriceMemoryCache.putAll(StockCommonFinalString.KOSPI, todayStr, kospiTodayDbBars);
+				} else {
+					// 🚨 [장중 비상 구출]: 장 개막 이후인데 오늘 자 데이터가 DB에 0건으로 통째로 낙오되어 있다면!
+					log.warn("[KOSPI 장중 유실 감지] 아침 9시 이후 부팅되었으나 오늘 자 DB 데이터가 0건입니다! API 구출을 기동합니다.");
 
-			// 오늘 자 아침 00:00:00 기점 마커를 들고 가 오늘 아침 9시부터 현재 찰나까지 쌓인 라이브 누적 세트를 인양합니다.
-			List<StockPriceDTO> apiKospiTodayBars = kiwoomApiService.getKOSPIChartDataByDay(todayStr);
+					// 오늘 자 아침 00:00:00 기점 마커를 들고 가 오늘 아침 9시부터 현재 찰나까지 쌓인 라이브 누적 세트를 인양합니다.
+					List<StockPriceDTO> apiKospiTodayBars = kiwoomApiService.getKOSPIChartDataByDay(todayStr);
 
-			if (apiKospiTodayBars != null && !apiKospiTodayBars.isEmpty()) {
-				// 역순 스캔 덮어쓰기 엔진으로 최신 정산가 오버라이딩 복구 완료
-				stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, todayStr, apiKospiTodayBars);
-				stockPriceDAO.updateOrInsertDailyMinutePrice(apiKospiTodayBars);
-				log.info("[KOSPI 장중 복구 성공] 오늘 자 누적 지수 {}건을 캐시판에 오버라이딩 강제 적재 완료!", apiKospiTodayBars.size());
+					if (apiKospiTodayBars != null && !apiKospiTodayBars.isEmpty()) {
+						// 역순 스캔 덮어쓰기 엔진으로 최신 정산가 오버라이딩 복구 완료
+						stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, todayStr, apiKospiTodayBars);
+						stockPriceDAO.updateOrInsertDailyMinutePrice(apiKospiTodayBars);
+						log.info("[KOSPI 장중 복구 성공] 오늘 자 누적 지수 {}건을 캐시판에 오버라이딩 강제 적재 완료!", apiKospiTodayBars.size());
+					}
+				}
+			} else {
+				//무조건 업데이트
+				// 🚨 [장중 비상 구출]: 장 개막 이후인데 오늘 자 데이터가 DB에 0건으로 통째로 낙오되어 있다면!
+				log.warn("[KOSPI 장 시작 감지] 아침 9시 이후 부팅되었습니다. API 구출을 기동합니다.");
+
+				// 오늘 자 아침 00:00:00 기점 마커를 들고 가 오늘 아침 9시부터 현재 찰나까지 쌓인 라이브 누적 세트를 인양합니다.
+				List<StockPriceDTO> apiKospiTodayBars;
+				if (!kospiTodayDbBars.isEmpty()) {
+					StockPriceDTO lastbar = kospiTodayDbBars.get(kospiTodayDbBars.size() - 1);
+					apiKospiTodayBars = kiwoomApiService.getKOSPIChartDataFromLastData(lastbar.getDateTime());
+				} else {
+					apiKospiTodayBars = kiwoomApiService.getKOSPIChartDataByDay(todayStr);
+				}
+
+				if (apiKospiTodayBars != null && !apiKospiTodayBars.isEmpty()) {
+					// 역순 스캔 덮어쓰기 엔진으로 최신 정산가 오버라이딩 복구 완료
+					stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, todayStr, apiKospiTodayBars);
+					stockPriceDAO.updateOrInsertDailyMinutePrice(apiKospiTodayBars);
+					log.info("[KOSPI 장중 복구 성공] 오늘 자 누적 지수 {}건을 캐시판에 오버라이딩 강제 적재 완료!", apiKospiTodayBars.size());
+				}
 			}
 		}
 

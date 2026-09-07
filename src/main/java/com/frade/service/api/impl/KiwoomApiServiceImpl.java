@@ -52,4 +52,9 @@ public class KiwoomApiServiceImpl implements KiwoomApiService {
 		return kiwoomApiRepository.getStockChartDataByDay(stockCode, dayString);
 	}
 
+	@Override
+	public List<StockPriceDTO> getStockChartDataFromLastData(String stockCode, LocalDateTime last) {
+		return kiwoomApiRepository.getStockChartDataFromLastData(stockCode, last);
+	}
+
 }
