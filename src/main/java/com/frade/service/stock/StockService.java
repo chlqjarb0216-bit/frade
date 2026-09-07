@@ -7,6 +7,8 @@ import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.dto.stock.StockPriceDTO;
 
 public interface StockService {
+	public int getLatestPrice(String stockCode);
+
 	//StockMemoryCache에서 검색
 	public List<StockInfoDTO> searchStockByName(String stockName);
 
@@ -42,17 +44,19 @@ public interface StockService {
 	public int updateStockInfoList();
 
 	//KiwoomApiService KOSPI 분봉 데이터를 받아와 메모리캐시 업데이트
-	public void updateKOSPIChartData(String nowDateString);
+	public void updateKOSPIChartData();
 
 	//KOSPI 분봉 DB로 업데이트
-	public void updateKOSPIChartDataToDB(String nowDateString);
+	public void updateKOSPIChartDataToDB();
 
 	//메모리캐시 초기화
 	public void initMemoryCache();
 
 	//메모리캐시 초기화
-	void warmUpStockPriceMemoryCache(String todayStr, String yesterdayStr);
+	public void warmUpStockPriceMemoryCache(String todayStr, String yesterdayStr);
 
 	//메모리캐시 청소
-	void clearOldStockPriceCache(String dayString);
+	public void clearOldStockPriceCache(String dayString);
+
+	public void setNowDateString(String nowDateString);
 }

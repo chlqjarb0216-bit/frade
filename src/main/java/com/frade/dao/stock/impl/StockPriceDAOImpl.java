@@ -18,7 +18,7 @@ public class StockPriceDAOImpl implements StockPriceDAO {
 
 	@Override
 	public int insertMinuteStockPrice(List<StockPriceDTO> stockPriceList) {
-		return sqlSessionTemplate.insert("stockprice_mapper.insertMinuteStockPrice", stockPriceList);
+		return sqlSessionTemplate.update("stockprice_mapper.updateOrInsertMinuteStockPrice", stockPriceList);
 	}
 
 	@Override
