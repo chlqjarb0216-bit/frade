@@ -12,6 +12,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- 부트스트랩 CSS --> 
+<link href ="https: //cdn.jsdelivr.net /npm /bootstrap 
+	 @5.0.2 /dist /css /bootstrap.min.css
+ " rel ="stylesheet " integrity ="sha384-EVSTQN3 /azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC
+ " crossorigin ="anonymous "> 
+ < !--추가 커스텀 CSS 필요하면 여기에 -->
+
+
 <style>
 body {
 	margin: 0;
@@ -31,20 +39,20 @@ body {
 	width: 100%;
 }
 
-<
-!
--- 부트스트랩 CSS --> <link href ="https: //cdn.jsdelivr.net /npm /bootstrap 
-	 @5.0.2 /dist /css /bootstrap.min.css
- " rel ="stylesheet " integrity ="sha384-EVSTQN3 /azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC
- " crossorigin ="anonymous ">< !--추가 커스텀 CSS 필요하면 여기에 --> <style>.profile-box
-	{
+ 
+ 
+ .profile-box {
 	display: flex;
-	align-items: center;
-	gap: 20px;
-	flex: 0 1 32%;
-	width: auto;
-	padding: 25px;
-	border: 1px solid #ccc;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+
+    flex: 0 0 320px;
+    width: 320px;
+
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 .profile-photo img {
@@ -375,11 +383,11 @@ body {
 				<div class="profile-photo">
 					<c:choose>
 						<c:when test="${empty userProfile.userPhoto}">
-							<img src="/resources/images/logo.png" alt="프로필 사진" width="70"
+							<img src="/resources/images/Default_profile.png" alt="프로필 사진" width="70"
 								height="70">
 						</c:when>
 						<c:otherwise>
-							<img src="/fileStorage/user_profile/${userProfile.userPhoto}"
+							<img src="/file-storage/user_profile/${userProfile.userPhoto}"
 								alt="프로필 사진" width="70" height="70">
 						</c:otherwise>
 					</c:choose>
@@ -548,7 +556,6 @@ body {
 				</div>
 			</div>
 
-		</div>
 
 		<div class="totalAsset-box">
 			<div class="totalAsset-summary">
@@ -585,7 +592,7 @@ body {
 				</div>
 			</div>
 		</div>
-
+	</div>
 
 		<div class="mypageMiddle">
 
@@ -736,11 +743,11 @@ body {
 						originalNick = inputProfileNick.value;
 
 						profileNickCheck = false;
-						profileNickCheckMsg.innerText = "";
-
+						profileNickCheckMsg.innerText = "";						
+						
+						
 						profileModal.style.display = "block";
-						profileNickCheck = false;
-						profileNickCheckMsg.innerText = "";
+
 
 						// 처음에는 현재 닉네임이므로 중복확인 불가
 						btnProfileNickCheck.disabled = true;
