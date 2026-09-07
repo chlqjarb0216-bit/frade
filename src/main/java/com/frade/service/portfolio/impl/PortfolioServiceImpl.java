@@ -2,7 +2,9 @@ package com.frade.service.portfolio.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import com.frade.service.stock.StockDataBufferService;
+import com.frade.service.stock.StockService;
+import com.frade.dto.stock.StockPreviewDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,10 +24,10 @@ import com.frade.service.portfolio.PortfolioService;
 public class PortfolioServiceImpl implements PortfolioService {
 
 	private static final long INITIAL_ASSET = 10_000_000L;
-	private static final long DEFAULT_CURRENT_PRICE = 210_000L;
-	private static final Map<String, Long> CURRENT_PRICE_MAP = Map.of(
-			"005930", 72_000L,
-			"000660", 195_000L);
+	@Autowired
+	StockDataBufferService stockDataBufferService;
+	@Autowired
+	StockService stockService;
 
 	@Autowired
 	PortfolioDAO portfolioDAO;
@@ -92,7 +94,10 @@ public class PortfolioServiceImpl implements PortfolioService {
 	}
 
 	private long getCurrentPrice(String stockCode) {
-		return CURRENT_PRICE_MAP.getOrDefault(stockCode, DEFAULT_CURRENT_PRICE);
+		int price = stockDataBufferService.getMinPriceSnapshotByStockCode(stockCode);
+		if (price > 0) return price;
+		StockPreviewDTO stock = stockService.getStockPreviewByStockCode(stockCode);
+		return stock == null ? 0L : Math.max(0, stock.getPrice());
 	}
 
 	private double calculatePercent(long amount, long total) {
