@@ -1,6 +1,7 @@
 package com.frade.scheduler;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ public class StockDataScheduler {
 	@Scheduled(cron = "0 5 0 ? * MON-FRI")
 	public void clearOldStockPriceCacheScheduler() {
 		try {
+			stockService.setNowDateString(LocalDateTime.now().format(MarketUtil.DATE_FORM));
+
 			// 어제날짜
 			String yesterdayStr = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
