@@ -3,12 +3,44 @@
 
 <mapper namespace="stockprice_mapper">
 
-	<insert id="insertMinuteStockPrice" parameterType="java.util.List"> INSERT
-		ALL <foreach collection="list" item="item"> INTO t_stock_price (
-		stock_code, date_time, price_open, price_high, price_low, price_close,
-		volume ) VALUES ( #{item.stockCode}, #{item.dateTime}, <!-- 💡 오라클 DATE 컬럼과 자바 LocalDateTime 완벽 호환 -->
-		#{item.priceOpen}, #{item.priceHigh}, #{item.priceLow},
-		#{item.priceClose}, #{item.volume} ) </foreach> SELECT * FROM DUAL </insert>
+	<update id="updateOrInsertMinuteStockPrice" parameterType="java.util.List">
+    <!-- 19c 최적화 다중 처리를 위한 PL/SQL 블록 시작 -->
+    	<foreach collection="list" item="item" open="BEGIN" close="END;" separator=" ">   
+        MERGE INTO t_stock_price target
+        USING dual
+           ON (target.stock_code = #{item.stockCode} AND target.date_time = #{item.dateTime})
+        
+        /* 1. 데이터가 이미 존재한다면 최신 주가 정보로 업데이트 */
+        WHEN MATCHED THEN
+            UPDATE SET
+                target.price_open  = #{item.priceOpen},
+                target.price_high  = #{item.priceHigh},
+                target.price_low   = #{item.priceLow},
+                target.price_close = #{item.priceClose},
+                target.volume      = #{item.volume}
+                
+        /* 2. 기존 데이터가 없다면 신규 분봉 데이터로 인서트 */
+        WHEN NOT MATCHED THEN
+            INSERT (
+                target.stock_code,
+                target.date_time,
+                target.price_open,
+                target.price_high,
+                target.price_low,
+                target.price_close,
+                target.volume
+            ) VALUES (
+                #{item.stockCode},
+                #{item.dateTime},
+                #{item.priceOpen},
+                #{item.priceHigh},
+                #{item.priceLow},
+                #{item.priceClose},
+                #{item.volume}
+            ); <!-- ⭐ 개별 MERGE 종료를 위한 세미콜론 필수 지정 -->
+	    </foreach>
+	</update>
+
 		
 	<update id="updateOrInsertDailyMinutePrice" parameterType="java.util.List">
     <!-- DECLARE를 제거하고 BEGIN으로 시작합니다 -->

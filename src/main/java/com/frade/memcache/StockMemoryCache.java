@@ -72,10 +72,18 @@ public class StockMemoryCache {
 			return Collections.emptyList();
 		}
 
-		String cleanKeyword = keyword.trim();
+		// 1. 입력 키워드를 공백 제거 후 '대문자'로 통일
+		String upperKeyword = keyword.trim().toUpperCase();
 
-		// 메모리에 올라온 100개 글자 안에서만 스트림 필터링 수행
-		return allStockList.stream().filter(stock -> stock.getStockName().contains(cleanKeyword)).limit(10) // 너무 많이 뜨면 화면이 지저분하므로 딱 10개만 자동완성 짤라주기
+		// 메모리에 올라온 전체 리스트에서 스트림 필터링 수행
+		return allStockList.stream().filter(stock -> {
+			// 주식명이 null일 경우를 대비한 안전장치 추가
+			if (stock.getStockName() == null)
+				return false;
+
+			// 2. 비교 대상인 주식명도 '대문자'로 바꾸어 비교
+			return stock.getStockName().toUpperCase().contains(upperKeyword);
+		}).limit(10) // 상위 10개만 자동완성으로 절삭
 				.collect(Collectors.toList());
 	}
 

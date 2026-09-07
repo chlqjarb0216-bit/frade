@@ -12,6 +12,11 @@
 			<param-name>contextConfigLocation</param-name>
 			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
 		</init-param>
+		<!-- 💡 404 발생 시 NoHandlerFoundException 예외를 던지도록 설정 추가 -->
+		<init-param>
+			<param-name>throwExceptionIfNoHandlerFound</param-name>
+			<param-value>true</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
 
 		<!-- 💡 여기에 비동기 지원 설정을 무조건 추가해야 SSE가 작동합니다! -->
@@ -42,9 +47,9 @@
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		
+
 		<async-supported>true</async-supported>
-		
+
 		<init-param>
 			<param-name>encoding</param-name>
 			<param-value>UTF-8</param-value>

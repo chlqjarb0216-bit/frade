@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -10,7 +10,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Frade</title>
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/resources/css/main.css">
+	href="${pageContext.request.contextPath}/resources/css/main.css?v=2.0">
 </head>
 <body>
 	<jsp:include page="../common/navbar.jsp"></jsp:include>
@@ -29,36 +29,78 @@
 					<a href="${pageContext.request.contextPath}/stock"
 						class="card-more-link">더보기</a>
 				</div>
-				<div class="stock-list">
-					<c:forEach var="stock" items="${topStocks}" varStatus="status">
-						<a
-							href="${pageContext.request.contextPath}/stock/${stock.stockCode}"
-							class="stock-item">
-							<div class="stock-left">
-								<span class="rank-badge">${status.count}</span>
-								<div class="stock-name-box">
-									<span class="stock-name">${stock.stockName}</span>
-									<span class="stock-code-sector">${stock.stockCode} · ${stock.sectorName}</span>
+				<div class="stock-top10-grid">
+					<div class="stock-sub-col">
+						<c:forEach var="stock" items="${topStocks}" varStatus="status"
+							begin="0" end="4">
+							<a
+								href="${pageContext.request.contextPath}/stock/${stock.stockCode}"
+								class="stock-item">
+								<div class="stock-left">
+									<span class="rank-badge">${status.index + 1}</span>
+									<div class="stock-name-box">
+										<span class="stock-name">${stock.stockName}</span> <span
+											class="stock-code-sector">${stock.stockCode} ·
+											${stock.sectorName}</span>
+									</div>
 								</div>
-							</div>
-							<div class="stock-right">
-								<span class="stock-price">
-									<fmt:formatNumber value="${stock.price}" pattern="#,##0" />원
-								</span>
-								<c:choose>
-									<c:when test="${stock.dailyPriceChange > 0}">
-										<span class="stock-rate up">▲ +${stock.dailyPriceChangeRoundedPercent}%</span>
-									</c:when>
-									<c:when test="${stock.dailyPriceChange < 0}">
-										<span class="stock-rate down">▼ ${stock.dailyPriceChangeRoundedPercent}%</span>
-									</c:when>
-									<c:otherwise>
-										<span class="stock-rate even">0.00%</span>
-									</c:otherwise>
-								</c:choose>
-							</div>
-						</a>
-					</c:forEach>
+								<div class="stock-right">
+									<span class="stock-price"> <fmt:formatNumber
+											value="${stock.price}" pattern="#,##0" />원
+									</span>
+									<c:choose>
+										<c:when test="${stock.dailyPriceChange > 0}">
+											<span class="stock-rate up">▲
+												+${stock.dailyPriceChangeRoundedPercent}%</span>
+										</c:when>
+										<c:when test="${stock.dailyPriceChange < 0}">
+											<span class="stock-rate down">▼
+												${stock.dailyPriceChangeRoundedPercent}%</span>
+										</c:when>
+										<c:otherwise>
+											<span class="stock-rate even">0.00%</span>
+										</c:otherwise>
+									</c:choose>
+								</div>
+							</a>
+						</c:forEach>
+					</div>
+
+					<div class="stock-sub-col">
+						<c:forEach var="stock" items="${topStocks}" varStatus="status"
+							begin="5" end="9">
+							<a
+								href="${pageContext.request.contextPath}/stock/${stock.stockCode}"
+								class="stock-item">
+								<div class="stock-left">
+									<span class="rank-badge">${status.index + 1}</span>
+									<div class="stock-name-box">
+										<span class="stock-name">${stock.stockName}</span> <span
+											class="stock-code-sector">${stock.stockCode} ·
+											${stock.sectorName}</span>
+									</div>
+								</div>
+								<div class="stock-right">
+									<span class="stock-price"> <fmt:formatNumber
+											value="${stock.price}" pattern="#,##0" />원
+									</span>
+									<c:choose>
+										<c:when test="${stock.dailyPriceChange > 0}">
+											<span class="stock-rate up">▲
+												+${stock.dailyPriceChangeRoundedPercent}%</span>
+										</c:when>
+										<c:when test="${stock.dailyPriceChange < 0}">
+											<span class="stock-rate down">▼
+												${stock.dailyPriceChangeRoundedPercent}%</span>
+										</c:when>
+										<c:otherwise>
+											<span class="stock-rate even">0.00%</span>
+										</c:otherwise>
+									</c:choose>
+								</div>
+							</a>
+						</c:forEach>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -69,13 +111,9 @@
 					<h2 class="card-title">KOSPI 종합지수</h2>
 				</div>
 				<div class="placeholder-section">
-					<span class="badge-preparing">지수 컨트롤러 준비 중</span>
-					<p class="placeholder-text">한국거래소(KRX) 실시간 코스피 시세 API 연동 예정입니다.</p>
-					<div class="kospi-preview-box">
-						<div class="kospi-val">2,685.20</div>
-						<div class="kospi-change up">▲ +28.50 (+1.07%)</div>
-					</div>
-					<div style="max-width: 850px; margin: 0 auto; background: #161a1e; padding: 20px; border-radius: 8px;">
+					
+					<div
+						style="width: 1050px; margin: 0 auto; background: #161a1e; padding: 20px; border-radius: 8px;">
 						<div id="stock-chart"></div>
 					</div>
 				</div>
@@ -86,67 +124,82 @@
 			<div class="dashboard-card">
 				<div class="card-header-row">
 					<h2 class="card-title">📰 주식뉴스 TOP 5</h2>
-					<a href="${pageContext.request.contextPath}/news" class="card-more-link">더보기</a>
+					<a href="${pageContext.request.contextPath}/news"
+						class="card-more-link">더보기</a>
 				</div>
 				<div class="post-list">
 					<a href="${pageContext.request.contextPath}/news" class="post-item">
 						<div class="post-left">
 							<span class="post-rank-badge" style="color: #ef4444;">1</span>
 							<div class="post-info-box">
-								<span class="post-title" title="AI 반도체 훈풍 지속... 삼성전자·SK하이닉스 HBM 공급망 선점 경쟁 가열">AI 반도체 훈풍 지속... 삼성전자·SK하이닉스 HBM 공급망 선점 경쟁 가열</span>
-								<span class="post-meta-sub">연합인포맥스 · 15분 전</span>
+								<span class="post-title"
+									title="AI 반도체 훈풍 지속... 삼성전자·SK하이닉스 HBM 공급망 선점 경쟁 가열">AI
+									반도체 훈풍 지속... 삼성전자·SK하이닉스 HBM 공급망 선점 경쟁 가열</span> <span
+									class="post-meta-sub">연합인포맥스 · 15분 전</span>
 							</div>
 						</div>
 						<div class="post-right">
-							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">반도체</span>
+							<span
+								style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">반도체</span>
 						</div>
-					</a>
-					<a href="${pageContext.request.contextPath}/news" class="post-item">
+					</a> <a href="${pageContext.request.contextPath}/news"
+						class="post-item">
 						<div class="post-left">
 							<span class="post-rank-badge" style="color: #f97316;">2</span>
 							<div class="post-info-box">
-								<span class="post-title" title="美 연준(Fed) 9월 빅컷 기대감 유효... 외국인 코스피 순매수 전환">美 연준(Fed) 9월 빅컷 기대감 유효... 외국인 코스피 순매수 전환</span>
-								<span class="post-meta-sub">한국경제 · 25분 전</span>
+								<span class="post-title"
+									title="美 연준(Fed) 9월 빅컷 기대감 유효... 외국인 코스피 순매수 전환">美
+									연준(Fed) 9월 빅컷 기대감 유효... 외국인 코스피 순매수 전환</span> <span
+									class="post-meta-sub">한국경제 · 25분 전</span>
 							</div>
 						</div>
 						<div class="post-right">
-							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">시황</span>
+							<span
+								style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">시황</span>
 						</div>
-					</a>
-					<a href="${pageContext.request.contextPath}/news" class="post-item">
+					</a> <a href="${pageContext.request.contextPath}/news"
+						class="post-item">
 						<div class="post-left">
 							<span class="post-rank-badge" style="color: #eab308;">3</span>
 							<div class="post-info-box">
-								<span class="post-title" title="현대차·기아, 북미 친환경차 점유율 2위 굳히기 성공">현대차·기아, 북미 친환경차 점유율 2위 굳히기 성공</span>
-								<span class="post-meta-sub">매일경제 · 42분 전</span>
+								<span class="post-title" title="현대차·기아, 북미 친환경차 점유율 2위 굳히기 성공">현대차·기아,
+									북미 친환경차 점유율 2위 굳히기 성공</span> <span class="post-meta-sub">매일경제 ·
+									42분 전</span>
 							</div>
 						</div>
 						<div class="post-right">
-							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">자동차</span>
+							<span
+								style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">자동차</span>
 						</div>
-					</a>
-					<a href="${pageContext.request.contextPath}/news" class="post-item">
+					</a> <a href="${pageContext.request.contextPath}/news"
+						class="post-item">
 						<div class="post-left">
 							<span class="post-rank-badge">4</span>
 							<div class="post-info-box">
-								<span class="post-title" title="2차전지 반등 신호탄? 리튬 가격 바닥 통과 기대에 양극재주 강세">2차전지 반등 신호탄? 리튬 가격 바닥 통과 기대에 양극재주 강세</span>
-								<span class="post-meta-sub">이데일리 · 1시간 전</span>
+								<span class="post-title"
+									title="2차전지 반등 신호탄? 리튬 가격 바닥 통과 기대에 양극재주 강세">2차전지 반등
+									신호탄? 리튬 가격 바닥 통과 기대에 양극재주 강세</span> <span class="post-meta-sub">이데일리
+									· 1시간 전</span>
 							</div>
 						</div>
 						<div class="post-right">
-							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">2차전지</span>
+							<span
+								style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">2차전지</span>
 						</div>
-					</a>
-					<a href="${pageContext.request.contextPath}/news" class="post-item">
+					</a> <a href="${pageContext.request.contextPath}/news"
+						class="post-item">
 						<div class="post-left">
 							<span class="post-rank-badge">5</span>
 							<div class="post-info-box">
-								<span class="post-title" title="정부, '기업 밸류업 프로그램' 세제 개편안 발표... 배당 분리과세 추진">정부, '기업 밸류업 프로그램' 세제 개편안 발표... 배당 분리과세 추진</span>
-								<span class="post-meta-sub">머니투데이 · 2시간 전</span>
+								<span class="post-title"
+									title="정부, '기업 밸류업 프로그램' 세제 개편안 발표... 배당 분리과세 추진">정부,
+									'기업 밸류업 프로그램' 세제 개편안 발표... 배당 분리과세 추진</span> <span
+									class="post-meta-sub">머니투데이 · 2시간 전</span>
 							</div>
 						</div>
 						<div class="post-right">
-							<span style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">정책</span>
+							<span
+								style="background-color: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px;">정책</span>
 						</div>
 					</a>
 				</div>
