@@ -131,9 +131,9 @@ body {
 }
 
 .stock-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap: 8px 16px;
 }
 
 .stock-item {
@@ -175,15 +175,15 @@ body {
   justify-content: center;
 }
 
-.stock-item:nth-child(1) .rank-badge {
+.stock-sub-col:first-child .stock-item:nth-child(1) .rank-badge {
   color: #ffd700;
 }
 
-.stock-item:nth-child(2) .rank-badge {
+.stock-sub-col:first-child .stock-item:nth-child(2) .rank-badge {
   color: #c0c0c0;
 }
 
-.stock-item:nth-child(3) .rank-badge {
+.stock-sub-col:first-child .stock-item:nth-child(3) .rank-badge {
   color: #cd7f32;
 }
 
