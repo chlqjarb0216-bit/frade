@@ -369,7 +369,6 @@ public class OrderServiceImpl implements OrderService {
 						result = saveLimitSell(orderInfo);
 					}
 				}
-
 			}
 		}
 		return result;

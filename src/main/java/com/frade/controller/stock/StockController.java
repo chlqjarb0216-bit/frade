@@ -20,6 +20,7 @@ import com.frade.service.order.OrderService;
 import com.frade.service.portfolio.PortfolioService;
 import com.frade.service.stock.StockService;
 import com.frade.util.LoginManager;
+import com.frade.util.MarketUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,6 +57,7 @@ public class StockController {
 			PortfolioDTO portfolio = portfolioService.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
 			model.addAttribute("userCash", cash == null ? 0 : cash.getCash());
 			model.addAttribute("stockCnt", portfolio == null ? 0 : portfolio.getUserStockCnt());
+			model.addAttribute("isMarketTime",MarketUtil.isMarketOpenTime());
 		}
 		// 차트 데이터
 		List<Object[]> kospiDataList = stockService.getEveryChartDataCached(stockCode);

@@ -14,6 +14,8 @@ import com.frade.dto.order.OrderInfoDTO;
 import com.frade.dto.stock.StockPreviewDTO;
 import com.frade.service.stock.StockService;
 import com.frade.util.LoginManager;
+import com.frade.util.MarketUtil;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
@@ -38,7 +40,15 @@ public class OrderController {
 		if (!LoginManager.isLogin(session)) {
 			return "redirect:/user/login";
 		}
-
+		
+		
+		if(!MarketUtil.isMarketOpenTime()) {
+			return "redirect:/stock";
+		}
+		
+			
+			
+			
 		orderInfo.setUserNum(LoginManager.getLoginUserNum(session));
 		if (orderInfo.getStockCode() == null || orderInfo.getStockCode().isBlank()) {
 			return "redirect:/stock";
