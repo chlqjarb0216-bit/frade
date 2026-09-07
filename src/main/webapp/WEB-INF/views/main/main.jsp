@@ -111,14 +111,9 @@
 					<h2 class="card-title">KOSPI 종합지수</h2>
 				</div>
 				<div class="placeholder-section">
-					<span class="badge-preparing">지수 컨트롤러 준비 중</span>
-					<p class="placeholder-text">한국거래소(KRX) 실시간 코스피 시세 API 연동 예정입니다.</p>
-					<div class="kospi-preview-box">
-						<div class="kospi-val">2,685.20</div>
-						<div class="kospi-change up">▲ +28.50 (+1.07%)</div>
-					</div>
+					
 					<div
-						style="max-width: 850px; margin: 0 auto; background: #161a1e; padding: 20px; border-radius: 8px;">
+						style="width: 1050px; margin: 0 auto; background: #161a1e; padding: 20px; border-radius: 8px;">
 						<div id="stock-chart"></div>
 					</div>
 				</div>
