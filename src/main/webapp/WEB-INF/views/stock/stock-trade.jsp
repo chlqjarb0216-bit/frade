@@ -70,6 +70,54 @@ body {
     margin-bottom: 16px;
 }
 
+
+.search-form-wrapper {
+  position: relative;
+  display: inline-block; 
+  width: 260px;          
+}
+
+
+.search-form-wrapper #searchKeyword {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+#previewList {
+  position: absolute;
+  top: calc(100% + 4px); 
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 240px;     
+  overflow-y: auto;
+  z-index: 1000;          
+}
+
+
+#previewList li {
+  padding: 9px 14px;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+
+#previewList li:hover {
+  background-color: #f2f7ff;
+  color: #2b7fff;
+}
+
 .stock-trade-layout { display: flex; align-items: flex-start; gap: 24px; }
 .stock-trade-main { flex: 1; min-width: 0; }
 .stock-order-panel { flex: 0 0 430px; min-width: 0; }
@@ -93,7 +141,7 @@ body {
             <input id="searchKeyword" name="searchKeyword" type="text"
                 placeholder="${ stockPreview.stockName }" />
             <ul id="previewList" style="display: none;"></ul>
-            <button>검색</button>
+            
         </form>
         <div class="stock">
             <div style="display: flex; justify-content: space-between">
