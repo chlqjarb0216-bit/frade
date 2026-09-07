@@ -225,14 +225,12 @@
 								<span class="post-rank-badge">${status.count}</span>
 								<div class="post-info-box">
 									<span class="post-title" title="${post.postTitle}">${post.postTitle}</span>
-									<span class="post-meta-sub">${post.userName} ·
-										${post.postedDateString}</span>
+									<span class="post-meta-sub">${post.userName} · ${post.postedDateString}</span>
 								</div>
 							</div>
 							<div class="post-right">
-								<span>조회 <fmt:formatNumber value="${post.postViewCnt}"
-										pattern="#,##0" /></span> <span class="post-like-tag">추천 <fmt:formatNumber
-										value="${post.postLikeCnt}" pattern="#,##0" /></span>
+								<span>조회 <fmt:formatNumber value="${post.postViewCnt}" pattern="#,##0" /></span>
+								<span class="post-like-tag">추천 <fmt:formatNumber value="${post.postLikeCnt}" pattern="#,##0" /></span>
 							</div>
 						</a>
 					</c:forEach>
@@ -250,10 +248,7 @@
 		src="https://cdn.jsdelivr.net/npm/apexstock/dist/apexstock.min.js"></script>
 
 	<script>
-		window.SERVER_CHART_DATA = $
-		{
-			chartDataJson
-		};
+		window.SERVER_CHART_DATA = ${chartDataJson};
 	</script>
 	<script src="/resources/js/draw_chart_KOSPI.js"></script>
 </body>
