@@ -59,4 +59,8 @@ public class RestApiResponse<T> {
 		return new RestApiResponse<>(resultCode.getCode(), resultCode.getMessage(), data);
 	}
 
+	public static <T> RestApiResponse<T> customResponse(ResultCode resultCode, String customMessage, T data) {
+		return new RestApiResponse<>(resultCode.getCode(), customMessage, data);
+	}
+
 }
