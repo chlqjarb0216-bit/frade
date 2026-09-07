@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -317,16 +318,58 @@ public class StockServiceImpl implements StockService {
 						// 🚨 장중 오늘 자 크래시 유실 가드 작동
 						log.warn("[{} 장 시작 감지] 아침 9시 이후 부팅되었습니다. API 복구를 트리거합니다.", stockCode);
 
-						List<StockPriceDTO> apiStockTodayBars = kiwoomApiService.getStockChartDataByDay(stockCode,
-								todayStr);
-						if (apiStockTodayBars != null && !apiStockTodayBars.isEmpty()) {
-							stockPriceMemoryCache.putOrUpdate(stockCode, todayStr, apiStockTodayBars);
-							stockPriceDAO.updateOrInsertDailyMinutePrice(apiStockTodayBars);
-							log.info("[{} 장중 복구 성공] 오늘 자 실시간 누적 이력 복원 및 영속화 종결", stockCode);
-
-							// ⏳ [핵심 트래픽 가드]: 증권사 방화벽 세션 차단 예방 휴식 추가
-							Thread.sleep(150);
+						// 오늘 자 아침 00:00:00 기점 마커를 들고 가 오늘 아침 9시부터 현재 찰나까지 쌓인 라이브 누적 세트를 인양합니다.
+						List<StockPriceDTO> apiStockTodayBars;
+						if (!todayDbBars.isEmpty()) {
+							StockPriceDTO lastbar = todayDbBars.get(todayDbBars.size() - 1);
+							apiStockTodayBars = kiwoomApiService.getStockChartDataFromLastData(stockCode,
+									lastbar.getDateTime());
+						} else {
+							apiStockTodayBars = kiwoomApiService.getStockChartDataByDay(stockCode, todayStr);
 						}
+
+						// [핵심 변경] API 데이터 존재 여부에 따른 조건 분기 및 캐시 최신화 보장
+						if (apiStockTodayBars != null && !apiStockTodayBars.isEmpty()) {
+							// ----------------------------------------------------
+							// 케이스 A: 신규 API 데이터가 있는 경우 -> 중복 교체 후 병합 최신화
+							// ----------------------------------------------------
+							List<StockPriceDTO> finalUpdatedBars;
+
+							if (!todayDbBars.isEmpty()) {
+								LocalDateTime apiStartDateTime = apiStockTodayBars.get(0).getDateTime();
+
+								// 겹치는 시점의 이전 데이터만 남기기 (API 쪽 최신 데이터 우선 적용)
+								finalUpdatedBars = todayDbBars.stream()
+										.filter(bar -> bar.getDateTime() != null
+												&& bar.getDateTime().isBefore(apiStartDateTime))
+										.collect(Collectors.toList());
+
+								finalUpdatedBars.addAll(apiStockTodayBars);
+							} else {
+								finalUpdatedBars = apiStockTodayBars;
+							}
+
+							// 캐시판에 최신 덮어쓰기 및 DB 반영
+							stockPriceMemoryCache.putOrUpdate(stockCode, todayStr, finalUpdatedBars);
+							stockPriceDAO.updateOrInsertDailyMinutePrice(apiStockTodayBars);
+
+							log.info("[{} 장중 복구] 신규 API 데이터 반영 성공. 오늘 자 누적 지수 총 {}건 캐시 적재.", stockCode,
+									finalUpdatedBars.size());
+
+						} else {
+							// ----------------------------------------------------
+							// 케이스 B: 신규 API 데이터가 없는 경우 -> 기존 DB 바로 캐시 밀어올리기 (폴백)
+							// ----------------------------------------------------
+							if (!todayDbBars.isEmpty()) {
+								stockPriceMemoryCache.putOrUpdate(stockCode, todayStr, todayDbBars);
+								log.info("[{} 캐시 동기화] 신규 API 데이터가 없어 기존 DB 데이터 {}건으로 메모리 캐시 최신화 완료.", stockCode,
+										todayDbBars.size());
+							} else {
+								log.warn("[{} 데이터 없음] 오늘 자 DB 데이터와 API 데이터가 모두 존재하지 않습니다.", stockCode);
+							}
+						}
+						// ⏳ [핵심 트래픽 가드]: 증권사 방화벽 세션 차단 예방 휴식 추가
+						Thread.sleep(150);
 					}
 				}
 				loadedCount++;
@@ -414,11 +457,43 @@ public class StockServiceImpl implements StockService {
 					apiKospiTodayBars = kiwoomApiService.getKOSPIChartDataByDay(todayStr);
 				}
 
+				// [핵심 변경] API 데이터 존재 여부에 따른 조건 분기 및 캐시 최신화 보장
 				if (apiKospiTodayBars != null && !apiKospiTodayBars.isEmpty()) {
-					// 역순 스캔 덮어쓰기 엔진으로 최신 정산가 오버라이딩 복구 완료
-					stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, todayStr, apiKospiTodayBars);
+					// ----------------------------------------------------
+					// 케이스 A: 신규 API 데이터가 있는 경우 -> 중복 교체 후 병합 최신화
+					// ----------------------------------------------------
+					List<StockPriceDTO> finalUpdatedBars;
+
+					if (!kospiTodayDbBars.isEmpty()) {
+						LocalDateTime apiStartDateTime = apiKospiTodayBars.get(0).getDateTime();
+
+						// 겹치는 시점의 이전 데이터만 남기기 (API 쪽 최신 데이터 우선 적용)
+						finalUpdatedBars = kospiTodayDbBars.stream().filter(
+								bar -> bar.getDateTime() != null && bar.getDateTime().isBefore(apiStartDateTime))
+								.collect(Collectors.toList());
+
+						finalUpdatedBars.addAll(apiKospiTodayBars);
+					} else {
+						finalUpdatedBars = apiKospiTodayBars;
+					}
+
+					// 캐시판에 최신 덮어쓰기 및 DB 반영
+					stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, todayStr, finalUpdatedBars);
 					stockPriceDAO.updateOrInsertDailyMinutePrice(apiKospiTodayBars);
-					log.info("[KOSPI 장중 복구 성공] 오늘 자 누적 지수 {}건을 캐시판에 오버라이딩 강제 적재 완료!", apiKospiTodayBars.size());
+
+					log.info("[KOSPI 장중 복구] 신규 API 데이터 반영 성공. 오늘 자 누적 지수 총 {}건 캐시 적재.", finalUpdatedBars.size());
+
+				} else {
+					// ----------------------------------------------------
+					// 케이스 B: 신규 API 데이터가 없는 경우 -> 기존 DB 바로 캐시 밀어올리기 (폴백)
+					// ----------------------------------------------------
+					if (!kospiTodayDbBars.isEmpty()) {
+						stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, todayStr, kospiTodayDbBars);
+						log.info("[KOSPI 캐시 동기화] 신규 API 데이터가 없어 기존 DB 데이터 {}건으로 메모리 캐시 최신화 완료.",
+								kospiTodayDbBars.size());
+					} else {
+						log.warn("[KOSPI 데이터 없음] 오늘 자 DB 데이터와 API 데이터가 모두 존재하지 않습니다.");
+					}
 				}
 			}
 		}
