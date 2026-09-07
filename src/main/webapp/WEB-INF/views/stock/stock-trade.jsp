@@ -71,14 +71,15 @@ body {
 }
 
 
-.search-form-wrapper {
+.stock-search-form {
   position: relative;
-  display: inline-block; 
-  width: 260px;          
+  display: block; 
+  width: 100%;
+  box-sizing: border-box;        
 }
 
 
-.search-form-wrapper #searchKeyword {
+.stock-search-form #searchKeyword {
   width: 100%;
   box-sizing: border-box;
 }
