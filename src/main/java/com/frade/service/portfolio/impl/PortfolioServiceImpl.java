@@ -93,13 +93,30 @@ public class PortfolioServiceImpl implements PortfolioService {
 		return myPagePortfolio;
 	}
 
-	private long getCurrentPrice(String stockCode) {
-		int price = stockDataBufferService.getMinPriceSnapshotByStockCode(stockCode);
-		if (price > 0) return price;
-		StockPreviewDTO stock = stockService.getStockPreviewByStockCode(stockCode);
-		return stock == null ? 0L : Math.max(0, stock.getPrice());
+	
+	
+	
+	
+	
+	
+	
+	private int getCurrentPrice(String stockCode) {
+		int price = stockService.getLatestPrice(stockCode);
+		return price;
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	private double calculatePercent(long amount, long total) {
 		if (total == 0) {
 			return 0.0;
