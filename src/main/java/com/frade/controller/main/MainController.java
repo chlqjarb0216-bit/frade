@@ -37,7 +37,7 @@ public class MainController {
 	public String main(Model model) {
 		// 1. 실시간 주식 상위 5개 테스트 데이터 조회
 
-		List<StockPreviewDTO> topStocks = stockService.getSortedStockRankingListPage(0, 5);
+		List<StockPreviewDTO> topStocks = stockService.getSortedStockRankingListPage(0, 10);
 
 		// 2. 커뮤니티 인기글 상위 5개 테스트 데이터 조회
 
