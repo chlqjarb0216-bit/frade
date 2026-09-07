@@ -36,5 +36,23 @@ public class CashDAOImpl implements CashDAO{
 		return result;
 	}
 
+	@Override
+	public int updateUserCashByLimitPrice(int userNum, int margin) {
+		Map<String, Integer> params = new HashMap<>();
+	    params.put("userNum", userNum);
+	    params.put("add", margin);
+		int result = sqlSessionTemplate.update("cash_mapper.updateUserCashByLimitPrice", params);
+		return result;
+	}
+
+	@Override
+	public int updateUserMargin(int userNum,int margin) {
+		Map<String, Integer> params = new HashMap<>();
+	    params.put("userNum", userNum);
+	    params.put("add", margin);
+		int result = sqlSessionTemplate.update("cash_mapper.updateUserMargin", params);
+		return result;
+	}
+
 	
 }
