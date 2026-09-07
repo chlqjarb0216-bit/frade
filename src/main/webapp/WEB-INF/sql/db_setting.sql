@@ -317,7 +317,7 @@ ALTER TABLE t_history ADD CONSTRAINT fk_t_history_to_t_user FOREIGN KEY (user_nu
 
 ALTER TABLE t_history ADD CONSTRAINT fk_t_history_to_t_stock FOREIGN KEY (stock_code) REFERENCES t_stock (stock_code) DEFERRABLE INITIALLY IMMEDIATE;
 
-ALTER TABLE t_comment ADD CONSTRAINT fk_t_comment_to_t_post FOREIGN KEY (post_num) REFERENCES t_post (post_num) DEFERRABLE INITIALLY IMMEDIATE;
+ALTER TABLE t_comment ADD CONSTRAINT fk_t_comment_to_t_post FOREIGN KEY (post_num) REFERENCES t_post (post_num) ON DELETE CASCADE DEFERRABLE INITIALLY IMMEDIATE;
 
 ALTER TABLE t_comment ADD CONSTRAINT fk_t_comment_to_t_user FOREIGN KEY (user_num) REFERENCES t_user (user_num) DEFERRABLE INITIALLY IMMEDIATE;
 
