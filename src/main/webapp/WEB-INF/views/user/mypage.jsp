@@ -12,6 +12,14 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<!-- 부트스트랩 CSS --> 
+<link href ="https: //cdn.jsdelivr.net /npm /bootstrap 
+	 @5.0.2 /dist /css /bootstrap.min.css
+ " rel ="stylesheet " integrity ="sha384-EVSTQN3 /azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC
+ " crossorigin ="anonymous "> 
+ < !--추가 커스텀 CSS 필요하면 여기에 -->
+
+
 <style>
 :root {
     --main-bg: #f8fafc;
@@ -813,8 +821,6 @@ body {
 
         btnProfileEdit.addEventListener("click", () => {
             originalNick = inputProfileNick.value;
-            profileNickCheck = false;
-            profileNickCheckMsg.innerText = "";
             profileModal.style.display = "block";
             profileNickCheck = false;
             profileNickCheckMsg.innerText = "";
