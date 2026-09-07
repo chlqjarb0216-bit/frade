@@ -31,32 +31,7 @@ public class OrderController {
 	@Autowired
 	StockService stockService;
 
-	@GetMapping("/stock/trade")
-	public String trade(@RequestParam("stockCode") String stockCode, Model model, HttpSession session) {
 
-		if (!LoginManager.isLogin(session)) {
-			return "redirect:/user/login";
-		}
-		StockPreviewDTO stock = stockService.getStockPreviewByStockCode(stockCode);
-		if (stock == null) {
-			return "redirect:/stock";
-		}
-		model.addAttribute("stockPreview", stock);
-		int userNum = LoginManager.getLoginUserNum(session);
-
-		UserCashDTO cash = orderService.findUserCashByUserNum(userNum);
-		model.addAttribute("userCash", cash == null ? 0 : cash.getCash());
-
-		PortfolioDTO portfolio = portfolioService.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
-
-		int userStockCnt = 0;
-		if (portfolio != null) {
-			userStockCnt = portfolio.getUserStockCnt();
-		}
-		model.addAttribute("stockCnt", userStockCnt);
-
-		return "stock/order";
-	}
 
 	@PostMapping("/stock/trade")
 	public String tradeAction(OrderInfoDTO orderInfo, HttpSession session) {
