@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +18,7 @@
 	 @5.0.2 /dist /css /bootstrap.min.css
  " rel ="stylesheet " integrity ="sha384-EVSTQN3 /azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC
  " crossorigin ="anonymous "> 
- < !--추가 커스텀 CSS 필요하면 여기에 -->
+
 
 
 <style>
@@ -586,11 +587,11 @@ body {
             <div class="profile-box">
                 <div class="profile-photo">
                     <c:choose>
-                        <c:when test="${empty userProfile.userPhoto}">
-                            <img src="/resources/images/logo.png" alt="프로필 사진" width="70" height="70">
+                        <c:when test="${not empty userProfile.userPhoto}">
+                            <img src="${pageContext.request.contextPath}/file-storage/user_profile/${userProfile.userPhoto}" alt="프로필 사진" width="70" height="70">
                         </c:when>
                         <c:otherwise>
-                            <img src="/fileStorage/user_profile/${userProfile.userPhoto}" alt="프로필 사진" width="70" height="70">
+                            <img src="${pageContext.request.contextPath}/resources/images/Default_profile.png" alt="프로필 사진" width="70" height="70">
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -599,6 +600,7 @@ body {
                         <strong>${userProfile.userNick}</strong>
                     </div>
                     <div>가입일 : ${userProfile.userRegistedDateText}</div>
+                 
                     <button type="button" id="btnProfileEdit">프로필 수정</button>
                 </div>
             </div>
@@ -614,10 +616,10 @@ body {
                                 <div class="profile-photo-preview">
                                     <c:choose>
                                         <c:when test="${not empty userProfile.userPhoto}">
-                                            <img src="/file-storage/user_profile/${userProfile.userPhoto}" alt="프로필 사진" id="profilePreview" width="80" height="80">
+                                            <img src="${pageContext.request.contextPath}/file-storage/user_profile/${userProfile.userPhoto}" alt="프로필 사진" id="profilePreview" width="80" height="80">
                                         </c:when>
                                         <c:otherwise>
-                                            <img src="/resources/images/Default_profile.png" alt="프로필 사진" id="profilePreview" width="80" height="80">
+                                            <img src="${pageContext.request.contextPath}/resources/images/Default_profile.png" alt="프로필 사진" id="profilePreview" width="80" height="80">
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -681,13 +683,14 @@ body {
                     <form action="/user/withdraw" method="post" id="userDeleteForm"></form>
                 </div>
             </div>
-        </div>
+        
 
         <div class="totalAsset-box" style="margin-top: 20px;">
             <div class="totalAsset-summary">
                 <p>총 자산</p>
-                <h2>${assetsInfo.totalAsset}원</h2>
-                <p>${assetsInfo.totalRevenue}원 <span>(${assetsInfo.revenuePercent}%)</span></p>
+                <h2><fmt:formatNumber value="${assetsInfo.totalAsset}" pattern="#,###"/>원</h2>
+                <p><fmt:formatNumber value="${assetsInfo.totalRevenue}" pattern="#,###"/>원
+    <span>(${assetsInfo.revenuePercent}%)</span></p>
             </div>
 
             <div class="assetInfo-box-top">
@@ -697,11 +700,11 @@ body {
                 </div>
                 <div>
                     <p>주식 평가금</p>
-                    <p>${assetsInfo.totalValuation}원</p>
+                    <p><fmt:formatNumber value="${assetsInfo.totalValuation}" pattern="#,###"/>원</p>
                 </div>
                 <div>
                     <p>예수금</p>
-                    <p>${assetsInfo.cash}원</p>
+                    <p> <fmt:formatNumber value="${assetsInfo.cash}" pattern="#,###"/>원</p>
                 </div>
             </div>
 
@@ -717,6 +720,7 @@ body {
                 <div></div>
             </div>
         </div>
+      </div>
 
         <div class="mypageMiddle">
             <div class="portfolio-circle">
