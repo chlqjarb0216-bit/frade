@@ -9,6 +9,9 @@ public interface CashDAO {
 	//거래 시작시 해당 유저 현금데이터 접근 잠금
 	public UserCashDTO findUserCashByUserNumForUpdate(int userNum); 
 	
-	public int updateUserCash(int userNum, int add); 
+	public int updateUserCash(int userNum, int add);
 	
+	public int updateUserCashByLimitPrice(int userNum, int result);
+	
+	public int updateUserMargin(int userNum, int result);
 }

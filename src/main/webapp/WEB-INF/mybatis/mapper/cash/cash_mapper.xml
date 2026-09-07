@@ -19,5 +19,21 @@
 		set cash = cash + #{add}
 		where user_num = #{userNum}
 	</update>
+	
+	
+	<update id="updateUserCashByLimitPrice" parameterType="map">
+		update t_cash
+		set margin = margin + #{add}
+		where user_num = #{userNum}
+	</update>
+	
+	<update id="updateUserMargin" parameterType="map">
+		update t_cash
+		set margin = margin - #{add},
+			cash = cash - #{add}
+		where user_num = #{userNum}
+	</update>
+	
+	
 
 </mapper>

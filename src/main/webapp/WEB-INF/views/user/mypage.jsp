@@ -688,9 +688,8 @@ body {
         <div class="totalAsset-box" style="margin-top: 20px;">
             <div class="totalAsset-summary">
                 <p>총 자산</p>
-                <h2><fmt:formatNumber value="${assetsInfo.totalAsset}" pattern="#,###"/>원</h2>
-                <p><fmt:formatNumber value="${assetsInfo.totalRevenue}" pattern="#,###"/>원
-    <span>(${assetsInfo.revenuePercent}%)</span></p>
+                <h2 id="live-total-asset">${assetsInfo.totalAsset}원</h2>
+                <p id="live-total-revenue">${assetsInfo.totalRevenue}원 <span>(${assetsInfo.revenuePercent}%)</span></p>
             </div>
 
             <div class="assetInfo-box-top">
@@ -700,7 +699,7 @@ body {
                 </div>
                 <div>
                     <p>주식 평가금</p>
-                    <p><fmt:formatNumber value="${assetsInfo.totalValuation}" pattern="#,###"/>원</p>
+                    <p id="live-total-valuation">${assetsInfo.totalValuation}원</p>
                 </div>
                 <div>
                     <p>예수금</p>
@@ -735,7 +734,7 @@ body {
                     <tr>
                         <td>${portfolioInfo.stockName}</td>
                         <td>${portfolioInfo.stockCnt}주</td>
-                        <td>${portfolioInfo.valuationAmount}원</td>
+                        <td data-valuation-code="${portfolioInfo.stockCode}">${portfolioInfo.valuationAmount}원</td>
                     </tr>
                 </c:forEach>
             </table>
@@ -784,7 +783,7 @@ body {
                         <tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px 0;">보유 종목이 없습니다.</td></tr>
                     </c:if>
                     <c:forEach var="portfolioInfo" items="${portfolioInfoList}">
-                        <tr>
+                        <tr data-stock-code="${portfolioInfo.stockCode}" data-count="${portfolioInfo.stockCnt}" data-buy-cost="${portfolioInfo.valuationAmount - portfolioInfo.pnl}" data-price="${portfolioInfo.stockNowPrice}">
                             <td>
                                 <span class="holding-stock-name">${portfolioInfo.stockName}</span>
                                 <span class="holding-stock-code">${portfolioInfo.stockCode}</span>
@@ -1049,7 +1048,7 @@ body {
                                     return sum + value;
                                 }, 0);
                                 const value = context.raw;
-                                const percent = value / total * 100;
+                                const percent = total > 0 ? value / total * 100 : 0;
                                 return context.label
                                     + ": "
                                     + value.toLocaleString()
@@ -1067,6 +1066,67 @@ body {
             document.getElementById("portfolioChart"),
             config
         );
+
+        // Reuse the existing chart stream for each holding.
+        const holdingRows = Array.from(document.querySelectorAll('[data-stock-code]'));
+        const cashBalance = Number(${assetsInfo.cash});
+        const won = value => Math.round(value).toLocaleString('ko-KR') + '원';
+        function refreshValuation() {
+            let totalValuation = 0;
+            const values = holdingRows.map(row => {
+                const price = Number(row.dataset.price);
+                const valuation = price * Number(row.dataset.count);
+                const cost = Number(row.dataset.buyCost);
+                const pnl = valuation - cost;
+                row.cells[3].textContent = price > 0 ? won(price) : '시세 대기';
+                row.cells[4].textContent = won(valuation);
+                row.cells[5].textContent = won(pnl);
+                row.cells[6].textContent = (cost > 0 ? pnl / cost * 100 : 0).toFixed(2) + '%';
+                totalValuation += valuation;
+                return valuation;
+            });
+            const totalAsset = totalValuation + cashBalance;
+            holdingRows.forEach((row, index) => {
+                row.cells[7].textContent = (totalAsset > 0 ? values[index] / totalAsset * 100 : 0).toFixed(2) + '%';
+                document.querySelectorAll('[data-valuation-code]').forEach(cell => {
+                    if (cell.dataset.valuationCode === row.dataset.stockCode) cell.textContent = won(values[index]);
+                });
+            });
+            document.getElementById('live-total-asset').textContent = won(totalAsset);
+            document.getElementById('live-total-valuation').textContent = won(totalValuation);
+            document.getElementById('live-total-revenue').textContent = won(totalAsset - 10000000)
+                + ' (' + ((totalAsset - 10000000) / 10000000 * 100).toFixed(2) + '%)';
+            portfolioChart.data.datasets[0].data = values.concat(cashBalance);
+            portfolioChart.update('none');
+        }
+        const portfolioStreams = [];
+        function connectPortfolioPrices() {
+            if (portfolioStreams.length) return;
+            holdingRows.forEach(row => {
+                const stream = new EventSource('${pageContext.request.contextPath}/api/stock/stream/connect?stockCode='
+                    + encodeURIComponent(row.dataset.stockCode));
+                portfolioStreams.push(stream);
+                stream.addEventListener('chart-tick', event => {
+                    try {
+                        const tick = JSON.parse(event.data);
+                        // Existing payload: [timestamp, [open, high, low, close, volume]].
+                        if (!Array.isArray(tick) || !Array.isArray(tick[1])) return;
+                        const price = Number(tick[1][3]);
+                        if (!Number.isFinite(price) || price <= 0) return;
+                        row.dataset.price = price;
+                        refreshValuation();
+                    } catch (error) { console.warn('시세 데이터 처리 실패', error); }
+                });
+            });
+        }
+        window.addEventListener('pagehide', () => {
+            portfolioStreams.forEach(stream => stream.close());
+            portfolioStreams.length = 0;
+        });
+        window.addEventListener('pageshow', connectPortfolioPrices);
+        refreshValuation();
+        connectPortfolioPrices();
+
     </script>
 </body>
 </html>

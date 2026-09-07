@@ -3,22 +3,37 @@ package com.frade.service.order.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import javax.sql.DataSource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import com.frade.common.order.PriceOptionCommon;
+import com.frade.common.order.TradeOptionCommon;
 import com.frade.dao.portfolio.CashDAO;
 import com.frade.dao.portfolio.HistoryDAO;
 import com.frade.dao.portfolio.PortfolioDAO;
+import com.frade.dto.event.PriceExecutedEvent;
 import com.frade.dto.order.HistoryDTO;
 import com.frade.dto.order.OrderInfoDTO;
 import com.frade.dto.user.PortfolioDTO;
 import com.frade.dto.user.UserCashDTO;
 import com.frade.exception.OrderProcessingException;
+import com.frade.service.order.LimitOrderMatchingService;
 import com.frade.service.order.OrderService;
 import com.frade.service.portfolio.PortfolioService;
+import com.frade.service.stock.StockService;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+	private final TransactionTemplate transactions;
+
+	@Autowired
+	public OrderServiceImpl(DataSource dataSource) {
+		this.transactions = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
+	}
 
 	@Autowired
 	PortfolioDAO portfolioDAO;
@@ -26,15 +41,26 @@ public class OrderServiceImpl implements OrderService {
 	CashDAO cashDAO;
 	@Autowired
 	HistoryDAO historyDAO;
-	
+
 	@Autowired
 	PortfolioService portfolioService;
+	
+	@Autowired
+	StockService stockService;
+
+	@Autowired
+	LimitOrderMatchingService limitOrderMatchingService;
 
 	@Override
-	@Transactional
-	public boolean processBuy(OrderInfoDTO orderInfo) { // 매수
-		
-		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
+	public boolean processMarketBuy(OrderInfoDTO orderInfo) {
+		if (orderInfo.getOrderCount() <= 0 || orderInfo.getOrderPrice() <= 0) return false;
+		boolean result = transactions.execute(status -> processMarketBuyInTransaction(orderInfo));
+		return result;
+	}
+
+	private boolean processMarketBuyInTransaction(OrderInfoDTO orderInfo) { // 매수
+
+		int totalPrice = Math.multiplyExact(orderInfo.getOrderCount(), orderInfo.getOrderPrice());
 
 		// 로그인 세션에서 검증한 회원번호
 		int userNum = orderInfo.getUserNum();
@@ -45,11 +71,10 @@ public class OrderServiceImpl implements OrderService {
 		}
 
 		// 검증
-		if (totalPrice > cash.getCash()) {
+		if (totalPrice > cash.getCash() - cash.getMargin()) {
 			System.out.println("주문 금액이 보유 예치금보다 많음.");
 			return false;
 		}
-
 
 		// 현금정보 저장
 		if (updateUserCash(userNum, -1 * totalPrice) == 0) {
@@ -62,15 +87,14 @@ public class OrderServiceImpl implements OrderService {
 		portfolio.setStockCode(orderInfo.getStockCode());
 		portfolio.setUserStockCnt(orderInfo.getOrderCount());
 		portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
-		
 
 		if (portfolioService.updateOrInsertUserPortfolio(portfolio) == 0) {
 			throw new OrderProcessingException("포트폴리오 갱신 실패");
 		}
 
 		// 거래기록 저장
-		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, 
-				orderInfo.getOrderPrice(), orderInfo.getOrderCount());
+		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, orderInfo.getOrderPrice(),
+				orderInfo.getOrderCount());
 
 		if (insertTradeHistory(history) == 0) {
 			throw new OrderProcessingException("거래 기록 insert 실패.");
@@ -80,20 +104,199 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	@Transactional
-	public boolean processSell(OrderInfoDTO orderInfo) { // 매도
+	public boolean processMarketSell(OrderInfoDTO orderInfo) {
+		if (orderInfo.getOrderCount() <= 0 || orderInfo.getOrderPrice() <= 0) return false;
+		boolean result = transactions.execute(status -> processMarketSellInTransaction(orderInfo));
+		return result;
+	}
 
-		int totalPrice = orderInfo.getOrderCount() * orderInfo.getOrderPrice();
+	private boolean processMarketSellInTransaction(OrderInfoDTO orderInfo) { // 매도
 		
+		int totalPrice = Math.multiplyExact(orderInfo.getOrderCount(), orderInfo.getOrderPrice());
+
 		// 로그인 세션에서 검증한 회원번호
 		int userNum = orderInfo.getUserNum();
-
 		UserCashDTO cash = findUserCashByUserNumForUpdate(userNum);
 		if (cash == null) {
 			throw new IllegalStateException("사용자 현금 데이터 없음");
 		}
 
 		PortfolioDTO portfolio = portfolioDAO.findUserPortfolioByUserNumAndStockCodeForUpdate(userNum,
+				orderInfo.getStockCode());
+		// 검증
+		if (portfolio == null) {
+			System.out.println("해당 주식을 보유하고 있지 않음");
+			return false;
+		} else if (orderInfo.getOrderCount() > portfolio.getUserStockCnt()) {
+			System.out.println("매도수량이 보유수량보다 많음");
+			return false;
+		}
+
+		// 현금정보 저장
+		if (updateUserCash(userNum, totalPrice) == 0) {
+			throw new OrderProcessingException("현금 정보 갱신 실패");
+		}
+
+		// 포트폴리오 업데이트
+		long soldCost = portfolio.getUserBuyCost() / portfolio.getUserStockCnt() * orderInfo.getOrderCount()
+				+ portfolio.getUserBuyCost() % portfolio.getUserStockCnt() * orderInfo.getOrderCount() / portfolio.getUserStockCnt();
+		
+		
+		portfolio.setUserStockCnt(portfolio.getUserStockCnt() - orderInfo.getOrderCount());
+		portfolio.setUserBuyCost(portfolio.getUserBuyCost() - soldCost);
+		if (portfolio.getUserStockCnt() == 0) {
+			if (portfolioService.deleteUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode()) == 0) {
+				throw new OrderProcessingException("포트폴리오 삭제 실패");
+			}
+		} else {
+			if (portfolioService.updateUserPortfolio(portfolio) == 0) {
+				throw new OrderProcessingException("포트폴리오 갱신 실패");
+			}
+		}
+		// 거래기록 저장
+		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, orderInfo.getOrderPrice(),
+				orderInfo.getOrderCount() * -1);
+
+		if (insertTradeHistory(history) == 0) {
+			throw new OrderProcessingException("거래기록 insert 실패");
+		}
+
+		return true;
+	}
+
+	// 지정가 매수 체결
+	private boolean processLimitBuy(OrderInfoDTO orderInfo) {
+
+		int totalPrice = Math.multiplyExact(orderInfo.getOrderCount(), orderInfo.getOrderPrice());
+
+		int userNum = orderInfo.getUserNum();
+
+		UserCashDTO cash = findUserCashByUserNumForUpdate(userNum);
+		if (cash == null || cash.getMargin() < totalPrice || cash.getCash() < totalPrice) {
+			throw new OrderProcessingException("지정가 매수 증거금 부족");
+		}
+
+		// 현금정보 저장
+		if (cashDAO.updateUserMargin(userNum, totalPrice) == 0) {
+			throw new OrderProcessingException("현금 정보 갱신 실패");
+		}
+
+		// 포트폴리오 merge into
+		PortfolioDTO portfolio = new PortfolioDTO();
+		portfolio.setUserNum(userNum);
+		portfolio.setStockCode(orderInfo.getStockCode());
+		portfolio.setUserStockCnt(orderInfo.getOrderCount());
+		portfolio.setUserBuyCost(orderInfo.getOrderCount() * orderInfo.getOrderPrice());
+
+		if (portfolioService.updateOrInsertUserPortfolio(portfolio) == 0) {
+			throw new OrderProcessingException("포트폴리오 갱신 실패");
+		}
+
+		// 거래기록 저장
+		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, orderInfo.getOrderPrice(),
+				orderInfo.getOrderCount());
+
+		if (insertTradeHistory(history) == 0) {
+			throw new OrderProcessingException("거래 기록 insert 실패.");
+		}
+
+		return true;
+	}
+
+	// 지정가 매도 체결
+	private boolean processLimitSell(OrderInfoDTO orderInfo) {
+		int totalPrice = Math.multiplyExact(orderInfo.getOrderCount(), orderInfo.getOrderPrice());
+
+		// 로그인 세션에서 검증한 회원번호
+		int userNum = orderInfo.getUserNum();
+
+		UserCashDTO cash = findUserCashByUserNumForUpdate(userNum);
+		if (cash == null) throw new OrderProcessingException("사용자 현금 데이터 없음");
+
+		PortfolioDTO portfolio = portfolioDAO.findUserPortfolioByUserNumAndStockCodeForUpdate(orderInfo.getUserNum(),
+				orderInfo.getStockCode());
+
+		if (portfolio == null || portfolio.getUserStockCnt() < orderInfo.getOrderCount()) {
+			throw new OrderProcessingException("지정가 매도 보유수량 부족");
+		}
+
+		// 현금정보 저장
+		if (updateUserCash(userNum, totalPrice) == 0) {
+			throw new OrderProcessingException("현금 정보 갱신 실패");
+		}
+
+		// 포트폴리오 업데이트
+		long soldCost = portfolio.getUserBuyCost() / portfolio.getUserStockCnt() * orderInfo.getOrderCount()
+				+ portfolio.getUserBuyCost() % portfolio.getUserStockCnt() * orderInfo.getOrderCount() / portfolio.getUserStockCnt();
+		portfolio.setUserStockCnt(portfolio.getUserStockCnt() - orderInfo.getOrderCount());
+		portfolio.setUserBuyCost(portfolio.getUserBuyCost() - soldCost);
+		if (portfolio.getUserStockCnt() == 0) {
+			if (portfolioService.deleteUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode()) == 0) {
+				throw new OrderProcessingException("포트폴리오 삭제 실패");
+			}
+		} else {
+			if (portfolioService.updateUserPortfolio(portfolio) == 0) {
+				throw new OrderProcessingException("포트폴리오 갱신 실패");
+			}
+		}
+
+		// 거래기록 저장
+		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, orderInfo.getOrderPrice(),
+				orderInfo.getOrderCount() * -1);
+
+		if (insertTradeHistory(history) == 0) {
+			throw new OrderProcessingException("거래기록 insert 실패");
+		}
+
+		return true;
+	}
+	
+	@Override // 지정가 매수정보 저장
+	public boolean saveLimitBuy(OrderInfoDTO orderInfo) {
+		if (orderInfo.getOrderCount() <= 0 || orderInfo.getOrderPrice() <= 0) return false;
+		boolean result = transactions.execute(status -> saveLimitBuyInTransaction(orderInfo));
+		if (result) limitOrderMatchingService.registerOrder(orderInfo);
+		return result;
+	}
+
+	private boolean saveLimitBuyInTransaction(OrderInfoDTO orderInfo) {
+		int totalPrice = Math.multiplyExact(orderInfo.getOrderCount(), orderInfo.getOrderPrice());
+
+
+		UserCashDTO cash = findUserCashByUserNumForUpdate(orderInfo.getUserNum());
+		if (cash == null) {
+			throw new IllegalStateException("사용자 현금 데이터 없음");
+		}
+
+		// 검증
+		if (totalPrice > cash.getCash() - cash.getMargin()) {
+			System.out.println("주문 금액이 보유 예치금보다 많음.");
+			return false;
+		}
+		
+		if (cashDAO.updateUserCashByLimitPrice(orderInfo.getUserNum(), totalPrice) != 1) {
+			throw new OrderProcessingException("증거금 예약 실패");
+		}
+		return true;
+	}
+	
+	@Override // 지정가 매도정보 저장
+	public boolean saveLimitSell(OrderInfoDTO orderInfo) {
+		if (orderInfo.getOrderCount() <= 0 || orderInfo.getOrderPrice() <= 0) return false;
+		boolean result = transactions.execute(status -> saveLimitSellInTransaction(orderInfo));
+		if (result) limitOrderMatchingService.registerOrder(orderInfo);
+		return result;
+	}
+
+	private boolean saveLimitSellInTransaction(OrderInfoDTO orderInfo) {
+		
+		
+		UserCashDTO cash = findUserCashByUserNumForUpdate(orderInfo.getUserNum());
+		if (cash == null) {
+			throw new IllegalStateException("사용자 현금 데이터 없음");
+		}
+		
+		PortfolioDTO portfolio = portfolioDAO.findUserPortfolioByUserNumAndStockCodeForUpdate(orderInfo.getUserNum(),
 				orderInfo.getStockCode());
 
 		// 검증
@@ -103,50 +306,94 @@ public class OrderServiceImpl implements OrderService {
 		} else if (orderInfo.getOrderCount() > portfolio.getUserStockCnt()) {
 			System.out.println("매도수량이 보유수량보다 많음");
 			return false;
-		} 
-
-		// 현금정보 저장
-		if (updateUserCash(userNum, totalPrice) == 0) {
-			throw new OrderProcessingException("현금 정보 갱신 실패");
 		}
-
-		// 포트폴리오 업데이트
-		portfolio.setUserStockCnt(portfolio.getUserStockCnt() - orderInfo.getOrderCount());
-		portfolio.setUserBuyCost(portfolio.getUserBuyCost() 
-						- totalPrice);
-		if(portfolio.getUserStockCnt() == 0) {
-			if (portfolioService.deleteUserPortfolioByUserNumAndStockCode(userNum, orderInfo.getStockCode()) == 0) {
-				throw new OrderProcessingException("포트폴리오 삭제 실패");
-			}
-		}else {
-			if (portfolioService.updateUserPortfolio(portfolio) == 0) {
-				throw new OrderProcessingException("포트폴리오 갱신 실패");
-			}
-		}
-
-		// 거래기록 저장
-		HistoryDTO history = new HistoryDTO(orderInfo.getStockCode(), userNum, 
-				orderInfo.getOrderPrice(), orderInfo.getOrderCount() * -1);
 		
-
-		if (insertTradeHistory(history) == 0) {
-			throw new OrderProcessingException("거래기록 insert 실패");
-		}
-
 		return true;
 	}
+
+	@EventListener
+	private void handlePriceExecutedEvent(PriceExecutedEvent event) {
+
+		OrderInfoDTO orderInfo = event.orderInfoDTO();
+
+		transactions.execute(status -> {
+			if (orderInfo.getTradeOption() == TradeOptionCommon.BUY) {
+				return processLimitBuy(orderInfo);
+			}
+			return processLimitSell(orderInfo);
+		});
+	}
+	
+	
+	@Override
+	public boolean orderAnalyzer(OrderInfoDTO orderInfo) {
+		
+		boolean result = false;
+		
+		TradeOptionCommon tradeOption = orderInfo.getTradeOption();
+		PriceOptionCommon priceOption = orderInfo.getPriceOption();
+
+
+		// 매수 매도 및 DAO 호출 전 검증
+		if (tradeOption == (TradeOptionCommon.BUY)) {
+			if (orderInfo.getOrderCount() <= 0) {
+				System.out.println("주문 수량은 1 이상이어야 함.");
+			} else if (orderInfo.getOrderPrice() <= 0) {
+				System.out.println("주문 금액은 1 이상이어야 함.");
+			} else {
+				if (priceOption == PriceOptionCommon.MARKETPRICE) {
+					System.out.println("시장가");
+					result = processMarketBuy(orderInfo);
+				} else {
+					if(orderInfo.getOrderPrice() >= stockService.getLatestPrice(orderInfo.getStockCode())) {
+						result = processMarketBuy(orderInfo);
+					}else {
+						result = saveLimitBuy(orderInfo);
+					}
+				}
+			}
+		}
+		if (tradeOption == (TradeOptionCommon.SELL)) {
+			if (orderInfo.getOrderCount() <= 0) {
+				System.out.println("매도수량은 0보다 커야함");
+			} else if (orderInfo.getOrderPrice() <= 0) {
+				System.out.println("매도가격은 0보다 커야함");
+			} else {
+				if (priceOption == PriceOptionCommon.MARKETPRICE) {
+					System.out.println("시장가");
+					result = processMarketSell(orderInfo);
+				} else {
+					if(orderInfo.getOrderPrice() <= stockService.getLatestPrice(orderInfo.getStockCode())) {
+						result = processMarketSell(orderInfo);
+					}else {
+						result = saveLimitSell(orderInfo);
+					}
+				}
+			}
+		}
+		return result;
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 
 //	=============t_cash==============
-	
 
-	
 	@Override
 	public UserCashDTO findUserCashByUserNum(int userNum) {
 		UserCashDTO userCash = cashDAO.findUserCashByUserNum(userNum);
 		return userCash;
 	}
-	
+
 	private UserCashDTO findUserCashByUserNumForUpdate(int userNum) {
 		UserCashDTO userCash = cashDAO.findUserCashByUserNumForUpdate(userNum);
 		return userCash;
@@ -158,7 +405,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 //	=============t_history==============
-	
+
 	@Override
 	public List<HistoryDTO> findTradeHistoryByUserNum(int userNum) {
 		List<HistoryDTO> history = historyDAO.findTradeHistoryByUserNum(userNum);
@@ -170,10 +417,9 @@ public class OrderServiceImpl implements OrderService {
 		return result;
 	}
 
-	
 	@Override
 	public boolean saveMarketPrice(OrderInfoDTO orderInfo) {
-		
+
 		return false;
 	}
 

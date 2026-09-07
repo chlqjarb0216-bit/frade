@@ -372,7 +372,7 @@
         </div>
 
         <button type="button" class="btn btn-primary btn-lg custom-submit"
-            id="openModal">주문하기</button>
+            id="openModal" <c:if test="${isMarketTime == false}">disabled</c:if>>주문하기</button>
 
 
 
