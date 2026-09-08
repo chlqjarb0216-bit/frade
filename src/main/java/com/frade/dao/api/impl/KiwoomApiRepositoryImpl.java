@@ -211,7 +211,7 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 		requestHeaders.set("authorization", token.toTypeToken());
 		requestHeaders.set("api-id", "ka20005");
 		//바디(001: 코스피, 1:1분봉)
-		Map<String, String> requestBody = Map.of("mrkt_tp", "001", "tic_scope", "1");
+		Map<String, String> requestBody = Map.of("inds_cd", "001", "tic_scope", "1");
 
 		boolean hasNextPage = true;
 		boolean isDateLimitReached = false; // 💡 날짜 리밋 도달 여부 플래그
@@ -225,7 +225,6 @@ public class KiwoomApiRepositoryImpl implements KiwoomApiRepository {
 					entity, KiwoomIndexChartResponse.class);
 
 			KiwoomIndexChartResponse body = responseEntity.getBody();
-
 			if (body != null && body.getIndsMinPoleQry() != null) {
 				for (StockPriceRawDTO raw : body.getIndsMinPoleQry()) {
 					StockPriceDTO row = raw.toStockPriceDTO(StockCommonFinalString.KOSPI);

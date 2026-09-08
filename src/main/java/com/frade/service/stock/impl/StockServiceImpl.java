@@ -225,7 +225,13 @@ public class StockServiceImpl implements StockService {
 
 	@Override
 	public void updateKOSPIChartData() {
-		LocalDateTime lastData = stockPriceMemoryCache.getLatestDataTime(StockCommonFinalString.KOSPI, nowDateString);
+		String targetDayString = nowDateString;
+		LocalDateTime lastData = stockPriceMemoryCache.getLatestDataTime(StockCommonFinalString.KOSPI, targetDayString);
+		while (lastData == null) {
+			targetDayString = LocalDate.parse(targetDayString, MarketUtil.DATE_FORM).minusDays(1)
+					.format(MarketUtil.DATE_FORM);
+			lastData = stockPriceMemoryCache.getLatestDataTime(StockCommonFinalString.KOSPI, targetDayString);
+		}
 		List<StockPriceDTO> updateChartData = kiwoomApiService.getKOSPIChartDataFromLastData(lastData);
 		stockPriceMemoryCache.putOrUpdate(StockCommonFinalString.KOSPI, nowDateString, updateChartData);
 	}
@@ -254,7 +260,7 @@ public class StockServiceImpl implements StockService {
 
 		int loadedCount = 0;
 		boolean isBeforeMarket = LocalDateTime.now().getHour() < 9; // 💡 상단에서 시간 조건 플래그 1방에 추출
-		boolean isAfterMarket = LocalDateTime.now().getHour() > 3; // 💡 상단에서 시간 조건 플래그 1방에 추출
+		boolean isAfterMarket = LocalDateTime.now().getHour() > 15; // 💡 상단에서 시간 조건 플래그 1방에 추출
 
 		// 🌟 지저분한 이중 루프를 박멸하고 단 하나의 클린한 종목 순회 루프로 대통합
 		for (String stockCode : activeStockCodes) {
@@ -397,7 +403,7 @@ public class StockServiceImpl implements StockService {
 				.selectMinuteStockPriceListByStockCodeAndDayString(StockCommonFinalString.KOSPI, todayStr);
 
 		// 2단계: 현재 시각에 따라 '진짜 살아있어야 정상인 기준 날짜'를 타깃으로 스위칭 가드 가동
-		if (MarketUtil.isMarketDay() || isBeforeMarket) {
+		if (!MarketUtil.isMarketDay() || isBeforeMarket) {
 			/* ☀️ [시나리오 A]: 장 시작 전 부팅 (00:00 ~ 08:59) */
 			if (!kospiYesterdayDbBars.isEmpty()) {
 				// 어제 자 데이터가 DB에 잘 들어있다면 정상 웜업 적재

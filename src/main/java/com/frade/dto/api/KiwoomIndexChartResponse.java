@@ -7,10 +7,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class KiwoomIndexChartResponse {
 	@JsonProperty("return_code")
