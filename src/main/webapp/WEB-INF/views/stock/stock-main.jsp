@@ -182,7 +182,7 @@ body {
 	margin: 0;
 	font-size: 14px;
 	font-weight: 600;
-	color: #f04452;
+	/* color: #f04452; */
 }
 
 .active-stock {
@@ -383,12 +383,12 @@ body {
         })
           .then((res) => res.json())
           .then((result) => {
-            renderTable(result.data);
+            renderTable(result.data, page);
             renderPaging(page);
           });
       }
 
-      function renderTable(stockList, activeStock = 0) {
+      function renderTable(stockList, page) {
         const stockTableBody = document.getElementById("stock-table-body");
         let html = "";
 
@@ -404,11 +404,12 @@ body {
         });
 
         stockList.forEach((stock, index) => {
-          let active = index == activeStock ? "active-stock" : "";
-          html += `
+          let active = index == 0 ? "active-stock" : "";
+          if(stock.dailyPriceChangeRoundedPercent>0){
+          	html += `
                             <div class="\${active} stock" style="display:flex; justify-content:space-between">
                                 <div>
-                                    <h3>\${ index+1 }</h3>
+                                    <h3>\${ index+1 +(page-1)*10 }</h3>
                                 </div>
                                 <div>
                                     <p>
@@ -417,13 +418,54 @@ body {
                                     <p class="stock-code">\${ stock.stockCode }</p>
                                 </div>
                                 <div>
-                                    <h2>\${ stock.price }</h2>
+                                	<h2>\${ Number(stock.price).toLocaleString('ko-KR') }원</h2>
                                 </div>
                                 <div>
-                                    <h4>\${ stock.dailyPriceChangeRoundedPercent }</h4>
+                                    <h4 style="color:red">▲\${ Math.abs(stock.dailyPriceChangeRoundedPercent) }%</h4>
                                 </div>
                             </div>
                 `;
+          }else if(stock.dailyPriceChangeRoundedPercent<0){
+            	html += `
+                    <div class="\${active} stock" style="display:flex; justify-content:space-between">
+                        <div>
+                            <h3>\${ index+1 +(page-1)*10 }</h3>
+                        </div>
+                        <div>
+                            <p>
+                                <strong>\${ stock.stockName }</strong>
+                            </p>
+                            <p class="stock-code">\${ stock.stockCode }</p>
+                        </div>
+                        <div>
+                    		<h2>\${ Number(stock.price).toLocaleString('ko-KR') }원</h2>
+                        </div>
+                        <div>
+                            <h4 style="color:blue">▼\${ Math.abs(stock.dailyPriceChangeRoundedPercent) }%</h4>
+                        </div>
+                    </div>
+        	`;
+		  }else{
+	          	html += `
+                    <div class="\${active} stock" style="display:flex; justify-content:space-between">
+                        <div>
+                            <h3>\${ index+1 +(page-1)*10 }</h3>
+                        </div>
+                        <div>
+                            <p>
+                                <strong>\${ stock.stockName }</strong>
+                            </p>
+                            <p class="stock-code">\${ stock.stockCode }</p>
+                        </div>
+                        <div>
+                    		<h2>\${ Number(stock.price).toLocaleString('ko-KR') }원</h2>
+                        </div>
+                        <div>
+                            <h4>\${ Math.abs(stock.dailyPriceChangeRoundedPercent) }%</h4>
+                        </div>
+                    </div>
+        		`;
+		  }
         });
         stockTableBody.innerHTML = html;
         

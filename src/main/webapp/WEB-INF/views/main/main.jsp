@@ -51,11 +51,11 @@
 									<c:choose>
 										<c:when test="${stock.dailyPriceChange > 0}">
 											<span class="stock-rate up">▲
-												+${stock.dailyPriceChangeRoundedPercent}%</span>
+												${Math.abs(stock.dailyPriceChangeRoundedPercent)}%</span>
 										</c:when>
 										<c:when test="${stock.dailyPriceChange < 0}">
 											<span class="stock-rate down">▼
-												${stock.dailyPriceChangeRoundedPercent}%</span>
+												${Math.abs(stock.dailyPriceChangeRoundedPercent)}%</span>
 										</c:when>
 										<c:otherwise>
 											<span class="stock-rate even">0.00%</span>
@@ -87,11 +87,11 @@
 									<c:choose>
 										<c:when test="${stock.dailyPriceChange > 0}">
 											<span class="stock-rate up">▲
-												+${stock.dailyPriceChangeRoundedPercent}%</span>
+												${Math.abs(stock.dailyPriceChangeRoundedPercent)}%</span>
 										</c:when>
 										<c:when test="${stock.dailyPriceChange < 0}">
 											<span class="stock-rate down">▼
-												${stock.dailyPriceChangeRoundedPercent}%</span>
+												${Math.abs(stock.dailyPriceChangeRoundedPercent)}%</span>
 										</c:when>
 										<c:otherwise>
 											<span class="stock-rate even">0.00%</span>
