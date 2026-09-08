@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user_mapper">
+
+	<!-- 아이디 중복 확인 -->
+	<select id="findUserNumById" parameterType="String" resultType="int">
+
+		SELECT user_num
+		FROM t_user
+		WHERE user_id = #{userId}
+
+	</select>
+
+
+	<!-- 닉네임 중복 확인 -->
+	<select id="findUserNumByNick" parameterType="String" resultType="int">
+
+		SELECT user_num
+		FROM t_user
+		WHERE user_nick = #{userNick}
+
+	</select>
+
+
+	<!-- 이메일 중복 확인 -->
+	<select id="findUserNumByEmail" parameterType="String" resultType="int">
+
+		SELECT user_num
+		FROM t_user
+		WHERE user_email = #{userEmail}
+
+	</select>
+
+
+	<!-- 회원가입에 사용할 user_num 시퀀스 조회 -->
+	<select id="getNextUserNum" resultType="int">
+
+		SELECT seq_t_user.NEXTVAL
+		FROM dual
+
+	</select>
+
+
+	<!-- 회원가입 -->
+	<insert id="saveUser" parameterType="UserDTO">
+
+		INSERT INTO t_user(
+		user_num,
+		user_id,
+		user_nick,
+		user_email,
+		user_pw
+		)
+		VALUES(
+		#{userNum},
+		#{userId},
+		#{userNick},
+		#{userEmail},
+		#{userPw}
+		)
+
+	</insert>
+
+
+	<!-- 회원가입 후 지갑 생성 -->
+	<insert id="saveUserCash" parameterType="int">
+
+		INSERT INTO t_cash(
+		user_num
+		)
+		VALUES(
+		#{userNum}
+		)
+
+    </insert>
+
+
+	<!-- 로그인할 회원 정보 조회 -->
+	<select id="findUserById" parameterType="String"
+		resultType="UserDTO">
+
+		SELECT
+		user_num,
+		user_nick,
+		user_pw,
+		user_photo
+		FROM t_user
+		WHERE user_id = #{userId}
+		AND user_is_deleted IS NULL
+
+	</select>
+
+	<!-- 회원번호로 마이페이지 프로필 정보 조회 -->
+	<select id="findUserProfileByUserNum" parameterType="int" resultType="UserProfileDTO">
+
+	SELECT
+	user_num,
+	user_nick,
+	user_photo,
+	user_portfolio_is_public,
+	user_registed_date
+	FROM t_user
+	WHERE user_num = #{userNum}
+	AND user_is_deleted IS NULL
+
+</select>
+
+	<!-- 회원 프로필 수정 -->
+	<update id="updateUserProfile" parameterType="UserDTO">
+
+		UPDATE t_user
+
+		<set>
+
+			user_nick = #{userNick},
+
+			user_portfolio_is_public =
+			#{userPortfolioIsPublic},
+
+			user_photo = #{userPhoto},
+
+			<if test="userPw != null">
+				user_pw = #{userPw},
+			</if>
+
+		</set>
+
+		WHERE user_num = #{userNum}
+		AND user_is_deleted IS NULL
+
+	</update>
+
+	<!-- 회원 탈퇴 처리 -->
+	<update id="deleteUser" parameterType="int">
+
+		UPDATE t_user
+		SET user_is_deleted = 1
+		WHERE user_num = #{userNum}
+		AND user_is_deleted IS NULL
+
+	</update>
+
+
+	<!-- 회원번호로 현재 비밀번호 조회 -->
+	<select id="findUserPwByUserNum" parameterType="int"
+		resultType="String">
+
+		SELECT user_pw
+		FROM t_user
+		WHERE user_num = #{userNum}
+		AND user_is_deleted IS NULL
+
+	</select>
+	
+	
+	
+	
+	
+
+</mapper>

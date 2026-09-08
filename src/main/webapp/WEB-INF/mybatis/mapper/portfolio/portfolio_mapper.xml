@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC
+		   "-//mybatis.org//DTD Mapper 3.0//EN" 
+		   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="portfolio_mapper">
+
+
+	<select id="findUserPortfolioListByUserNum" parameterType="int" resultType="PortfolioDTO">
+		select p.user_num,
+		       p.stock_code,
+		       s.stock_name,
+		       p.user_stock_cnt,
+		       p.user_buy_cost
+		from t_portfolio p
+		join t_stock s on s.stock_code = p.stock_code
+		where p.user_num = #{userNum}
+		  and p.user_stock_cnt > 0
+		order by p.stock_code
+	</select>
+
+	<select id="findUserPortfolioByUserNumAndStockCode" parameterType="map" resultType="PortfolioDTO">
+		select * from t_portfolio
+		where user_num = #{userNum} and stock_code = #{stockCode}
+	</select>
+
+	<select id="findUserPortfolioByUserNumAndStockCodeForUpdate" parameterType="map" resultType="PortfolioDTO">
+		select * from t_portfolio
+		where user_num = #{userNum} and stock_code = #{stockCode}
+		for update
+	</select>
+	
+	<insert id="insertUserPortfolio" parameterType="PortfolioDTO">
+		insert into t_portfolio(user_num, stock_code, user_stock_cnt, user_buy_cost)
+		values (
+			#{userNum},
+			#{stockCode},
+			#{userStockCnt},
+			#{userBuyCost}
+		)
+	</insert>
+	
+	<update id="updateUserPortfolio" parameterType="PortfolioDTO">
+		update t_portfolio
+		set user_stock_cnt = #{userStockCnt},
+			user_buy_cost = #{userBuyCost}
+		where user_num = #{userNum} and stock_code = #{stockCode}
+	</update>
+	
+	
+	<delete id="deleteUserPortfolioByUserNumAndStockCode" parameterType="map">
+		delete from t_portfolio 
+		where user_num = #{userNum} and stock_code = #{stockCode}
+	</delete>
+	
+	
+	<update id="updateOrInsertUserPortfolio" parameterType="PortfolioDTO">
+	
+		merge into t_portfolio using dual
+			on (user_num = #{userNum} and stock_code = #{stockCode})
+		when matched then
+    	update set user_stock_cnt = user_stock_cnt + #{userStockCnt},
+            user_buy_cost = user_buy_cost + #{userBuyCost}
+		when not matched then
+    	insert (user_num, stock_code, user_stock_cnt, user_buy_cost) 
+    	values (#{userNum}, #{stockCode}, #{userStockCnt}, #{userBuyCost})
+		
+	</update>
+
+	
+</mapper>

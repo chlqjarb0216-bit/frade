@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="stockprice_mapper">
+
+	<update id="updateOrInsertMinuteStockPrice" parameterType="java.util.List">
+    <!-- 19c 최적화 다중 처리를 위한 PL/SQL 블록 시작 -->
+    	<foreach collection="list" item="item" open="BEGIN" close="END;" separator=" ">   
+        MERGE INTO t_stock_price target
+        USING dual
+           ON (target.stock_code = #{item.stockCode} AND target.date_time = #{item.dateTime})
+        
+        /* 1. 데이터가 이미 존재한다면 최신 주가 정보로 업데이트 */
+        WHEN MATCHED THEN
+            UPDATE SET
+                target.price_open  = #{item.priceOpen},
+                target.price_high  = #{item.priceHigh},
+                target.price_low   = #{item.priceLow},
+                target.price_close = #{item.priceClose},
+                target.volume      = #{item.volume}
+                
+        /* 2. 기존 데이터가 없다면 신규 분봉 데이터로 인서트 */
+        WHEN NOT MATCHED THEN
+            INSERT (
+                target.stock_code,
+                target.date_time,
+                target.price_open,
+                target.price_high,
+                target.price_low,
+                target.price_close,
+                target.volume
+            ) VALUES (
+                #{item.stockCode},
+                #{item.dateTime},
+                #{item.priceOpen},
+                #{item.priceHigh},
+                #{item.priceLow},
+                #{item.priceClose},
+                #{item.volume}
+            ); <!-- ⭐ 개별 MERGE 종료를 위한 세미콜론 필수 지정 -->
+	    </foreach>
+	</update>
+
+		
+	<update id="updateOrInsertDailyMinutePrice" parameterType="java.util.List">
+    <!-- DECLARE를 제거하고 BEGIN으로 시작합니다 -->
+    <foreach collection="list" item="item" open="BEGIN" close="END;" separator=" ">   
+        MERGE INTO t_stock_price target
+        USING dual
+           ON (target.stock_code = #{item.stockCode} AND target.date_time = #{item.dateTime})
+        
+        /* 1. 덮어쓰기 가드: 종목코드와 분시간이 완벽히 일치하는 기존 방이 존재한다면 최신 정산가로 오버라이딩 */
+        WHEN MATCHED THEN
+            UPDATE SET
+                target.price_open  = #{item.priceOpen},
+                target.price_high  = #{item.priceHigh},
+                target.price_low   = #{item.priceLow},
+                target.price_close = #{item.priceClose},
+                target.volume      = #{item.volume}
+                
+        /* 2. 신규 장착 가드: 매칭되는 과거 타임라인이 전혀 없다면 순수 신규 분 봉으로 인서트 */
+        WHEN NOT MATCHED THEN
+            INSERT (
+                target.stock_code,
+                target.date_time,
+                target.price_open,
+                target.price_high,
+                target.price_low,
+                target.price_close,
+                target.volume
+            ) VALUES (
+                #{item.stockCode},
+                #{item.dateTime},
+                #{item.priceOpen},
+                #{item.priceHigh},
+                #{item.priceLow},
+                #{item.priceClose},
+                #{item.volume}
+            ); <!-- ⭐ 핵심: 각 MERGE 문장 끝에 확실하게 세미콜론을 박아줍니다 -->
+    </foreach>
+</update>
+		
+	<select id="selectMinuteStockPriceListByStockCodeAndDayString" parameterType="java.util.Map" resultType="StockPriceDTO">
+    SELECT 
+        stock_code,
+        date_time,
+        price_open,
+        price_high,
+        price_low,
+        price_close,
+        volume
+    FROM 
+        t_stock_price
+    WHERE 
+        stock_code = #{stockCode}
+        <!-- 💡 시작점: 오늘 아침 00시 00분 00초부터 -->
+        AND date_time &gt;= TO_DATE(#{dayString}, 'YYYYMMDD')
+        
+        <!-- 💡 끝점 [개선]: 오늘 날짜에 +1일을 한 뒤, 다음 날 00시 00분 00초 '미만(&lt;)'으로 차단막 생성 -->
+        AND date_time &lt; TO_DATE(#{dayString}, 'YYYYMMDD') + 1
+    ORDER BY 
+        date_time ASC
+	</select>
+
+</mapper>

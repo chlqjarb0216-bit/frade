@@ -1,0 +1,436 @@
+package com.frade.service.user.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.frade.common.FilePath;
+import com.frade.common.ResultCode;
+import com.frade.dao.user.UserDAO;
+import com.frade.dto.user.UserDTO;
+import com.frade.dto.user.UserLoginDTO;
+import com.frade.dto.user.UserProfileDTO;
+import com.frade.dto.user.UserSessionDTO;
+import com.frade.dto.user.UserSignupDTO;
+import com.frade.exception.UserSignupException;
+import com.frade.service.user.UserService;
+import com.frade.util.SHA256Encryptor;
+
+@Service
+public class UserServiceImpl implements UserService{
+	
+	
+	@Autowired
+	UserDAO userDAO;
+
+	@Override
+	public UserSessionDTO userLogin(UserLoginDTO userLoginDTO) {
+
+		// 아이디로 회원정보 조회
+		UserDTO userDTO = userDAO.findUserById(userLoginDTO.getUserId());
+
+		// 해당 아이디의 회원이 없거나 탈퇴한 회원이면 로그인 실패
+		if (userDTO == null) {
+			return null;
+		}
+
+		try {
+
+			// 입력한 비밀번호와
+			// DB에 저장된 암호화 비밀번호 비교
+			boolean pwMatch = SHA256Encryptor.matches(userLoginDTO.getUserPw(), userDTO.getUserPw());
+
+			// 비밀번호가 일치하지 않으면 로그인 실패
+			if (!pwMatch) {
+				return null;
+			}
+
+		} catch (NoSuchAlgorithmException e) {
+
+			e.printStackTrace();
+
+			return null;
+		}
+
+		// 로그인 성공
+		// 세션에서 사용할 정보만 UserSessionDTO에 담아서 반환
+		return new UserSessionDTO(userDTO.getUserNum(), userDTO.getUserNick(), userDTO.getUserPhoto());
+	}
+
+	@Override
+	public boolean checkUserId(String userId) {
+
+		Integer userNum = userDAO.findUserNumById(userId);
+
+		return userNum != null;
+	}
+
+	@Override
+	public boolean checkUserNick(String userNick) {
+
+		Integer userNum = userDAO.findUserNumByNick(userNick);
+
+		return userNum != null;
+	}
+
+	@Override
+	public boolean checkUserEmail(String userEmail) {
+
+		Integer userNum = userDAO.findUserNumByEmail(userEmail);
+
+		return userNum != null;
+	}
+
+	@Override
+	@Transactional
+	public ResultCode userSignup(UserSignupDTO userSignupDTO) {
+
+	    // 비밀번호 암호화
+	    String encryptedPw = null;
+
+	    try {
+
+			encryptedPw = SHA256Encryptor.encrypt(userSignupDTO.getUserPw());
+
+	    } catch(NoSuchAlgorithmException e) {
+
+
+	        throw new UserSignupException("비밀번호 암호화 실패");
+	    }
+
+	    
+	    int userNum = userDAO.getNextUserNum();
+
+	    // Controller용 DTO → DB용 DTO 변환
+	    // 회원가입용 생성자 사용
+	    UserDTO userDTO = new UserDTO(
+	    		userNum,
+	            userSignupDTO.getUserId(),       // userId
+	            userSignupDTO.getUserNick(),     // userNick
+	            userSignupDTO.getUserEmail(),    // userEmail
+	            encryptedPw                      // userPw
+	    );
+
+		System.out.println("DB에 전달할 회원가입 정보 : " + userDTO);
+		
+		// T_USER 테이블에 회원정보 저장
+		try {
+
+			// T_USER 회원정보 저장
+			int userResult = userDAO.saveUser(userDTO);
+
+			// INSERT가 정상적으로 1건 처리되지 않은 경우
+			if (userResult != 1) {
+				throw new UserSignupException("회원정보 저장 실패");
+			}
+
+		} catch (DataIntegrityViolationException e) {
+
+			// 아이디 / 닉네임 / 이메일 UNIQUE 제약조건 위반 등
+			throw new UserSignupException("이미 사용 중인 아이디, 닉네임 또는 이메일입니다.");
+		}
+
+		// T_CASH 테이블에 가입한 회원의 자금정보 생성
+		// T_USER에 넣었던 것과 같은 userNum 사용
+		int cashResult = userDAO.saveUserCash(userNum);
+
+		// INSERT가 정상적으로 1건 처리되지 않은 경우
+		if (cashResult != 1) {
+			throw new UserSignupException("회원 지갑 생성 실패");
+		}    
+
+	    return ResultCode.SUCCESS;
+	}
+
+
+	@Override
+	public ResultCode updateUserProfile(
+	        UserProfileDTO userProfileDTO) {
+
+	    // 프로필 수정정보 확인용
+	    System.out.println(
+	            "service 프로필 수정 정보: "
+	            + userProfileDTO);
+
+
+	    // DTO에 담겨서 넘어온 프로필 수정 정보
+	    MultipartFile profilePhoto =
+	            userProfileDTO.getProfilePhoto();
+
+	    boolean defaultPhoto =
+	            userProfileDTO.isDefaultPhoto();
+
+	    boolean passwordChange =
+	            userProfileDTO.isPasswordChange();
+
+
+	    /*
+	     * 현재 프로필 정보 조회
+	     * 현재는 getUserProfile()의 임시 데이터 사용
+	     * DB 연결 후 DAO 조회 결과 사용
+	     */
+		UserProfileDTO currentProfile = getUserProfile(userProfileDTO.getUserNum());
+		
+		if(currentProfile == null) {
+			return ResultCode.USER_NOT_FOUND;
+		}
+
+		// 현재 프로필 사진
+		String oldProfilePhoto = currentProfile.getUserPhoto();
+
+
+	    /*
+	     * DB에 전달할 값
+	     * 모든 처리가 끝난 후
+	     * 마지막에 UserDTO 생성
+	     */
+
+	    // 비밀번호를 변경하지 않으면 null
+	    String encryptedNewPw = null;
+
+	    // 사진 변경이 없으면 기존 사진명 유지
+	    String newProfilePhoto =
+	            oldProfilePhoto;
+
+
+	    /*
+	     * 비밀번호 변경 처리
+	     */
+	    if(passwordChange) {
+
+	        try {
+
+				// DB에서 현재 회원의 암호화된 비밀번호 조회
+				String dbPw = userDAO.findUserPwByUserNum(userProfileDTO.getUserNum());
+
+				if (dbPw == null) {
+					return ResultCode.FAIL;
+				}
+
+	            // 현재 비밀번호 확인
+				boolean pwMatch = SHA256Encryptor.matches(userProfileDTO.getCurrentPw(), dbPw);
+
+	            if(pwMatch == false) {
+	                return ResultCode.CURRENT_PW_NOT_MATCH;
+	            }
+
+	            // 새 비밀번호 암호화
+				encryptedNewPw = SHA256Encryptor.encrypt(userProfileDTO.getNewPw());
+
+				System.out.println("암호화된 새 비밀번호 : " + encryptedNewPw);
+
+	        } catch(NoSuchAlgorithmException e) {
+	            e.printStackTrace();
+	            return ResultCode.PASSWORD_ENCRYPT_FAIL;
+	        }
+	    }
+
+
+	    /*
+	     * 프로필 사진 저장 경로
+	     */
+	    String uploadPath =
+	            FilePath.FILE_ABSOLUTE_STORE_PATH
+	            + FilePath.USER_PROFILE_PATH;
+
+	    File uploadFolder =
+	            new File(uploadPath);
+
+	    // 폴더가 없으면 생성
+	    if(!uploadFolder.exists()) {
+	        uploadFolder.mkdirs();
+	    }
+
+
+	    /*
+	     * 기본 프로필로 변경
+	     */
+	    if(defaultPhoto) {
+
+	        // 기존 프로필 사진 삭제
+	        if(oldProfilePhoto != null) {
+
+	            File oldFile =
+	                    new File(
+	                            uploadFolder,
+	                            oldProfilePhoto);
+
+	            if(oldFile.exists()) {
+	                oldFile.delete();
+	            }
+	        }
+
+	        // DB에는 null
+	        newProfilePhoto = null;
+
+	        System.out.println(
+	                "기본 이미지로 변경");
+	    }
+
+
+	    /*
+	     * 새 프로필 사진 선택
+	     */
+	    else if(profilePhoto != null
+	            && !profilePhoto.isEmpty()) {
+
+	        String originalFileName =
+	                profilePhoto.getOriginalFilename();
+
+	        String extension =
+	                originalFileName.substring(
+	                        originalFileName.lastIndexOf("."));
+
+
+	        // 확장자 확인
+	        if(!extension.equalsIgnoreCase(".png")
+	                && !extension.equalsIgnoreCase(".jpg")
+	                && !extension.equalsIgnoreCase(".jpeg")) {
+
+	            return ResultCode.INVALID_PROFILE_FILE;
+	        }
+
+
+	        // MIME 타입 확인
+	        String contentType =
+	                profilePhoto.getContentType();
+
+	        if(contentType == null
+	                || (!contentType.equals("image/png")
+	                && !contentType.equals("image/jpeg"))) {
+
+	            return ResultCode.INVALID_PROFILE_FILE;
+	        }
+
+
+	        // 유저번호 + 확장자로 저장
+	        String saveFileName =
+	                userProfileDTO.getUserNum()
+	                + extension;
+
+	        try {
+
+	            File saveFile =
+	                    new File(
+	                            uploadFolder,
+	                            saveFileName);
+
+	            // 새 프로필 사진 저장
+	            profilePhoto.transferTo(saveFile);
+
+
+	            /*
+	             * 새 사진 저장 성공 후
+	             * 기존 사진과 파일명이 다르면 기존 사진 삭제
+	             */
+	            if(oldProfilePhoto != null
+	                    && !oldProfilePhoto.equals(
+	                            saveFileName)) {
+
+	                File oldFile =
+	                        new File(
+	                                uploadFolder,
+	                                oldProfilePhoto);
+
+	                if(oldFile.exists()) {
+	                    oldFile.delete();
+	                }
+	            }
+
+
+	            // DB에 저장할 새 파일명
+	            newProfilePhoto =
+	                    saveFileName;
+
+	            System.out.println(
+	                    "저장된 프로필 사진: "
+	                    + newProfilePhoto);
+
+	        } catch(IOException e) {
+
+	            e.printStackTrace();
+
+	            /*
+	             * 사진 저장 실패
+	             * → 기본 프로필 처리
+	             */
+	            newProfilePhoto = null;
+
+	            // 기존 프로필 사진도 삭제
+	            if(oldProfilePhoto != null) {
+
+	                File oldFile =
+	                        new File(
+	                                uploadFolder,
+	                                oldProfilePhoto);
+
+	                if(oldFile.exists()) {
+	                    oldFile.delete();
+	                }
+	            }
+
+	            System.out.println(
+	                    "프로필 사진 저장 실패"
+	                    + " → 기본 프로필로 변경");
+	        }
+	    }
+
+	    userProfileDTO.setUserPhoto(newProfilePhoto);
+
+	    /*
+	     * 모든 처리 완료 후
+	     * DB용 UserDTO 생성
+	     */
+	    UserDTO userDTO = new UserDTO(
+	            userProfileDTO.getUserNum(),
+	            userProfileDTO.getUserNick(),
+	            encryptedNewPw,
+	            userProfileDTO.getUserPortfolioIsPublic(),
+	            newProfilePhoto
+	    );
+
+
+		System.out.println("DB에 전달할 프로필 수정 정보 : " + userDTO);
+
+		// T_USER 프로필 정보 수정
+		int updateResult = userDAO.updateUserProfile(userDTO);
+
+		// 1건이 정상적으로 수정되지 않은 경우
+		if (updateResult != 1) {
+			return ResultCode.FAIL;
+		}
+
+	    return ResultCode.SUCCESS;
+	}
+	
+	
+
+	@Override
+	public ResultCode deleteUser(int userNum) {
+
+		// 회원 탈퇴 처리
+		int deleteResult = userDAO.deleteUser(userNum);
+
+		// 정상적으로 1명의 회원이 수정되지 않은 경우
+		if (deleteResult != 1) {
+			return ResultCode.FAIL;
+		}
+
+		return ResultCode.SUCCESS;
+	}
+
+	@Override
+	public UserProfileDTO getUserProfile(int userNum) {
+
+	    return userDAO.findUserProfileByUserNum(userNum);
+	}
+
+
+}
