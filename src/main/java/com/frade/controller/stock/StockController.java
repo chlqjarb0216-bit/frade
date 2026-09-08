@@ -57,13 +57,13 @@ public class StockController {
 			PortfolioDTO portfolio = portfolioService.findUserPortfolioByUserNumAndStockCode(userNum, stockCode);
 			model.addAttribute("userCash", cash == null ? 0 : cash.getCash());
 			model.addAttribute("stockCnt", portfolio == null ? 0 : portfolio.getUserStockCnt());
-			model.addAttribute("isMarketTime",MarketUtil.isMarketOpenTime());
+			model.addAttribute("isMarketTime", MarketUtil.isMarketOpenTime());
 		}
 		// 차트 데이터
-		List<Object[]> kospiDataList = stockService.getEveryChartDataCached(stockCode);
+		List<Object[]> stockDataList = stockService.getEveryChartDataCached(stockCode);
 		String jsonString = "[]";
 		try {
-			jsonString = objectMapper.writeValueAsString(kospiDataList);
+			jsonString = objectMapper.writeValueAsString(stockDataList);
 		} catch (JsonProcessingException e) {
 			log.error("jsonString 매핑중 에러 발생");
 		}
